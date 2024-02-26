@@ -1,0 +1,30 @@
+{
+  "name": "hra-node-dist-vis",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "npm-run-all build:code build:sample-edges*",
+    "build:code": "node ./scripts/build.js",
+    "build:sample-edges1": "node src/distances.js docs/sample-data/Region_D265-12.csv 'Cell Type' Endothelial 1000 docs/sample-data/Region_D265-12.edges.csv",
+    "build:sample-edges2": "node src/distances.js docs/sample-data/Region_D265-11.csv type 'Lymphatic Endothelial Cell (and some immune cells)' 1000 docs/sample-data/Region_D265-11.edges.csv",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "hra-node-dist-vis": "./src/distances.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@deck.gl/carto": "^8.9.34",
+    "@deck.gl/core": "^8.9.34",
+    "@deck.gl/layers": "^8.9.34",
+    "@preact/signals-core": "^1.5.1",
+    "@tensorflow/tfjs": "^4.17.0",
+    "esbuild": "^0.20.0",
+    "esbuild-plugin-inline-worker": "^0.1.1",
+    "npm-run-all": "^4.1.5",
+    "papaparse": "^5.4.1"
+  }
+}

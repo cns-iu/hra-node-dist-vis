@@ -1,0 +1,287 @@
+import { colorCategories } from '@deck.gl/carto';
+import { COORDINATE_SYSTEM, Deck, OrbitView } from '@deck.gl/core';
+import { LineLayer, PointCloudLayer } from '@deck.gl/layers';
+import { batch, computed, effect, signal } from '@preact/signals-core';
+import cartocolor from 'cartocolor';
+import Papa from 'papaparse';
+import DistanceEdgesWorker from './distance-edges.worker.js';
+
+async function fetchCsv(url, papaOptions = {}) {
+  const csvString = await fetch(url).then((r) => r.text());
+  const { data } = Papa.parse(csvString, { header: true, skipEmptyLines: true, dynamicTyping: true, ...papaOptions });
+  return data;
+}
+
+function delay(t, val) {
+  return new Promise((resolve) => setTimeout(resolve, t, val));
+}
+
+async function distanceEdges(nodes, type_field, target_type, maxDist) {
+  const worker = new DistanceEdgesWorker();
+  return new Promise((resolve) => {
+    worker.onmessage = (e) => {
+      if (e.data.status === 'processing') {
+        console.log(`Computing edges; ${e.data.percentage}% complete.`);
+      } else if (e.data.status === 'complete') {
+        resolve(e.data.edges);
+        worker.terminate();
+      }
+    };
+    worker.postMessage({ nodes, type_field, target_type, maxDist });
+  });
+}
+
+const template = document.createElement('template');
+template.innerHTML = `<style>
+#vis {
+  width: 100%;
+  height: 100%;
+  position: relative !important;
+}
+</style>
+<canvas id="vis"></canvas>
+`;
+
+class HraNodeDistanceVisualization extends HTMLElement {
+  static observedAttributes = [
+    'nodes',
+    'edges',
+    'color-map',
+    'color-map-key',
+    'color-map-value',
+    'node-target-key',
+    'node-target-value',
+    'max-edge-distance',
+  ];
+  nodesUrl = signal();
+  edgesUrl = signal();
+  colorMapUrl = signal();
+  colorMapKey = signal();
+  colorMapValue = signal();
+  nodeTargetKey = signal();
+  nodeTargetValue = signal();
+  maxEdgeDistance = signal();
+  toDispose = [];
+  initialized = false;
+
+  nodes = signal([]);
+  nodes$ = computed(async () => {
+    if (this.nodesUrl.value) {
+      const nodes = await fetchCsv(this.nodesUrl.value);
+      for (const node of nodes) {
+        node.position = [node.x ?? 0, node.y ?? 0, node.z ?? 0];
+      }
+      return nodes;
+    } else {
+      return [];
+    }
+  });
+
+  edges = signal([]);
+  edges$ = computed(async () => {
+    const nodes = this.nodes.value;
+    if (this.edgesUrl.value && nodes.length > 0) {
+      await delay(100);
+      const edges = await fetchCsv(this.edgesUrl.value, { header: false });
+      return edges;
+    } else if (nodes.length > 0) {
+      const nodeKey = this.nodeTargetKey.value;
+      const nodeValue = this.nodeTargetValue.value;
+      const maxDist = this.maxEdgeDistance.value;
+      console.log('start', new Date());
+      const edges = await distanceEdges(nodes, nodeKey, nodeValue, maxDist);
+      console.log('end', new Date());
+      return edges;
+    } else {
+      return [];
+    }
+  });
+
+  colorCoding = signal();
+  colorCoding$ = computed(async () => {
+    const nodes = this.nodes.value;
+    let colorDomain;
+    let colorRange;
+    if (this.colorMapUrl.value) {
+      const colorMapData = await fetchCsv(this.colorMapUrl.value);
+      colorDomain = [];
+      colorRange = [];
+      for (const row of colorMapData) {
+        colorDomain.push(row[this.colorMapKey.value]);
+        const color = row[this.colorMapValue.value];
+        if (color?.startsWith('[')) {
+          colorRange.push(JSON.parse(color));
+        } else {
+          colorRange.push([255, 255, 255]);
+        }
+      }
+    } else if (nodes.length > 0) {
+      const nodeKey = this.nodeTargetKey.value;
+      const nodeValues = new Set();
+      for (const node of nodes) {
+        nodeValues.add(node[nodeKey]);
+      }
+      colorDomain = Array.from(nodeValues).sort();
+      const maxColors = Math.max(2, Math.min(11, colorDomain.length)) + '';
+      const colorSchemes = Object.keys(cartocolor).filter((c) => cartocolor[c][maxColors]);
+      colorRange = colorSchemes[Math.floor(Math.random() * colorSchemes.length)];
+    } else {
+      return undefined;
+    }
+
+    return (attr) =>
+      colorCategories({
+        attr,
+        domain: colorDomain,
+        colors: colorRange,
+        othersColor: [255, 255, 255],
+        nullColor: [255, 255, 255],
+      });
+  });
+
+  positionScaling = computed(() => {
+    let maxDimSize = 1;
+    for (const node of this.nodes.value) {
+      maxDimSize = Math.max(maxDimSize, ...node.position);
+    }
+    const scale = ([x, y, z]) => [x / maxDimSize, y / maxDimSize, z / maxDimSize];
+    return (attr) => {
+      return (d) => scale(attr(d));
+    };
+  });
+
+  nodesLayer = computed(() => {
+    if (this.colorCoding.value && this.nodes.value.length > 0) {
+      const nodeKey = this.nodeTargetKey.value;
+      return new PointCloudLayer({
+        id: 'nodes',
+        data: this.nodes.value,
+        getPosition: this.positionScaling.value((d) => d.position),
+        getColor: this.colorCoding.value((d) => d[nodeKey]),
+        pickable: true,
+        coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+        pointSize: 1.5,
+      });
+    } else {
+      return undefined;
+    }
+  });
+
+  edgesLayer = computed(() => {
+    if (this.colorCoding.value && this.edges.value.length > 0) {
+      const nodeKey = this.nodeTargetKey.value;
+      const nodes = this.nodes.value;
+      return new LineLayer({
+        id: 'edges',
+        data: this.edges.value,
+        getSourcePosition: this.positionScaling.value(([node_index, sx, sy, sz, tx, ty, tz]) => [sx, sy, sz]),
+        getTargetPosition: this.positionScaling.value(([node_index, sx, sy, sz, tx, ty, tz]) => [tx, ty, tz]),
+        getColor: this.colorCoding.value(([node_index]) => nodes[node_index][nodeKey]),
+        pickable: false,
+        coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+        getWidth: 1,
+      });
+    } else {
+      return undefined;
+    }
+  });
+
+  constructor() {
+    super();
+    const root = this.attachShadow({ mode: 'open' });
+    root.appendChild(template.content.cloneNode(true));
+    this.$canvas = root.getElementById('vis');
+    this.$canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
+  async connectedCallback() {
+    this.deck = new Deck({
+      canvas: this.$canvas,
+      controller: true,
+      views: [new OrbitView({ id: 'orbit', orbitAxis: 'Y' })],
+      initialViewState: {
+        orbitAxis: 'Y',
+        camera: 'orbit',
+        zoom: 9,
+        minRotationX: -90,
+        maxRotationX: 90,
+        rotationX: 0,
+        rotationOrbit: 0,
+        dragMode: 'rotate',
+        target: [0.5, 0.5],
+      },
+      onClick: (e) => e.picked && console.log('Node Clicked', e),
+      layers: [],
+    });
+
+    this.trackDisposal(
+      effect(() => {
+        this.deck.setProps({ layers: [this.nodesLayer.value, this.edgesLayer.value].filter((l) => !!l) });
+      })
+    );
+
+    this.trackDisposal(
+      effect(async () => {
+        this.nodes.value = await this.nodes$.value;
+      })
+    );
+
+    this.trackDisposal(
+      effect(async () => {
+        this.edges.value = await this.edges$.value;
+      })
+    );
+
+    this.trackDisposal(
+      effect(async () => {
+        const colorCoding = await this.colorCoding$.value;
+        if (colorCoding) {
+          this.colorCoding.value = colorCoding;
+        }
+      })
+    );
+
+    batch(() => {
+      this.nodesUrl.value = this.getAttribute('nodes');
+      this.edgesUrl.value = this.getAttribute('edges');
+      this.colorMapUrl.value = this.getAttribute('color-map');
+      this.colorMapKey.value = this.getAttribute('color-map-key') || 'cell_type';
+      this.colorMapValue.value = this.getAttribute('color-map-value') || 'cell_color';
+      this.nodeTargetKey.value = this.getAttribute('node-target-key');
+      this.nodeTargetValue.value = this.getAttribute('node-target-value');
+      this.maxEdgeDistance.value = parseFloat(this.getAttribute('max-edge-distance'));
+      this.initialized = true;
+    });
+  }
+
+  attributesLookup = {
+    nodes: this.nodesUrl,
+    edges: this.edgesUrl,
+    'color-map': this.colorMapUrl,
+    'color-map-key': this.colorMapKey,
+    'color-map-value': this.colorMapValue,
+    'node-target-key': this.nodeTargetKey,
+    'node-target-value': this.nodeTargetValue,
+    'max-edge-distance': this.maxEdgeDistance,
+  };
+
+  attributeChangedCallback(name, _oldValue, newValue) {
+    if (this.initialized) {
+      if (name === 'max-edge-distance' && typeof newValue === 'string') {
+        newValue = parseFloat(newValue);
+      }
+      this.attributesLookup[name].value = newValue;
+    }
+  }
+
+  trackDisposal(disposable) {
+    this.toDispose.push(disposable);
+  }
+
+  disconnectedCallback() {
+    this.toDispose.forEach((dispose) => dispose());
+    this.toDispose = [];
+  }
+}
+
+window.customElements.define('hra-node-dist-vis', HraNodeDistanceVisualization);
