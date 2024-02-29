@@ -7,9 +7,19 @@ import Papa from 'papaparse';
 import DistanceEdgesWorker from './distance-edges.worker.js';
 
 async function fetchCsv(url, papaOptions = {}) {
-  const csvString = await fetch(url).then((r) => r.text());
-  const { data } = Papa.parse(csvString, { header: true, skipEmptyLines: true, dynamicTyping: true, ...papaOptions });
-  return data;
+  return new Promise((resolve) => {
+    Papa.parse(url, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+      ...papaOptions,
+      worker: true,
+      download: true,
+      complete: (results) => {
+        resolve(results.data);
+      },
+    });
+  });
 }
 
 function delay(t, val) {
@@ -222,12 +232,14 @@ class HraNodeDistanceVisualization extends HTMLElement {
 
     this.trackDisposal(
       effect(async () => {
+        this.nodes.value = [];
         this.nodes.value = await this.nodes$.value;
       })
     );
 
     this.trackDisposal(
       effect(async () => {
+        this.edges.value = [];
         this.edges.value = await this.edges$.value;
       })
     );

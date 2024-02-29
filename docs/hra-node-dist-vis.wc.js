@@ -31317,9 +31317,19 @@
 
   // src/hra-node-dist-vis.js
   async function fetchCsv(url, papaOptions = {}) {
-    const csvString = await fetch(url).then((r2) => r2.text());
-    const { data } = import_papaparse.default.parse(csvString, { header: true, skipEmptyLines: true, dynamicTyping: true, ...papaOptions });
-    return data;
+    return new Promise((resolve2) => {
+      import_papaparse.default.parse(url, {
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: true,
+        ...papaOptions,
+        worker: true,
+        download: true,
+        complete: (results) => {
+          resolve2(results.data);
+        }
+      });
+    });
   }
   function delay(t2, val) {
     return new Promise((resolve2) => setTimeout(resolve2, t2, val));
@@ -31516,11 +31526,13 @@
       );
       this.trackDisposal(
         O(async () => {
+          this.nodes.value = [];
           this.nodes.value = await this.nodes$.value;
         })
       );
       this.trackDisposal(
         O(async () => {
+          this.edges.value = [];
           this.edges.value = await this.edges$.value;
         })
       );
