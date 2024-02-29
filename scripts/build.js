@@ -4,6 +4,14 @@ import inlineWorkerPlugin from 'esbuild-plugin-inline-worker';
 
 const watch = process.argv.slice(-1)[0] === '--watch';
 
+const demo = {
+  bundle: true,
+  outfile: 'docs/demo.js',
+  logLevel: 'info',
+  entryPoints: ['src/demo.js'],
+  platform: 'browser',
+};
+
 const webComponent = {
   bundle: true,
   outfile: 'docs/hra-node-dist-vis.wc.js',
@@ -13,7 +21,7 @@ const webComponent = {
   platform: 'browser',
 };
 
-const all = [webComponent];
+const all = [webComponent, demo];
 
 let ops;
 if (watch) {

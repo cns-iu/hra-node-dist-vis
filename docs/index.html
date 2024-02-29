@@ -6,6 +6,7 @@
     <title>Test hra-node-dist-vis Web Component</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="hra-node-dist-vis.wc.js"></script>
+    <script src="demo.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <script src="https://apps.humanatlas.io/components/hra-app-shell.wc.js"></script>
@@ -15,11 +16,16 @@
     <hra-app-shell logo-text="HRA Cell Type Distance Visualizations" logo-text-small="HRA Dist Vis"
       logo-url="https://lod.humanatlas.io/" hide-menu>
       <div class="main">
-        <h1>Sample Visualizations</h1>
-        <ul>
-          <li><a href="Region_D265-11.html">Region_D265-11</a></li>
-          <li><a href="Region_D265-12.html">Region_D265-12</a></li>
-        </ul>
+        <div class="card-container">
+          <div class="card">
+            <h3>Select a dataset</h3>
+            <md-filled-select id="dataset-input">
+            </md-filled-select>
+          </div>
+        </div>
+        <div style="height: 90vh;background-color: #333;">
+          <hra-node-dist-vis id="vis"></hra-node-dist-vis>
+        </div>
       </div>
     </body>
 </html>
