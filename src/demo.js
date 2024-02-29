@@ -7,7 +7,6 @@ async function getDatasets() {
 
 function setDataset(dataset) {
   const $vis = document.getElementById('vis');
-  console.log(dataset, $vis);
   for (const attr of Object.keys(dataset)) {
     $vis.setAttribute(attr, dataset[attr])
   }
