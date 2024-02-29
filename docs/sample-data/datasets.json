@@ -1,0 +1,24 @@
+[
+  {
+    "label": "Region_D265-12",
+    "nodes":"./Region_D265-12.csv",
+    "edges":"./Region_D265-12.edges.csv",
+    "color-map":"./Region_D265-12.color_mapping.csv",
+    "color-map-key":"cell_type",
+    "color-map-value":"cell_color",
+    "node-target-key":"Cell Type",
+    "node-target-value":"Endothelial",
+    "max-edge-distance":"1000"
+  },
+  {
+    "label": "Region_D265-11",
+    "nodes":"./Region_D265-11.csv",
+    "edges":"./Region_D265-11.edges.csv",
+    "color-map":"./Region_D265-11.color_mapping.csv",
+    "color-map-key":"cell_type",
+    "color-map-value":"cell_color",
+    "node-target-key":"type",
+    "node-target-value":"Lymphatic Endothelial Cell (and some immune cells)",
+    "max-edge-distance":"1000"
+  }
+]

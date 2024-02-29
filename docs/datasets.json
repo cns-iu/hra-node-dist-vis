@@ -1,24 +1,2362 @@
 [
   {
-    "label": "Region_D265-12",
-    "nodes":"./sample-data/Region_D265-12.csv",
-    "edges":"./sample-data/Region_D265-12.edges.csv",
-    "color-map":"./sample-data/Region_D265-12.color_mapping.csv",
-    "color-map-key":"cell_type",
-    "color-map-value":"cell_color",
-    "node-target-key":"Cell Type",
-    "node-target-value":"Endothelial",
-    "max-edge-distance":"1000"
+    "label": "esophagus-codex-stanford / esophagus (45,958 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/esophagus-codex-stanford/esophagus-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/esophagus-codex-stanford/esophagus-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
   },
   {
-    "label": "Region_D265-11",
-    "nodes":"./sample-data/Region_D265-11.csv",
-    "edges":"./sample-data/Region_D265-11.edges.csv",
-    "color-map":"./sample-data/Region_D265-11.color_mapping.csv",
-    "color-map-key":"cell_type",
-    "color-map-value":"cell_color",
-    "node-target-key":"type",
-    "node-target-value":"Lymphatic Endothelial Cell (and some immune cells)",
-    "max-edge-distance":"1000"
+    "label": "intestine-codex-stanford / B004_Ascending (21,232 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Ascending-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Ascending-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B004_Descending (30,547 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Descending-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Descending-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B004_Descending_Sigmoid (25,063 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Descending_Sigmoid-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Descending_Sigmoid-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B004_Duodenum (44,170 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Duodenum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Duodenum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B004_Ileum (26,494 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Ileum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Ileum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B004_Mid_jejunum (36,921 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Mid_jejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Mid_jejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B004_ProximalJejunum (30,067 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_ProximalJejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_ProximalJejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B004_Transverse (33,793 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Transverse-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B004_Transverse-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B005_Ascending (17,312 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Ascending-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Ascending-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B005_Descending (51,294 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Descending-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Descending-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B005_Descending_Sigmoid (14,230 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Descending_Sigmoid-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Descending_Sigmoid-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B005_Duodenum (23,558 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Duodenum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Duodenum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B005_Ileum (17,670 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Ileum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Ileum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B005_Mid_jejunum (86,102 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Mid_jejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Mid_jejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B005_ProximalJejunum (38,321 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_ProximalJejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_ProximalJejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B005_Transverse (33,281 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Transverse-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B005_Transverse-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B006_Ascending (38,371 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Ascending-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Ascending-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B006_Descending (20,379 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Descending-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Descending-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B006_Descending_Sigmoid (24,585 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Descending_Sigmoid-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Descending_Sigmoid-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B006_Duodenum (56,310 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Duodenum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Duodenum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B006_Ileum (89,907 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Ileum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Ileum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B006_Mid_jejunum (35,371 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Mid_jejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Mid_jejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B006_ProximalJejunum (41,063 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_ProximalJejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_ProximalJejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B006_Transverse (31,283 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Transverse-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B006_Transverse-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Duodenum (78,213 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Duodenum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Duodenum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Ileum (37,200 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Ileum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Ileum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Left (37,213 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Left-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Left-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Midjejunum (50,954 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Midjejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Midjejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Proximaljejunum (37,304 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Proximaljejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Proximaljejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Proximaljejunum_extra (34,850 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Proximaljejunum_extra-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Proximaljejunum_extra-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Right (5,829 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Right-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Right-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Sigmoid (43,783 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Sigmoid-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Sigmoid-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B008_Trans (22,279 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Trans-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Trans-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Duodenum (43,092 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Duodenum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Duodenum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Ileum (88,586 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Ileum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Ileum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Left (77,354 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Left-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Left-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Midjejunum (88,436 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Midjejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Midjejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Midjejunum_extra (56,182 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Midjejunum_extra-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Midjejunum_extra-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Proximaljejunum (48,517 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Proximaljejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Proximaljejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Right (58,349 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Right-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Right-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Sigmoid (40,551 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Sigmoid-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Sigmoid-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B009_Trans (34,642 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Trans-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Trans-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B010_Duodenum (34,133 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Duodenum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Duodenum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B010_Ileum (39,839 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Ileum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Ileum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B010_Left (19,612 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Left-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Left-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B010_Midjejunum (31,583 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Midjejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Midjejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B010_Proximaljejunum (54,111 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Proximaljejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Proximaljejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B010_Right (22,961 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Right-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Right-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B010_Sigmoid (24,158 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Sigmoid-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Sigmoid-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B010_Trans (14,924 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Trans-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B010_Trans-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B011_Duodenum (66,845 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Duodenum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Duodenum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B011_Ileum (32,944 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Ileum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Ileum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B011_Left (20,504 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Left-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Left-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B011_Midjejunum (44,026 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Midjejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Midjejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B011_Proximaljejunum (30,724 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Proximaljejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Proximaljejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B011_Right (20,382 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Right-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Right-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B011_Sigmoid (21,201 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Sigmoid-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Sigmoid-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B011_Trans (31,751 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Trans-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B011_Trans-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B012_Duodenum (31,219 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Duodenum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Duodenum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B012_Ileum (33,958 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Ileum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Ileum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B012_Left (72,748 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Left-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Left-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B012_Midjejunum (67,636 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Midjejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Midjejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B012_Proximaljejunum (32,520 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Proximaljejunum-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Proximaljejunum-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B012_Right (25,403 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Right-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Right-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B012_Sigmoid (51,593 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Sigmoid-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Sigmoid-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "intestine-codex-stanford / B012_Trans (27,784 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Trans-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Trans-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31739_6_13 (1,929 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31739_6_13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31739_6_13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31739_6_14 (2,679 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31739_6_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31739_6_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31739_6_15 (1,989 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31739_6_15-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31739_6_15-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31740_16_6 (3,512 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31740_16_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31740_16_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31740_6_11 (1,116 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31740_6_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31740_6_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31740_6_12 (2,244 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31740_6_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31740_6_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31741_1_1 (2,493 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31741_1_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31741_1_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31742_1_2 (2,254 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31742_1_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31742_1_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31743_16_7 (2,371 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31743_16_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31743_16_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31743_16_8 (2,245 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31743_16_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31743_16_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31744_1_3 (2,460 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31744_1_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31744_1_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31745_16_10 (3,459 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_16_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_16_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31745_16_9 (2,462 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_16_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_16_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31745_1_4 (2,459 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_1_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_1_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31745_1_5 (3,499 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_1_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_1_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31745_1_6 (3,164 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_1_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31745_1_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 10_31747_1_7 (1,973 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31747_1_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/10_31747_1_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31748_1_8 (3,044 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31748_1_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31748_1_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31749_16_11 (2,850 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31749_16_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31749_16_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31749_1_9 (3,049 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31749_1_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31749_1_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31750_16_12 (2,537 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31750_16_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31750_16_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31750_1_10 (2,017 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31750_1_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31750_1_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31750_1_11 (1,926 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31750_1_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31750_1_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31751_1_12 (1,685 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31751_1_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31751_1_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31754_16_13 (1,194 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_16_13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_16_13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31754_16_14 (2,584 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_16_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_16_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31754_16_15 (1,400 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_16_15-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_16_15-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31754_18_2 (2,233 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_18_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_18_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 12_31754_1_14 (2,070 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_1_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/12_31754_1_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31755_18_1 (2,501 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31755_18_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31755_18_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31756_20_2 (3,215 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31756_20_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31756_20_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31757_20_3 (2,437 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31757_20_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31757_20_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31758_16_17 (1,977 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31758_16_17-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31758_16_17-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31758_20_4 (2,378 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31758_20_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31758_20_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31758_20_5 (1,462 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31758_20_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31758_20_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31759_16_18 (2,075 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31759_16_18-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31759_16_18-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31759_20_6 (2,651 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31759_20_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31759_20_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31760_16_19 (2,478 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31760_16_19-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31760_16_19-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31761_16_20 (2,880 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31761_16_20-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31761_16_20-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 14_31761_20_7 (2,741 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31761_20_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/14_31761_20_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31762_16_21 (1,669 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31762_16_21-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31762_16_21-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31762_20_8 (1,108 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31762_20_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31762_20_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31762_20_9 (2,803 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31762_20_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31762_20_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31763_20_10 (183 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31763_20_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31763_20_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31765_19_1 (1,798 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31765_19_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31765_19_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31765_20_11 (1,037 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31765_20_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31765_20_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31765_3_1 (2,310 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31765_3_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31765_3_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31766_3_2 (2,327 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31766_3_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31766_3_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31767_17_1 (3,024 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31767_17_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31767_17_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31767_3_3 (1,906 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31767_3_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31767_3_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31767_3_4 (1,087 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31767_3_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31767_3_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31768_17_2 (2,315 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31768_17_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31768_17_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31768_3_5 (2,395 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31768_3_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31768_3_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31768_3_6 (438 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31768_3_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31768_3_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31769_18_11 (2,632 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31769_18_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31769_18_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31769_3_7 (2,662 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31769_3_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31769_3_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31770_14_15 (2,446 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31770_14_15-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31770_14_15-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31770_14_16 (2,856 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31770_14_16-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31770_14_16-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31770_4_1 (158 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31770_4_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31770_4_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31770_4_2 (1,600 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31770_4_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31770_4_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31771_14_14 (2,119 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31771_14_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31771_14_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31771_4_3 (1,447 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31771_4_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31771_4_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31772_4_4 (3,813 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31772_4_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31772_4_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31772_4_5 (3,332 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31772_4_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31772_4_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31772_4_6 (2,753 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31772_4_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31772_4_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31772_4_7 (2,124 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31772_4_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31772_4_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31773_4_10 (864 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31773_4_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31773_4_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31773_4_8 (2,572 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31773_4_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31773_4_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31773_4_9 (2,924 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31773_4_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31773_4_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31774_14_13 (2,501 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31774_14_13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31774_14_13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31774_4_11 (2,299 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31774_4_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31774_4_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31774_4_12 (2,869 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31774_4_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31774_4_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 16_31775_5_1 (3,057 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31775_5_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/16_31775_5_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31776_14_12 (455 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31776_14_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31776_14_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31776_5_2 (2,671 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31776_5_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31776_5_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31779_5_4 (2,631 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31779_5_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31779_5_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31780_5_5 (2,097 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31780_5_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31780_5_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31782_5_6 (234 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31782_5_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31782_5_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31782_5_7 (2,212 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31782_5_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31782_5_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_14_10 (2,157 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_14_11 (1,902 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_14_7 (1,968 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_14_8 (2,061 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_14_9 (2,124 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_14_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_5_10 (1,786 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_5_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_5_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_5_11 (1,829 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_5_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_5_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_5_8 (3,159 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_5_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_5_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31783_5_9 (1,992 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_5_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31783_5_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31784_14_6 (1,320 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31784_14_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31784_14_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31785_5_13 (2,633 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31785_5_13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31785_5_13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31785_5_14 (868 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31785_5_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31785_5_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 18_31785_5_15 (2,890 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31785_5_15-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/18_31785_5_15-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31786_14_5 (988 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31786_14_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31786_14_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31787_14_3 (10 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31787_14_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31787_14_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31787_14_4 (1,249 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31787_14_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31787_14_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31787_5_16 (1,377 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31787_5_16-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31787_5_16-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31788_5_17 (1,601 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31788_5_17-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31788_5_17-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31788_5_18 (603 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31788_5_18-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31788_5_18-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31789_14_1 (1,143 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31789_14_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31789_14_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31789_14_2 (1,403 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31789_14_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31789_14_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31789_5_19 (2,387 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31789_5_19-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31789_5_19-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31789_5_20 (1,942 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31789_5_20-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31789_5_20-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31790_13_14 (213 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31790_13_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31790_13_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31790_18_12 (533 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31790_18_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31790_18_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31791_13_11 (1,036 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31791_13_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31791_13_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31791_13_12 (545 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31791_13_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31791_13_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31791_13_13 (2,015 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31791_13_13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31791_13_13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31791_18_13 (525 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31791_18_13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31791_18_13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31792_18_14 (2,179 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31792_18_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31792_18_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31793_13_10 (1,861 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_13_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_13_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31793_13_8 (2,947 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_13_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_13_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31793_13_9 (1,481 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_13_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_13_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31793_6_1 (308 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_6_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_6_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31793_6_2 (1,280 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_6_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_6_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31793_6_3 (1,729 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_6_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31793_6_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31794_13_6 (2,149 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31794_13_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31794_13_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31794_13_7 (1,805 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31794_13_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31794_13_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31794_6_4 (1,132 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31794_6_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31794_6_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31794_6_6 (2,972 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31794_6_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31794_6_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31795_13_4 (1,520 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31795_13_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31795_13_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31795_6_7 (66 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31795_6_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31795_6_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31797_13_3 (1,566 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31797_13_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31797_13_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31797_6_9 (806 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31797_6_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31797_6_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 20_31798_13_1 (129 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31798_13_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/20_31798_13_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31725_15_1 (3,111 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31725_15_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31725_15_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31725_15_2 (1,849 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31725_15_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31725_15_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31725_8_2 (3,574 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31725_8_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31725_8_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31725_8_3 (3,525 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31725_8_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31725_8_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31726_8_4 (3,488 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31726_8_5 (1,631 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31726_8_6 (2,890 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31726_8_7 (3,500 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31726_8_8 (3,123 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31726_8_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31727_15_3 (2,375 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_15_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_15_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31727_8_10 (2,819 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_8_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_8_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31727_8_11 (2,263 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_8_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_8_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31727_8_12 (2,435 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_8_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_8_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31727_8_9 (2,350 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_8_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31727_8_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31728_15_4 (1,831 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_15_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_15_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31728_15_5 (2,044 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_15_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_15_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31728_15_6 (2,213 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_15_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_15_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31728_9_2 (2,759 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_9_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_9_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31728_9_3 (2,334 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_9_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31728_9_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31729_10_1 (2,195 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31729_10_2 (2,796 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31729_10_3 (1,934 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31729_10_4 (3,081 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31729_10_5 (1,893 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_10_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31729_9_4 (2,761 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_9_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31729_9_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_10_10 (2,062 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_10_11 (3,688 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_10_12 (3,366 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_10_6 (3,867 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_10_7 (3,634 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_10_8 (3,943 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_10_9 (3,290 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_10_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_11_1 (1,762 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_11_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_11_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31730_18_15 (3,181 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_18_15-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31730_18_15-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31731_11_2 (2,696 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31731_11_4 (1,506 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31731_11_5 (2,863 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31731_11_6 (2,377 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31731_11_7 (2,415 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31731_11_8 (2,150 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_11_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31731_15_7 (2,317 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_15_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_15_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31731_15_8 (2,151 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_15_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31731_15_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31732_11_10 (3,128 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_11_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_11_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31732_11_11 (2,688 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_11_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_11_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31732_11_12 (2,752 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_11_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_11_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31732_11_9 (3,363 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_11_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_11_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31732_15_9 (2,612 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_15_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31732_15_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31733_11_13 (2,377 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31733_11_14 (3,196 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31733_11_15 (1,363 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_15-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_15-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31733_11_16 (2,818 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_16-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_16-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31733_11_17 (2,767 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_17-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_11_17-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31733_15_10 (2,019 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_15_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_15_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31733_15_11 (3,081 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_15_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_15_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 6_31733_15_12 (3,411 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_15_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/6_31733_15_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31734_11_18 (3,251 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_11_18-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_11_18-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31734_12_1 (2,898 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31734_12_2 (3,492 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31734_12_3 (2,699 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31734_12_4 (913 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31734_12_5 (3,419 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_12_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31734_16_1 (2,970 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_16_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_16_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31734_16_2 (2,469 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_16_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31734_16_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_10 (2,647 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_11 (2,627 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_12 (2,688 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_13 (2,709 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_14 (2,271 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_14-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_14-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_6 (2,928 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_7 (3,753 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_8 (2,995 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31735_12_9 (2,708 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31735_12_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31736_12_15 (3,002 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_15-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_15-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31736_12_16 (2,076 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_16-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_16-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31736_12_17 (2,775 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_17-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_17-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31736_12_18 (2,138 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_18-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_18-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31736_12_19 (2,897 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_19-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_12_19-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31736_16_3 (1,718 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_16_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_16_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31736_16_4 (3,484 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_16_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_16_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31736_16_5 (2,647 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_16_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31736_16_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31737_12_20 (3,175 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31737_12_20-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31737_12_20-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31737_12_22 (4,333 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31737_12_22-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31737_12_22-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31737_12_23 (3,941 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31737_12_23-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31737_12_23-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31737_6_18 (4,243 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31737_6_18-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31737_6_18-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "maternalfetalinterface-mibitof-stanford / 8_31738_6_17 (2,655 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31738_6_17-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/maternalfetalinterface-mibitof-stanford/8_31738_6_17-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_1 (5,542,563 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_10 (5,063,627 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_10-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_10-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_11 (12,385,545 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_11-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_11-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_12 (5,470,929 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_12-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_2 (8,117,670 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_3 (9,721,029 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_4 (10,566,272 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_5 (8,102,627 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_5-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_5-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_6 (46,268 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_6-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_6-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_7 (5,668,883 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_7-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_7-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_8 (6,970,019 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_8-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_8-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-celldive-ge / region_9 (5,462,608 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_9-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "spleen-codex-ufl / FSLD (226,384 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/FSLD-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/FSLD-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "spleen-codex-ufl / KSFB (152,896 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/KSFB-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/KSFB-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "spleen-codex-ufl / NGPL (177,777 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/NGPL-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/NGPL-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "spleen-codex-ufl / PBVN (130,584 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/PBVN-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/PBVN-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "spleen-codex-ufl / PKHL (154,446 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/PKHL-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/PKHL-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "spleen-codex-ufl / XXCD (150,311 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/XXCD-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/spleen-codex-ufl/XXCD-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "tonsil-codex-stanford / tonsil (173,968 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/tonsil-codex-stanford/tonsil-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/tonsil-codex-stanford/tonsil-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
   }
 ]
