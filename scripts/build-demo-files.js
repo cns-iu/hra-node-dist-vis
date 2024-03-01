@@ -2,6 +2,7 @@ import { existsSync, writeFileSync } from 'fs';
 import { globSync } from 'glob';
 import sh from 'shelljs';
 
+const CLEAN = process.argv.length === 3 && process.argv[2] === '--clean'
 const BASE_URL = 'https://cdn.humanatlas.io';
 const CSV_FILES = 'image-store/vccf-data-cell-nodes/published/*/*-nodes.csv';
 const NODE_OPTIONS = '--max-old-space-size=64000';
@@ -12,7 +13,7 @@ for (const nodesFile of globSync(CSV_FILES).sort()) {
   const edgesFile = nodesFile.replace('-nodes.csv', '-edges.csv');
   if (!existsSync(edgesFile)) {
     console.log(`extracting edges for ${nodesFile}`);
-    sh.exec(`time nodes ${NODE_OPTIONS} ./src/distances.js ${nodesFile} ${DIST_ARGS} ${edgesFile}`);
+    sh.exec(`node ${NODE_OPTIONS} ./src/distances.js ${nodesFile} ${DIST_ARGS} ${edgesFile}`);
   }
 
   const numNodes = parseInt(sh.exec(`wc -l ${nodesFile} | cut -d ' ' -f 1`, { silent: true }).toString()) - 1;

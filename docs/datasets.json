@@ -2208,7 +2208,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_1 (5,542,563 cells)",
+    "label": "skin-celldive-ge / region_1 (2,868 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_1-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_1-edges.csv",
     "node-target-key": "Cell Type",
@@ -2216,7 +2216,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_10 (5,063,627 cells)",
+    "label": "skin-celldive-ge / region_10 (2,487 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_10-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_10-edges.csv",
     "node-target-key": "Cell Type",
@@ -2224,7 +2224,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_11 (12,385,545 cells)",
+    "label": "skin-celldive-ge / region_11 (4,846 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_11-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_11-edges.csv",
     "node-target-key": "Cell Type",
@@ -2232,7 +2232,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_12 (5,470,929 cells)",
+    "label": "skin-celldive-ge / region_12 (3,458 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_12-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_12-edges.csv",
     "node-target-key": "Cell Type",
@@ -2240,7 +2240,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_2 (8,117,670 cells)",
+    "label": "skin-celldive-ge / region_2 (6,070 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_2-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_2-edges.csv",
     "node-target-key": "Cell Type",
@@ -2248,7 +2248,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_3 (9,721,029 cells)",
+    "label": "skin-celldive-ge / region_3 (3,238 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_3-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_3-edges.csv",
     "node-target-key": "Cell Type",
@@ -2256,7 +2256,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_4 (10,566,272 cells)",
+    "label": "skin-celldive-ge / region_4 (7,018 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_4-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_4-edges.csv",
     "node-target-key": "Cell Type",
@@ -2264,7 +2264,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_5 (8,102,627 cells)",
+    "label": "skin-celldive-ge / region_5 (6,326 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_5-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_5-edges.csv",
     "node-target-key": "Cell Type",
@@ -2280,7 +2280,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_7 (5,668,883 cells)",
+    "label": "skin-celldive-ge / region_7 (4,444 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_7-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_7-edges.csv",
     "node-target-key": "Cell Type",
@@ -2288,7 +2288,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_8 (6,970,019 cells)",
+    "label": "skin-celldive-ge / region_8 (3,381 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_8-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_8-edges.csv",
     "node-target-key": "Cell Type",
@@ -2296,7 +2296,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-celldive-ge / region_9 (5,462,608 cells)",
+    "label": "skin-celldive-ge / region_9 (7,645 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_9-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_9-edges.csv",
     "node-target-key": "Cell Type",
