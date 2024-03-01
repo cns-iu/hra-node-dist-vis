@@ -31454,7 +31454,7 @@
       for (const node of this.nodes.value) {
         maxDimSize = Math.max(maxDimSize, ...node.position);
       }
-      const scale3 = ([x2, y2, z]) => [x2 / maxDimSize, y2 / maxDimSize, z / maxDimSize];
+      const scale3 = ([x2, y2, z]) => [x2 / maxDimSize, 1 - y2 / maxDimSize, z / maxDimSize];
       return (attr) => {
         return (d2) => scale3(attr(d2));
       };

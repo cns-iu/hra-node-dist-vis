@@ -154,7 +154,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
     for (const node of this.nodes.value) {
       maxDimSize = Math.max(maxDimSize, ...node.position);
     }
-    const scale = ([x, y, z]) => [x / maxDimSize, y / maxDimSize, z / maxDimSize];
+    const scale = ([x, y, z]) => [x / maxDimSize, 1 - y / maxDimSize, z / maxDimSize];
     return (attr) => {
       return (d) => scale(attr(d));
     };
