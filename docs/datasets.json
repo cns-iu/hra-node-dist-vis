@@ -1,5 +1,205 @@
 [
   {
+    "label": "colon-cycif-sorgerlab / CRC01002 (483,936 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01002-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01002-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01007 (468,159 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01007-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01007-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01014 (427,104 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01014-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01014-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01020 (407,394 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01020-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01020-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01025 (414,100 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01025-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01025-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01029 (442,126 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01029-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01029-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01034 (553,589 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01034-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01034-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01039 (464,039 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01039-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01039-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01044 (386,081 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01044-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01044-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01049 (529,188 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01049-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01049-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01050 (505,952 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01050-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01050-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01051 (603,497 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01051-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01051-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01052 (564,983 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01052-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01052-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01054 (508,839 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01054-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01054-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01059 (484,964 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01059-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01059-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01064 (582,209 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01064-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01064-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01069 (499,890 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01069-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01069-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01074 (573,396 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01074-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01074-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01078 (552,656 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01078-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01078-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01084 (570,522 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01084-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01084-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01086 (559,297 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01086-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01086-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01091 (511,304 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01091-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01091-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01097 (563,326 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01097-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01097-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01102 (557,363 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01102-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01102-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "colon-cycif-sorgerlab / CRC01106 (544,227 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01106-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/colon-cycif-sorgerlab/CRC01106-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
     "label": "esophagus-codex-stanford / esophagus (45,958 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/esophagus-codex-stanford/esophagus-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/esophagus-codex-stanford/esophagus-edges.csv",
