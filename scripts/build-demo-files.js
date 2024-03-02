@@ -5,13 +5,14 @@ import sh from 'shelljs';
 const CLEAN = process.argv.length === 3 && process.argv[2] === '--clean'
 const BASE_URL = 'https://cdn.humanatlas.io';
 const CSV_FILES = 'image-store/vccf-data-cell-nodes/published/*/*-nodes.csv';
+const DATASETS_JSON = 'docs/datasets.json';
 const NODE_OPTIONS = '--max-old-space-size=64000';
 const DIST_ARGS = "'Cell Type' 'Endothelial' 1000";
 
 const datasets = [];
 for (const nodesFile of globSync(CSV_FILES).sort()) {
   const edgesFile = nodesFile.replace('-nodes.csv', '-edges.csv');
-  if (!existsSync(edgesFile)) {
+  if (!existsSync(edgesFile) || CLEAN) {
     console.log(`extracting edges for ${nodesFile}`);
     sh.exec(`node ${NODE_OPTIONS} ./src/distances.js ${nodesFile} ${DIST_ARGS} ${edgesFile}`);
   }
@@ -29,4 +30,4 @@ for (const nodesFile of globSync(CSV_FILES).sort()) {
   });
 }
 
-writeFileSync('docs/datasets.json', JSON.stringify(datasets, null, 2));
+writeFileSync(DATASETS_JSON, JSON.stringify(datasets, null, 2));
