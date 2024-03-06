@@ -4472,9 +4472,10 @@
       const dataset = datasets[$datasets.selectedIndex];
       setDataset(dataset);
     });
-    setDataset(datasets[0]);
+    const startingDataset = Math.floor(Math.random() * datasets.length);
+    setDataset(datasets[startingDataset]);
     setTimeout(() => {
-      $datasets.selectIndex(0);
+      $datasets.selectIndex(startingDataset);
     }, 50);
   }
   window.addEventListener("DOMContentLoaded", setupDatasetsDropdown);
