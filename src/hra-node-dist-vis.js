@@ -2,6 +2,7 @@ import { colorCategories } from '@deck.gl/carto';
 import { COORDINATE_SYSTEM, Deck, OrbitView } from '@deck.gl/core';
 import { LineLayer, PointCloudLayer } from '@deck.gl/layers';
 import { batch, computed, effect, signal } from '@preact/signals-core';
+import { ScaleBarLayer } from '@vivjs/layers';
 import cartocolor from 'cartocolor';
 import Papa from 'papaparse';
 import DistanceEdgesWorker from './distance-edges.worker.js';
@@ -71,6 +72,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
   nodeTargetKey = signal();
   nodeTargetValue = signal();
   maxEdgeDistance = signal();
+  viewState = signal();
   toDispose = [];
   initialized = false;
 
@@ -196,6 +198,20 @@ class HraNodeDistanceVisualization extends HTMLElement {
     }
   });
 
+  scaleBarLayer = computed(() => {
+    return this.nodes.value.length > 0
+      ? new ScaleBarLayer({
+          id: 'scalebar',
+          unit: 'µm',
+          size: 1 / this.positionScaling.value(() => [1, 1, 1])()[0], // Scale 1µm the same way positions are scaled
+          position: 'top-right',
+          viewState: { ...this.viewState.value, width: this.$canvas.width - 136, height: this.$canvas.height - 32 },
+          length: 0.1,
+          snap: true,
+        })
+      : undefined;
+  });
+
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'open' });
@@ -205,6 +221,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
   }
 
   async connectedCallback() {
+    let isHovering = false;
     this.deck = new Deck({
       canvas: this.$canvas,
       controller: true,
@@ -220,13 +237,18 @@ class HraNodeDistanceVisualization extends HTMLElement {
         dragMode: 'rotate',
         target: [0.5, 0.5],
       },
-      onClick: (e) => e.picked && console.log('Node Clicked', e),
+      onClick: (e) => e.picked && console.log('Node Clicked', e.object.x, e.object.y),
+      onViewStateChange: ({ viewState }) => (this.viewState.value = viewState),
+      onLoad: () => (this.viewState.value = this.deck.viewState),
+      onHover: (e) => (isHovering = e.picked),
+      getCursor: (e) => (isHovering ? 'pointer' : e.isDragging ? 'grabbing' : 'grab'),
       layers: [],
     });
 
     this.trackDisposal(
       effect(() => {
-        this.deck.setProps({ layers: [this.nodesLayer.value, this.edgesLayer.value].filter((l) => !!l) });
+        const layers = [this.nodesLayer.value, this.edgesLayer.value, this.scaleBarLayer.value].filter((l) => !!l);
+        this.deck.setProps({ layers });
       })
     );
 
