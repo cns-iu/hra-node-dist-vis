@@ -220,8 +220,19 @@ class HraNodeDistanceVisualization extends HTMLElement {
     this.$canvas.addEventListener('contextmenu', (e) => e.preventDefault());
   }
 
+  dispatch(eventName, payload = undefined) {
+    let event;
+    if (payload) {
+      event = new CustomEvent(eventName, { detail: payload });
+    } else {
+      event = new Event(eventName);
+    }
+    this.dispatchEvent(event);
+  }
+
   async connectedCallback() {
     let isHovering = false;
+    let hoveredObject = undefined;
     this.deck = new Deck({
       canvas: this.$canvas,
       controller: true,
@@ -237,10 +248,23 @@ class HraNodeDistanceVisualization extends HTMLElement {
         dragMode: 'rotate',
         target: [0.5, 0.5],
       },
-      onClick: (e) => e.picked && console.log('Node Clicked', e.object.x, e.object.y),
+      onClick: (e) => e.picked ? this.dispatch('nodeClicked', e.object) : undefined,
       onViewStateChange: ({ viewState }) => (this.viewState.value = viewState),
       onLoad: () => (this.viewState.value = this.deck.viewState),
-      onHover: (e) => (isHovering = e.picked),
+      onHover: (e) => {
+        isHovering = e.picked;
+        if (isHovering) {
+          if (hoveredObject !== e.object) {
+            this.dispatch('nodeHovering', e.object);
+            hoveredObject = e.object;
+          }
+        } else {
+          if (hoveredObject) {
+            this.dispatch('nodeHovering', undefined);
+            hoveredObject = undefined;
+          }
+        }
+      },
       getCursor: (e) => (isHovering ? 'pointer' : e.isDragging ? 'grabbing' : 'grab'),
       layers: [],
     });
@@ -256,6 +280,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
       effect(async () => {
         this.nodes.value = [];
         this.nodes.value = await this.nodes$.value;
+        this.dispatch('nodes', this.nodes.value);
       })
     );
 
@@ -263,6 +288,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
       effect(async () => {
         this.edges.value = [];
         this.edges.value = await this.edges$.value;
+        this.dispatch('edges', this.edges.value);
       })
     );
 

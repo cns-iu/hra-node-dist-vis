@@ -62162,8 +62162,18 @@ void main(void) {
       this.$canvas = root.getElementById("vis");
       this.$canvas.addEventListener("contextmenu", (e2) => e2.preventDefault());
     }
+    dispatch(eventName, payload = void 0) {
+      let event;
+      if (payload) {
+        event = new CustomEvent(eventName, { detail: payload });
+      } else {
+        event = new Event(eventName);
+      }
+      this.dispatchEvent(event);
+    }
     async connectedCallback() {
       let isHovering = false;
+      let hoveredObject = void 0;
       this.deck = new Deck({
         canvas: this.$canvas,
         controller: true,
@@ -62179,10 +62189,23 @@ void main(void) {
           dragMode: "rotate",
           target: [0.5, 0.5]
         },
-        onClick: (e2) => e2.picked && console.log("Node Clicked", e2.object.x, e2.object.y),
+        onClick: (e2) => e2.picked ? this.dispatch("nodeClicked", e2.object) : void 0,
         onViewStateChange: ({ viewState }) => this.viewState.value = viewState,
         onLoad: () => this.viewState.value = this.deck.viewState,
-        onHover: (e2) => isHovering = e2.picked,
+        onHover: (e2) => {
+          isHovering = e2.picked;
+          if (isHovering) {
+            if (hoveredObject !== e2.object) {
+              this.dispatch("nodeHovering", e2.object);
+              hoveredObject = e2.object;
+            }
+          } else {
+            if (hoveredObject) {
+              this.dispatch("nodeHovering", void 0);
+              hoveredObject = void 0;
+            }
+          }
+        },
         getCursor: (e2) => isHovering ? "pointer" : e2.isDragging ? "grabbing" : "grab",
         layers: []
       });
@@ -62196,12 +62219,14 @@ void main(void) {
         O(async () => {
           this.nodes.value = [];
           this.nodes.value = await this.nodes$.value;
+          this.dispatch("nodes", this.nodes.value);
         })
       );
       this.trackDisposal(
         O(async () => {
           this.edges.value = [];
           this.edges.value = await this.edges$.value;
+          this.dispatch("edges", this.edges.value);
         })
       );
       this.trackDisposal(
