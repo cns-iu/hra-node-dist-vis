@@ -62100,11 +62100,18 @@ void main(void) {
       });
     });
     positionScaling = p(() => {
-      let maxDimSize = 1;
+      let minDimSize = Number.MAX_VALUE;
+      let maxDimSize = Number.MIN_VALUE;
       for (const node of this.nodes.value) {
         maxDimSize = Math.max(maxDimSize, ...node.position);
+        minDimSize = Math.min(minDimSize, ...node.position);
       }
-      const scale5 = ([x2, y2, z]) => [x2 / maxDimSize, 1 - y2 / maxDimSize, z / maxDimSize];
+      const dimDifference = maxDimSize - minDimSize;
+      const scale5 = ([x2, y2, z]) => [
+        (x2 - minDimSize) / dimDifference,
+        1 - (y2 - minDimSize) / dimDifference,
+        (z - minDimSize) / dimDifference
+      ];
       return (attr) => {
         return (d2) => scale5(attr(d2));
       };

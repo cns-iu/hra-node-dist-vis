@@ -152,11 +152,18 @@ class HraNodeDistanceVisualization extends HTMLElement {
   });
 
   positionScaling = computed(() => {
-    let maxDimSize = 1;
+    let minDimSize = Number.MAX_VALUE;
+    let maxDimSize = Number.MIN_VALUE;
     for (const node of this.nodes.value) {
       maxDimSize = Math.max(maxDimSize, ...node.position);
+      minDimSize = Math.min(minDimSize, ...node.position);
     }
-    const scale = ([x, y, z]) => [x / maxDimSize, 1 - y / maxDimSize, z / maxDimSize];
+    const dimDifference = maxDimSize - minDimSize;
+    const scale = ([x, y, z]) => [
+      (x - minDimSize) / dimDifference,
+      1 - (y - minDimSize) / dimDifference,
+      (z - minDimSize) / dimDifference
+    ];
     return (attr) => {
       return (d) => scale(attr(d));
     };
