@@ -65,8 +65,11 @@ class HraNodeDistanceVisualization extends HTMLElement {
     'max-edge-distance',
   ];
   nodesUrl = signal();
+  nodesData = signal();
   edgesUrl = signal();
+  edgesData = signal();
   colorMapUrl = signal();
+  colorMapData = signal();
   colorMapKey = signal();
   colorMapValue = signal();
   nodeTargetKey = signal();
@@ -78,21 +81,25 @@ class HraNodeDistanceVisualization extends HTMLElement {
 
   nodes = signal([]);
   nodes$ = computed(async () => {
-    if (this.nodesUrl.value) {
-      const nodes = await fetchCsv(this.nodesUrl.value);
-      for (const node of nodes) {
-        node.position = [node.x ?? 0, node.y ?? 0, node.z ?? 0];
-      }
-      return nodes;
-    } else {
-      return [];
+    let nodes = [];
+    if (this.nodesData.value) {
+      nodes = this.nodesData.value;
+    } else if (this.nodesUrl.value) {
+      nodes = await fetchCsv(this.nodesUrl.value);
     }
+
+    for (const node of nodes) {
+      node.position = [node.x ?? 0, node.y ?? 0, node.z ?? 0];
+    }
+    return nodes;
   });
 
   edges = signal([]);
   edges$ = computed(async () => {
     const nodes = this.nodes.value;
-    if (this.edgesUrl.value && nodes.length > 0) {
+    if (this.edgesData.value && nodes.length > 0) {
+      return this.edgesData.value;
+    } else if (this.edgesUrl.value && nodes.length > 0) {
       await delay(100);
       const edges = await fetchCsv(this.edgesUrl.value, { header: false });
       return edges;
@@ -112,16 +119,22 @@ class HraNodeDistanceVisualization extends HTMLElement {
   colorCoding = signal();
   colorCoding$ = computed(async () => {
     const nodes = this.nodes.value;
-    let colorDomain;
-    let colorRange;
-    if (this.colorMapUrl.value) {
-      const colorMapData = await fetchCsv(this.colorMapUrl.value);
-      colorDomain = [];
-      colorRange = [];
-      for (const row of colorMapData) {
+    let data;
+    let colorDomain = [];
+    let colorRange = [];
+    if (this.colorMapData.value) {
+      data = this.colorMapData.value;
+    } else if (this.colorMapUrl.value) {
+      data = await fetchCsv(this.colorMapUrl.value);
+    }
+
+    if (data) {
+      for (const row of data) {
         colorDomain.push(row[this.colorMapKey.value]);
         const color = row[this.colorMapValue.value];
-        if (color?.startsWith('[')) {
+        if (Array.isArray(color)) {
+          colorRange.push(color)
+        } else if (color?.startsWith('[')) {
           colorRange.push(JSON.parse(color));
         } else {
           colorRange.push([255, 255, 255]);
