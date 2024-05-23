@@ -62032,10 +62032,11 @@ void main(void) {
     viewState = a();
     toDispose = [];
     initialized = false;
+    edgesVersion = 0;
     nodes = a([]);
     nodes$ = p(async () => {
       let nodes = [];
-      if (this.nodesData.value?.length > 0) {
+      if (this.nodesData.value) {
         nodes = this.nodesData.value;
       } else if (this.nodesUrl.value) {
         nodes = await fetchCsv(this.nodesUrl.value);
@@ -62048,23 +62049,29 @@ void main(void) {
     edges = a([]);
     edges$ = p(async () => {
       const nodes = this.nodes.value;
-      if (this.edgesData.value?.length > 0 && nodes.length > 0) {
+      const version = this.edgesVersion += 1;
+      if (nodes.length === 0) {
+        return void 0;
+      } else if (this.edgesData.value) {
         return this.edgesData.value;
-      } else if (this.edgesUrl.value && nodes.length > 0) {
-        await delay(100);
-        const edges = await fetchCsv(this.edgesUrl.value, { header: false });
-        return edges;
-      } else if (nodes.length > 0) {
+      }
+      const url = this.edgesUrl.value;
+      await delay(100);
+      if (version !== this.edgesVersion) {
+        return void 0;
+      }
+      let edges = [];
+      if (url) {
+        edges = await fetchCsv(url, { header: false });
+      } else {
         const nodeKey = this.nodeTargetKey.value;
         const nodeValue = this.nodeTargetValue.value;
         const maxDist = this.maxEdgeDistance.value;
         console.log("start", /* @__PURE__ */ new Date());
-        const edges = await distanceEdges(nodes, nodeKey, nodeValue, maxDist);
+        edges = await distanceEdges(nodes, nodeKey, nodeValue, maxDist);
         console.log("end", /* @__PURE__ */ new Date());
-        return edges;
-      } else {
-        return [];
       }
+      return version === this.edgesVersion ? edges : void 0;
     });
     colorCoding = a();
     colorCoding$ = p(async () => {
@@ -62072,7 +62079,7 @@ void main(void) {
       let data;
       let colorDomain = [];
       let colorRange = [];
-      if (this.colorMapData.value?.length > 0) {
+      if (this.colorMapData.value) {
         data = this.colorMapData.value;
       } else if (this.colorMapUrl.value) {
         data = await fetchCsv(this.colorMapUrl.value);
@@ -62102,13 +62109,16 @@ void main(void) {
       } else {
         return void 0;
       }
-      return (attr) => colorCategories({
-        attr,
-        domain: colorDomain,
-        colors: colorRange,
-        othersColor: [255, 255, 255],
-        nullColor: [255, 255, 255]
-      });
+      return {
+        range: colorRange,
+        create: (attr) => colorCategories({
+          attr,
+          domain: colorDomain,
+          colors: colorRange,
+          othersColor: [255, 255, 255],
+          nullColor: [255, 255, 255]
+        })
+      };
     });
     positionScaling = p(() => {
       let minDimSize = Number.MAX_VALUE;
@@ -62134,10 +62144,13 @@ void main(void) {
           id: "nodes",
           data: this.nodes.value,
           getPosition: this.positionScaling.value((d2) => d2.position),
-          getColor: this.colorCoding.value((d2) => d2[nodeKey]),
+          getColor: this.colorCoding.value.create((d2) => d2[nodeKey]),
           pickable: true,
           coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-          pointSize: 1.5
+          pointSize: 1.5,
+          updateTriggers: {
+            getColor: this.colorCoding.value.range
+          }
         });
       } else {
         return void 0;
@@ -62152,10 +62165,13 @@ void main(void) {
           data: this.edges.value,
           getSourcePosition: this.positionScaling.value(([node_index, sx, sy, sz, tx, ty, tz]) => [sx, sy, sz]),
           getTargetPosition: this.positionScaling.value(([node_index, sx, sy, sz, tx, ty, tz]) => [tx, ty, tz]),
-          getColor: this.colorCoding.value(([node_index]) => nodes[node_index][nodeKey]),
+          getColor: this.colorCoding.value.create(([node_index]) => nodes[node_index][nodeKey]),
           pickable: false,
           coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-          getWidth: 1
+          getWidth: 1,
+          updateTriggers: {
+            getColor: this.colorCoding.value.range
+          }
         });
       } else {
         return void 0;
@@ -62243,8 +62259,11 @@ void main(void) {
       this.trackDisposal(
         O(async () => {
           this.edges.value = [];
-          this.edges.value = await this.edges$.value;
-          this.dispatch("edges", this.edges.value);
+          const edges = await this.edges$.value;
+          if (edges) {
+            this.edges.value = edges;
+            this.dispatch("edges", this.edges.value);
+          }
         })
       );
       this.trackDisposal(
@@ -62291,6 +62310,13 @@ void main(void) {
     disconnectedCallback() {
       this.toDispose.forEach((dispose) => dispose());
       this.toDispose = [];
+    }
+    toDataUrl(type, quality) {
+      if (!this.deck) {
+        return void 0;
+      }
+      this.deck.redraw(true);
+      return this.$canvas.toDataURL(type, quality);
     }
   };
   window.customElements.define("hra-node-dist-vis", HraNodeDistanceVisualization);
