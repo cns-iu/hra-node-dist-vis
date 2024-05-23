@@ -53,8 +53,6 @@ template.innerHTML = `<style>
 <canvas id="vis"></canvas>
 `;
 
-const emptyImmutableArray = Object.freeze([]);
-
 class HraNodeDistanceVisualization extends HTMLElement {
   static observedAttributes = [
     'nodes',
@@ -82,9 +80,9 @@ class HraNodeDistanceVisualization extends HTMLElement {
   initialized = false;
   edgesVersion = 0;
 
-  nodes = signal(emptyImmutableArray);
+  nodes = signal([]);
   nodes$ = computed(async () => {
-    let nodes = emptyImmutableArray;
+    let nodes = [];
     if (this.nodesData.value) {
       nodes = this.nodesData.value;
     } else if (this.nodesUrl.value) {
@@ -97,24 +95,25 @@ class HraNodeDistanceVisualization extends HTMLElement {
     return nodes;
   });
 
-  edges = signal(emptyImmutableArray);
+  edges = signal([]);
   edges$ = computed(async () => {
     const nodes = this.nodes.value;
-    const version = this.edgesVersion;
+    const version = (this.edgesVersion += 1);
 
     if (nodes.length === 0) {
-      return emptyImmutableArray;
+      return undefined;
     } else if (this.edgesData.value) {
       return this.edgesData.value;
     }
 
+    const url = this.edgesUrl.value;
     await delay(100);
     if (version !== this.edgesVersion) {
-      return emptyImmutableArray;
+      return undefined;
     }
 
-    if (this.edgesUrl.value) {
-      return await fetchCsv(this.edgesUrl.value, { header: false });
+    if (url) {
+      return await fetchCsv(url, { header: false });
     }
 
     const nodeKey = this.nodeTargetKey.value;
@@ -317,7 +316,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
 
     this.trackDisposal(
       effect(async () => {
-        this.nodes.value = emptyImmutableArray;
+        this.nodes.value = [];
         this.nodes.value = await this.nodes$.value;
         this.dispatch('nodes', this.nodes.value);
       })
@@ -325,11 +324,9 @@ class HraNodeDistanceVisualization extends HTMLElement {
 
     this.trackDisposal(
       effect(async () => {
-        const version = (this.edgesVersion += 1);
-        this.edges.value = emptyImmutableArray;
-
+        this.edges.value = [];
         const edges = await this.edges$.value;
-        if (version === this.edgesVersion) {
+        if (edges) {
           this.edges.value = edges;
           this.dispatch('edges', this.edges.value);
         }
