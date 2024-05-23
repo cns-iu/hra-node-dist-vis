@@ -385,6 +385,16 @@ class HraNodeDistanceVisualization extends HTMLElement {
     this.toDispose.forEach((dispose) => dispose());
     this.toDispose = [];
   }
+
+  toDataUrl(type, quality) {
+    if (!this.deck) {
+      return undefined;
+    }
+
+    // See https://github.com/visgl/deck.gl/discussions/6909#discussioncomment-5167898
+    this.deck.redraw(true);
+    return this.$canvas.toDataURL(type, quality);
+  }
 }
 
 window.customElements.define('hra-node-dist-vis', HraNodeDistanceVisualization);

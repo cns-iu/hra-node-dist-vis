@@ -62311,6 +62311,13 @@ void main(void) {
       this.toDispose.forEach((dispose) => dispose());
       this.toDispose = [];
     }
+    toDataUrl(type, quality) {
+      if (!this.deck) {
+        return void 0;
+      }
+      this.deck.redraw(true);
+      return this.$canvas.toDataURL(type, quality);
+    }
   };
   window.customElements.define("hra-node-dist-vis", HraNodeDistanceVisualization);
 })();
