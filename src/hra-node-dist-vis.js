@@ -112,17 +112,19 @@ class HraNodeDistanceVisualization extends HTMLElement {
       return undefined;
     }
 
+    let edges = [];
     if (url) {
-      return await fetchCsv(url, { header: false });
+      edges = await fetchCsv(url, { header: false });
+    } else {
+      const nodeKey = this.nodeTargetKey.value;
+      const nodeValue = this.nodeTargetValue.value;
+      const maxDist = this.maxEdgeDistance.value;
+      console.log('start', new Date());
+      edges = await distanceEdges(nodes, nodeKey, nodeValue, maxDist);
+      console.log('end', new Date());
     }
 
-    const nodeKey = this.nodeTargetKey.value;
-    const nodeValue = this.nodeTargetValue.value;
-    const maxDist = this.maxEdgeDistance.value;
-    console.log('start', new Date());
-    const edges = await distanceEdges(nodes, nodeKey, nodeValue, maxDist);
-    console.log('end', new Date());
-    return edges;
+    return version === this.edgesVersion ? edges : undefined;
   });
 
   colorCoding = signal();

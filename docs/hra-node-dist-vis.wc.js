@@ -62060,16 +62060,18 @@ void main(void) {
       if (version !== this.edgesVersion) {
         return void 0;
       }
+      let edges = [];
       if (url) {
-        return await fetchCsv(url, { header: false });
+        edges = await fetchCsv(url, { header: false });
+      } else {
+        const nodeKey = this.nodeTargetKey.value;
+        const nodeValue = this.nodeTargetValue.value;
+        const maxDist = this.maxEdgeDistance.value;
+        console.log("start", /* @__PURE__ */ new Date());
+        edges = await distanceEdges(nodes, nodeKey, nodeValue, maxDist);
+        console.log("end", /* @__PURE__ */ new Date());
       }
-      const nodeKey = this.nodeTargetKey.value;
-      const nodeValue = this.nodeTargetValue.value;
-      const maxDist = this.maxEdgeDistance.value;
-      console.log("start", /* @__PURE__ */ new Date());
-      const edges = await distanceEdges(nodes, nodeKey, nodeValue, maxDist);
-      console.log("end", /* @__PURE__ */ new Date());
-      return edges;
+      return version === this.edgesVersion ? edges : void 0;
     });
     colorCoding = a();
     colorCoding$ = p(async () => {
