@@ -61997,6 +61997,19 @@ void main(void) {
       worker.postMessage({ nodes, type_field, target_type, maxDist });
     });
   }
+  function getInitialViewState() {
+    return {
+      orbitAxis: "Y",
+      camera: "orbit",
+      zoom: 9,
+      minRotationX: -90,
+      maxRotationX: 90,
+      rotationX: 0,
+      rotationOrbit: 0,
+      dragMode: "rotate",
+      target: [0.5, 0.5]
+    };
+  }
   var template = document.createElement("template");
   template.innerHTML = `<style>
 #vis {
@@ -62212,17 +62225,7 @@ void main(void) {
         canvas: this.$canvas,
         controller: true,
         views: [new OrbitView({ id: "orbit", orbitAxis: "Y" })],
-        initialViewState: {
-          orbitAxis: "Y",
-          camera: "orbit",
-          zoom: 9,
-          minRotationX: -90,
-          maxRotationX: 90,
-          rotationX: 0,
-          rotationOrbit: 0,
-          dragMode: "rotate",
-          target: [0.5, 0.5]
-        },
+        initialViewState: getInitialViewState(),
         onClick: (e2) => e2.picked ? this.dispatch("nodeClicked", e2.object) : void 0,
         onViewStateChange: ({ viewState }) => this.viewState.value = viewState,
         onLoad: () => this.viewState.value = this.deck.viewState,
@@ -62310,6 +62313,9 @@ void main(void) {
     disconnectedCallback() {
       this.toDispose.forEach((dispose) => dispose());
       this.toDispose = [];
+    }
+    resetView() {
+      this.deck?.setProps({ initialViewState: getInitialViewState() });
     }
     toDataUrl(type, quality) {
       if (!this.deck) {
