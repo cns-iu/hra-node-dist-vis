@@ -61997,8 +61997,10 @@ void main(void) {
       worker.postMessage({ nodes, type_field, target_type, maxDist });
     });
   }
+  var viewStateVersionCounter = 0;
   function getInitialViewState() {
     return {
+      version: viewStateVersionCounter++,
       orbitAxis: "Y",
       camera: "orbit",
       zoom: 9,
