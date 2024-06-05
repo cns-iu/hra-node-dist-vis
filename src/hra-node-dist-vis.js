@@ -42,8 +42,11 @@ async function distanceEdges(nodes, type_field, target_type, maxDist) {
   });
 }
 
+let viewStateVersionCounter = 0;
+
 function getInitialViewState() {
   return {
+    version: viewStateVersionCounter++,
     orbitAxis: 'Y',
     camera: 'orbit',
     zoom: 9,
