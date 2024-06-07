@@ -13890,16 +13890,16 @@
   var DATA_URL_PATTERN = /^data:([-\w.]+\/[-\w.+]+)(;|,)/;
   var MIME_TYPE_PATTERN = /^([-\w.]+\/[-\w.+]+)/;
   function parseMIMEType(mimeString) {
-    const matches3 = MIME_TYPE_PATTERN.exec(mimeString);
-    if (matches3) {
-      return matches3[1];
+    const matches4 = MIME_TYPE_PATTERN.exec(mimeString);
+    if (matches4) {
+      return matches4[1];
     }
     return mimeString;
   }
   function parseMIMETypeFromURL(url) {
-    const matches3 = DATA_URL_PATTERN.exec(url);
-    if (matches3) {
-      return matches3[1];
+    const matches4 = DATA_URL_PATTERN.exec(url);
+    if (matches4) {
+      return matches4[1];
     }
     return "";
   }
@@ -13907,8 +13907,8 @@
   // node_modules/@loaders.gl/core/dist/esm/lib/utils/url-utils.js
   var QUERY_STRING_PATTERN = /\?.*/;
   function extractQueryString(url) {
-    const matches3 = url.match(QUERY_STRING_PATTERN);
-    return matches3 && matches3[0];
+    const matches4 = url.match(QUERY_STRING_PATTERN);
+    return matches4 && matches4[0];
   }
   function stripQueryString(url) {
     return url.replace(QUERY_STRING_PATTERN, "");
@@ -15330,7 +15330,221 @@
   }
 
   // node_modules/@loaders.gl/images/dist/esm/lib/utils/version.js
-  var VERSION3 = true ? "3.4.14" : "latest";
+  var VERSION3 = true ? "3.4.15" : "latest";
+
+  // node_modules/@loaders.gl/images/node_modules/@loaders.gl/loader-utils/dist/esm/lib/env-utils/assert.js
+  function assert4(condition, message) {
+    if (!condition) {
+      throw new Error(message || "loader assertion failed.");
+    }
+  }
+
+  // node_modules/@loaders.gl/images/node_modules/@loaders.gl/loader-utils/dist/esm/lib/env-utils/globals.js
+  var globals3 = {
+    self: typeof self !== "undefined" && self,
+    window: typeof window !== "undefined" && window,
+    global: typeof global !== "undefined" && global,
+    document: typeof document !== "undefined" && document
+  };
+  var self_4 = globals3.self || globals3.window || globals3.global || {};
+  var window_4 = globals3.window || globals3.self || globals3.global || {};
+  var global_4 = globals3.global || globals3.self || globals3.window || {};
+  var document_4 = globals3.document || {};
+  var isBrowser5 = Boolean(typeof process !== "object" || String(process) !== "[object process]" || process.browser);
+  var matches3 = typeof process !== "undefined" && process.version && /v([0-9]*)/.exec(process.version);
+  var nodeVersion3 = matches3 && parseFloat(matches3[1]) || 0;
+
+  // node_modules/@probe.gl/stats/dist/esm/utils/hi-res-timestamp.js
+  function getHiResTimestamp3() {
+    let timestamp;
+    if (typeof window !== "undefined" && window.performance) {
+      timestamp = window.performance.now();
+    } else if (typeof process !== "undefined" && process.hrtime) {
+      const timeParts = process.hrtime();
+      timestamp = timeParts[0] * 1e3 + timeParts[1] / 1e6;
+    } else {
+      timestamp = Date.now();
+    }
+    return timestamp;
+  }
+
+  // node_modules/@probe.gl/stats/dist/esm/lib/stat.js
+  var Stat2 = class {
+    constructor(name, type) {
+      _defineProperty(this, "name", void 0);
+      _defineProperty(this, "type", void 0);
+      _defineProperty(this, "sampleSize", 1);
+      _defineProperty(this, "time", void 0);
+      _defineProperty(this, "count", void 0);
+      _defineProperty(this, "samples", void 0);
+      _defineProperty(this, "lastTiming", void 0);
+      _defineProperty(this, "lastSampleTime", void 0);
+      _defineProperty(this, "lastSampleCount", void 0);
+      _defineProperty(this, "_count", 0);
+      _defineProperty(this, "_time", 0);
+      _defineProperty(this, "_samples", 0);
+      _defineProperty(this, "_startTime", 0);
+      _defineProperty(this, "_timerPending", false);
+      this.name = name;
+      this.type = type;
+      this.reset();
+    }
+    setSampleSize(samples) {
+      this.sampleSize = samples;
+      return this;
+    }
+    incrementCount() {
+      this.addCount(1);
+      return this;
+    }
+    decrementCount() {
+      this.subtractCount(1);
+      return this;
+    }
+    addCount(value) {
+      this._count += value;
+      this._samples++;
+      this._checkSampling();
+      return this;
+    }
+    subtractCount(value) {
+      this._count -= value;
+      this._samples++;
+      this._checkSampling();
+      return this;
+    }
+    addTime(time) {
+      this._time += time;
+      this.lastTiming = time;
+      this._samples++;
+      this._checkSampling();
+      return this;
+    }
+    timeStart() {
+      this._startTime = getHiResTimestamp3();
+      this._timerPending = true;
+      return this;
+    }
+    timeEnd() {
+      if (!this._timerPending) {
+        return this;
+      }
+      this.addTime(getHiResTimestamp3() - this._startTime);
+      this._timerPending = false;
+      this._checkSampling();
+      return this;
+    }
+    getSampleAverageCount() {
+      return this.sampleSize > 0 ? this.lastSampleCount / this.sampleSize : 0;
+    }
+    getSampleAverageTime() {
+      return this.sampleSize > 0 ? this.lastSampleTime / this.sampleSize : 0;
+    }
+    getSampleHz() {
+      return this.lastSampleTime > 0 ? this.sampleSize / (this.lastSampleTime / 1e3) : 0;
+    }
+    getAverageCount() {
+      return this.samples > 0 ? this.count / this.samples : 0;
+    }
+    getAverageTime() {
+      return this.samples > 0 ? this.time / this.samples : 0;
+    }
+    getHz() {
+      return this.time > 0 ? this.samples / (this.time / 1e3) : 0;
+    }
+    reset() {
+      this.time = 0;
+      this.count = 0;
+      this.samples = 0;
+      this.lastTiming = 0;
+      this.lastSampleTime = 0;
+      this.lastSampleCount = 0;
+      this._count = 0;
+      this._time = 0;
+      this._samples = 0;
+      this._startTime = 0;
+      this._timerPending = false;
+      return this;
+    }
+    _checkSampling() {
+      if (this._samples === this.sampleSize) {
+        this.lastSampleTime = this._time;
+        this.lastSampleCount = this._count;
+        this.count += this._count;
+        this.time += this._time;
+        this.samples += this._samples;
+        this._time = 0;
+        this._count = 0;
+        this._samples = 0;
+      }
+    }
+  };
+
+  // node_modules/@probe.gl/stats/dist/esm/lib/stats.js
+  var Stats2 = class {
+    constructor(options) {
+      _defineProperty(this, "id", void 0);
+      _defineProperty(this, "stats", {});
+      this.id = options.id;
+      this.stats = {};
+      this._initializeStats(options.stats);
+      Object.seal(this);
+    }
+    get(name) {
+      let type = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "count";
+      return this._getOrCreate({
+        name,
+        type
+      });
+    }
+    get size() {
+      return Object.keys(this.stats).length;
+    }
+    reset() {
+      for (const key in this.stats) {
+        this.stats[key].reset();
+      }
+      return this;
+    }
+    forEach(fn) {
+      for (const key in this.stats) {
+        fn(this.stats[key]);
+      }
+    }
+    getTable() {
+      const table = {};
+      this.forEach((stat) => {
+        table[stat.name] = {
+          time: stat.time || 0,
+          count: stat.count || 0,
+          average: stat.getAverageTime() || 0,
+          hz: stat.getHz() || 0
+        };
+      });
+      return table;
+    }
+    _initializeStats() {
+      let stats = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : [];
+      stats.forEach((stat) => this._getOrCreate(stat));
+    }
+    _getOrCreate(stat) {
+      if (!stat || !stat.name) {
+        return null;
+      }
+      const {
+        name,
+        type
+      } = stat;
+      if (!this.stats[name]) {
+        if (stat instanceof Stat2) {
+          this.stats[name] = stat;
+        } else {
+          this.stats[name] = new Stat2(name, type);
+        }
+      }
+      return this.stats[name];
+    }
+  };
 
   // node_modules/@loaders.gl/images/dist/esm/lib/category-api/image-type.js
   var {
@@ -15339,7 +15553,7 @@
   var IMAGE_SUPPORTED = typeof Image !== "undefined";
   var IMAGE_BITMAP_SUPPORTED = typeof ImageBitmap !== "undefined";
   var NODE_IMAGE_SUPPORTED = Boolean(_parseImageNode);
-  var DATA_SUPPORTED = isBrowser ? true : NODE_IMAGE_SUPPORTED;
+  var DATA_SUPPORTED = isBrowser5 ? true : NODE_IMAGE_SUPPORTED;
   function isImageTypeSupported(type) {
     switch (type) {
       case "auto":
@@ -15655,7 +15869,7 @@
       mimeType
     } = getBinaryImageMetadata(arrayBuffer2) || {};
     const _parseImageNode2 = globalThis._parseImageNode;
-    assert(_parseImageNode2);
+    assert4(_parseImageNode2);
     return await _parseImageNode2(arrayBuffer2, mimeType);
   }
 
@@ -15680,7 +15894,7 @@
         image = await parseToNodeImage(arrayBuffer2, options);
         break;
       default:
-        assert(false);
+        assert4(false);
     }
     if (imageType === "data") {
       image = getImageData(image);
@@ -15736,32 +15950,32 @@
   }
 
   // node_modules/@probe.gl/env/dist/esm/lib/is-browser.js
-  function isBrowser5() {
+  function isBrowser6() {
     const isNode = typeof process === "object" && String(process) === "[object process]" && !process.browser;
     return !isNode || isElectron2();
   }
 
   // node_modules/@probe.gl/env/dist/esm/lib/globals.js
-  var globals3 = {
+  var globals4 = {
     self: typeof self !== "undefined" && self,
     window: typeof window !== "undefined" && window,
     global: typeof global !== "undefined" && global,
     document: typeof document !== "undefined" && document,
     process: typeof process === "object" && process
   };
-  var self_4 = globals3.self || globals3.window || globals3.global;
-  var window_4 = globals3.window || globals3.self || globals3.global;
-  var document_4 = globals3.document || {};
-  var process_2 = globals3.process || {};
+  var self_5 = globals4.self || globals4.window || globals4.global;
+  var window_5 = globals4.window || globals4.self || globals4.global;
+  var document_5 = globals4.document || {};
+  var process_2 = globals4.process || {};
 
   // node_modules/@probe.gl/env/dist/esm/utils/globals.js
   var VERSION4 = typeof __VERSION__ !== "undefined" ? __VERSION__ : "untranspiled source";
-  var isBrowser6 = isBrowser5();
+  var isBrowser7 = isBrowser6();
 
   // node_modules/@probe.gl/env/dist/esm/lib/get-browser.js
   var window2 = globalThis;
   function getBrowser(mockUserAgent) {
-    if (!mockUserAgent && !isBrowser5()) {
+    if (!mockUserAgent && !isBrowser6()) {
       return "Node";
     }
     if (isElectron2(mockUserAgent)) {
@@ -15888,7 +16102,7 @@
     return typeof color === "string" ? COLOR2[color.toUpperCase()] || COLOR2.WHITE : color;
   }
   function addColor2(string, color, background) {
-    if (!isBrowser5 && typeof string === "string") {
+    if (!isBrowser6 && typeof string === "string") {
       if (color) {
         color = getColor2(color);
         string = "\x1B[".concat(color, "m").concat(string, "\x1B[39m");
@@ -15916,18 +16130,18 @@
   }
 
   // node_modules/@probe.gl/log/dist/esm/utils/assert.js
-  function assert4(condition, message) {
+  function assert5(condition, message) {
     if (!condition) {
       throw new Error(message || "Assertion failed");
     }
   }
 
   // node_modules/@probe.gl/log/dist/esm/utils/hi-res-timestamp.js
-  function getHiResTimestamp3() {
+  function getHiResTimestamp4() {
     let timestamp;
-    if (isBrowser5 && "performance" in window_4) {
+    if (isBrowser6 && "performance" in window_5) {
       var _window$performance, _window$performance$n;
-      timestamp = window_4 === null || window_4 === void 0 ? void 0 : (_window$performance = window_4.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$n = _window$performance.now) === null || _window$performance$n === void 0 ? void 0 : _window$performance$n.call(_window$performance);
+      timestamp = window_5 === null || window_5 === void 0 ? void 0 : (_window$performance = window_5.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$n = _window$performance.now) === null || _window$performance$n === void 0 ? void 0 : _window$performance$n.call(_window$performance);
     } else if ("hrtime" in process_2) {
       var _process$hrtime;
       const timeParts = process_2 === null || process_2 === void 0 ? void 0 : (_process$hrtime = process_2.hrtime) === null || _process$hrtime === void 0 ? void 0 : _process$hrtime.call(process_2);
@@ -15940,7 +16154,7 @@
 
   // node_modules/@probe.gl/log/dist/esm/log.js
   var originalConsole2 = {
-    debug: isBrowser5 ? console.debug || console.log : console.log,
+    debug: isBrowser6 ? console.debug || console.log : console.log,
     log: console.log,
     info: console.info,
     warn: console.warn,
@@ -15965,8 +16179,8 @@
       };
       _defineProperty(this, "id", void 0);
       _defineProperty(this, "VERSION", VERSION4);
-      _defineProperty(this, "_startTs", getHiResTimestamp3());
-      _defineProperty(this, "_deltaTs", getHiResTimestamp3());
+      _defineProperty(this, "_startTs", getHiResTimestamp4());
+      _defineProperty(this, "_deltaTs", getHiResTimestamp4());
       _defineProperty(this, "_storage", void 0);
       _defineProperty(this, "userData", {});
       _defineProperty(this, "LOG_THROTTLE_TIMEOUT", 0);
@@ -15990,10 +16204,10 @@
       return this._storage.config.level;
     }
     getTotal() {
-      return Number((getHiResTimestamp3() - this._startTs).toPrecision(10));
+      return Number((getHiResTimestamp4() - this._startTs).toPrecision(10));
     }
     getDelta() {
-      return Number((getHiResTimestamp3() - this._deltaTs).toPrecision(10));
+      return Number((getHiResTimestamp4() - this._deltaTs).toPrecision(10));
     }
     set priority(newPriority) {
       this.level = newPriority;
@@ -16033,7 +16247,7 @@
       }
     }
     assert(condition, message) {
-      assert4(condition, message);
+      assert5(condition, message);
     }
     warn(message) {
       return this._getLogFunction(0, message, originalConsole2.warn, arguments, ONCE2);
@@ -16084,7 +16298,7 @@
       if (!this._shouldLog(logLevel || priority)) {
         return noop2;
       }
-      return isBrowser5 ? logImageInBrowser2({
+      return isBrowser6 ? logImageInBrowser2({
         image,
         message,
         scale: scale5
@@ -16152,14 +16366,14 @@
           opts
         });
         method = method || opts.method;
-        assert4(method);
+        assert5(method);
         opts.total = this.getTotal();
         opts.delta = this.getDelta();
-        this._deltaTs = getHiResTimestamp3();
+        this._deltaTs = getHiResTimestamp4();
         const tag = opts.tag || opts.message;
         if (opts.once) {
           if (!cache2[tag]) {
-            cache2[tag] = getHiResTimestamp3();
+            cache2[tag] = getHiResTimestamp4();
           } else {
             return noop2;
           }
@@ -16186,7 +16400,7 @@
       default:
         return 0;
     }
-    assert4(Number.isFinite(resolvedLevel) && resolvedLevel >= 0);
+    assert5(Number.isFinite(resolvedLevel) && resolvedLevel >= 0);
     return resolvedLevel;
   }
   function normalizeArguments2(opts) {
@@ -16215,7 +16429,7 @@
       opts.message = opts.message();
     }
     const messageType = typeof opts.message;
-    assert4(messageType === "string" || messageType === "object");
+    assert5(messageType === "string" || messageType === "object");
     return Object.assign(opts, {
       args
     }, opts.opts);
@@ -16487,7 +16701,7 @@
   });
 
   // node_modules/@luma.gl/gltools/dist/esm/utils/assert.js
-  function assert5(condition, message) {
+  function assert6(condition, message) {
     if (!condition) {
       throw new Error(message || "luma.gl: assertion failed.");
     }
@@ -16515,11 +16729,11 @@
     return isWebGL2(gl) ? gl : null;
   }
   function assertWebGLContext(gl) {
-    assert5(isWebGL(gl), ERR_CONTEXT);
+    assert6(isWebGL(gl), ERR_CONTEXT);
     return gl;
   }
   function assertWebGL2Context(gl) {
-    assert5(isWebGL2(gl), ERR_WEBGL2);
+    assert6(isWebGL2(gl), ERR_WEBGL2);
     return gl;
   }
 
@@ -16892,7 +17106,7 @@
         suffix: "OES"
       },
       createVertexArray: () => {
-        assert5(false, ERR_VAO_NOT_SUPPORTED);
+        assert6(false, ERR_VAO_NOT_SUPPORTED);
       },
       deleteVertexArray: () => {
       },
@@ -16905,7 +17119,7 @@
         suffix: "ANGLE"
       },
       vertexAttribDivisor(location, divisor) {
-        assert5(divisor === 0, "WebGL instanced rendering not supported");
+        assert6(divisor === 0, "WebGL instanced rendering not supported");
       },
       drawElementsInstanced: () => {
       },
@@ -16917,7 +17131,7 @@
         suffix: "WEBGL"
       },
       drawBuffers: () => {
-        assert5(false);
+        assert6(false);
       }
     },
     [EXT_disjoint_timer_query2]: {
@@ -16925,13 +17139,13 @@
         suffix: "EXT"
       },
       createQuery: () => {
-        assert5(false);
+        assert6(false);
       },
       deleteQuery: () => {
-        assert5(false);
+        assert6(false);
       },
       beginQuery: () => {
-        assert5(false);
+        assert6(false);
       },
       endQuery: () => {
       },
@@ -17071,7 +17285,7 @@
       target2
     } = _ref2;
     const defaults = WEBGL2_CONTEXT_POLYFILLS[extension];
-    assert5(defaults);
+    assert6(defaults);
     const {
       meta = {}
     } = defaults;
@@ -17545,7 +17759,7 @@
       this.stateStack.push({});
     }
     pop() {
-      assert5(this.stateStack.length > 0);
+      assert6(this.stateStack.length > 0);
       const oldValues = this.stateStack[this.stateStack.length - 1];
       setParameters(this.gl, oldValues);
       this.stateStack.pop();
@@ -17555,7 +17769,7 @@
       let oldValue;
       const oldValues = this.stateStack.length > 0 && this.stateStack[this.stateStack.length - 1];
       for (const key in values) {
-        assert5(key !== void 0);
+        assert6(key !== void 0);
         const value = values[key];
         const cached = this.cache[key];
         if (!deepArrayEqual(value, cached)) {
@@ -17579,7 +17793,7 @@
       enable: enable2 = true,
       copyState
     } = options;
-    assert5(copyState !== void 0);
+    assert6(copyState !== void 0);
     if (!gl.state) {
       const {
         polyfillContext: polyfillContext2
@@ -17610,13 +17824,13 @@
     gl.state.push();
   }
   function popContextState(gl) {
-    assert5(gl.state);
+    assert6(gl.state);
     gl.state.pop();
   }
 
   // node_modules/@luma.gl/gltools/dist/esm/state-tracker/unified-parameter-api.js
   function setParameters(gl, values) {
-    assert5(isWebGL(gl), "setParameters requires a WebGL context");
+    assert6(isWebGL(gl), "setParameters requires a WebGL context");
     if (isObjectEmpty(values)) {
       return;
     }
@@ -17640,14 +17854,14 @@
       }
     }
   }
-  function getParameters(gl, parameters) {
-    parameters = parameters || GL_PARAMETER_DEFAULTS;
-    if (typeof parameters === "number") {
-      const key = parameters;
+  function getParameters(gl, parameters2) {
+    parameters2 = parameters2 || GL_PARAMETER_DEFAULTS;
+    if (typeof parameters2 === "number") {
+      const key = parameters2;
       const getter = GL_PARAMETER_GETTERS[key];
       return getter ? getter(gl, key) : gl.getParameter(key);
     }
-    const parameterKeys = Array.isArray(parameters) ? parameters : Object.keys(parameters);
+    const parameterKeys = Array.isArray(parameters2) ? parameters2 : Object.keys(parameters2);
     const state = {};
     for (const key of parameterKeys) {
       const getter = GL_PARAMETER_GETTERS[key];
@@ -17658,15 +17872,15 @@
   function resetParameters(gl) {
     setParameters(gl, GL_PARAMETER_DEFAULTS);
   }
-  function withParameters(gl, parameters, func) {
-    if (isObjectEmpty(parameters)) {
+  function withParameters(gl, parameters2, func) {
+    if (isObjectEmpty(parameters2)) {
       return func(gl);
     }
     const {
       nocatch = true
-    } = parameters;
+    } = parameters2;
     pushContextState(gl);
-    setParameters(gl, parameters);
+    setParameters(gl, parameters2);
     let value;
     if (nocatch) {
       value = func(gl);
@@ -17737,8 +17951,8 @@
   }
 
   // node_modules/@luma.gl/gltools/dist/esm/context/context.js
-  var isBrowser7 = isBrowser5();
-  var isPage = isBrowser7 && typeof document !== "undefined";
+  var isBrowser8 = isBrowser6();
+  var isPage = isBrowser8 && typeof document !== "undefined";
   var CONTEXT_DEFAULTS = {
     webgl2: true,
     webgl1: true,
@@ -17751,7 +17965,7 @@
   };
   function createGLContext() {
     let options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
-    assert5(isBrowser7, "createGLContext only available in the browser.\nCreate your own headless context or use 'createHeadlessContext' from @luma.gl/test-utils");
+    assert6(isBrowser8, "createGLContext only available in the browser.\nCreate your own headless context or use 'createHeadlessContext' from @luma.gl/test-utils");
     options = Object.assign({}, CONTEXT_DEFAULTS, options);
     const {
       width,
@@ -17807,7 +18021,7 @@
         }
       });
     }
-    if (isBrowser7 && debug2) {
+    if (isBrowser8 && debug2) {
       if (!globalThis.makeDebugContext) {
         log2.warn('WebGL debug mode not activated. import "@luma.gl/debug" to enable.')();
       } else {
@@ -17947,198 +18161,6 @@
     }
   }
 
-  // node_modules/@probe.gl/stats/dist/esm/utils/hi-res-timestamp.js
-  function getHiResTimestamp4() {
-    let timestamp;
-    if (typeof window !== "undefined" && window.performance) {
-      timestamp = window.performance.now();
-    } else if (typeof process !== "undefined" && process.hrtime) {
-      const timeParts = process.hrtime();
-      timestamp = timeParts[0] * 1e3 + timeParts[1] / 1e6;
-    } else {
-      timestamp = Date.now();
-    }
-    return timestamp;
-  }
-
-  // node_modules/@probe.gl/stats/dist/esm/lib/stat.js
-  var Stat2 = class {
-    constructor(name, type) {
-      _defineProperty(this, "name", void 0);
-      _defineProperty(this, "type", void 0);
-      _defineProperty(this, "sampleSize", 1);
-      _defineProperty(this, "time", void 0);
-      _defineProperty(this, "count", void 0);
-      _defineProperty(this, "samples", void 0);
-      _defineProperty(this, "lastTiming", void 0);
-      _defineProperty(this, "lastSampleTime", void 0);
-      _defineProperty(this, "lastSampleCount", void 0);
-      _defineProperty(this, "_count", 0);
-      _defineProperty(this, "_time", 0);
-      _defineProperty(this, "_samples", 0);
-      _defineProperty(this, "_startTime", 0);
-      _defineProperty(this, "_timerPending", false);
-      this.name = name;
-      this.type = type;
-      this.reset();
-    }
-    setSampleSize(samples) {
-      this.sampleSize = samples;
-      return this;
-    }
-    incrementCount() {
-      this.addCount(1);
-      return this;
-    }
-    decrementCount() {
-      this.subtractCount(1);
-      return this;
-    }
-    addCount(value) {
-      this._count += value;
-      this._samples++;
-      this._checkSampling();
-      return this;
-    }
-    subtractCount(value) {
-      this._count -= value;
-      this._samples++;
-      this._checkSampling();
-      return this;
-    }
-    addTime(time) {
-      this._time += time;
-      this.lastTiming = time;
-      this._samples++;
-      this._checkSampling();
-      return this;
-    }
-    timeStart() {
-      this._startTime = getHiResTimestamp4();
-      this._timerPending = true;
-      return this;
-    }
-    timeEnd() {
-      if (!this._timerPending) {
-        return this;
-      }
-      this.addTime(getHiResTimestamp4() - this._startTime);
-      this._timerPending = false;
-      this._checkSampling();
-      return this;
-    }
-    getSampleAverageCount() {
-      return this.sampleSize > 0 ? this.lastSampleCount / this.sampleSize : 0;
-    }
-    getSampleAverageTime() {
-      return this.sampleSize > 0 ? this.lastSampleTime / this.sampleSize : 0;
-    }
-    getSampleHz() {
-      return this.lastSampleTime > 0 ? this.sampleSize / (this.lastSampleTime / 1e3) : 0;
-    }
-    getAverageCount() {
-      return this.samples > 0 ? this.count / this.samples : 0;
-    }
-    getAverageTime() {
-      return this.samples > 0 ? this.time / this.samples : 0;
-    }
-    getHz() {
-      return this.time > 0 ? this.samples / (this.time / 1e3) : 0;
-    }
-    reset() {
-      this.time = 0;
-      this.count = 0;
-      this.samples = 0;
-      this.lastTiming = 0;
-      this.lastSampleTime = 0;
-      this.lastSampleCount = 0;
-      this._count = 0;
-      this._time = 0;
-      this._samples = 0;
-      this._startTime = 0;
-      this._timerPending = false;
-      return this;
-    }
-    _checkSampling() {
-      if (this._samples === this.sampleSize) {
-        this.lastSampleTime = this._time;
-        this.lastSampleCount = this._count;
-        this.count += this._count;
-        this.time += this._time;
-        this.samples += this._samples;
-        this._time = 0;
-        this._count = 0;
-        this._samples = 0;
-      }
-    }
-  };
-
-  // node_modules/@probe.gl/stats/dist/esm/lib/stats.js
-  var Stats2 = class {
-    constructor(options) {
-      _defineProperty(this, "id", void 0);
-      _defineProperty(this, "stats", {});
-      this.id = options.id;
-      this.stats = {};
-      this._initializeStats(options.stats);
-      Object.seal(this);
-    }
-    get(name) {
-      let type = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "count";
-      return this._getOrCreate({
-        name,
-        type
-      });
-    }
-    get size() {
-      return Object.keys(this.stats).length;
-    }
-    reset() {
-      for (const key in this.stats) {
-        this.stats[key].reset();
-      }
-      return this;
-    }
-    forEach(fn) {
-      for (const key in this.stats) {
-        fn(this.stats[key]);
-      }
-    }
-    getTable() {
-      const table = {};
-      this.forEach((stat) => {
-        table[stat.name] = {
-          time: stat.time || 0,
-          count: stat.count || 0,
-          average: stat.getAverageTime() || 0,
-          hz: stat.getHz() || 0
-        };
-      });
-      return table;
-    }
-    _initializeStats() {
-      let stats = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : [];
-      stats.forEach((stat) => this._getOrCreate(stat));
-    }
-    _getOrCreate(stat) {
-      if (!stat || !stat.name) {
-        return null;
-      }
-      const {
-        name,
-        type
-      } = stat;
-      if (!this.stats[name]) {
-        if (stat instanceof Stat2) {
-          this.stats[name] = stat;
-        } else {
-          this.stats[name] = new Stat2(name, type);
-        }
-      }
-      return this.stats[name];
-    }
-  };
-
   // node_modules/@luma.gl/webgl/dist/esm/init.js
   var VERSION6 = true ? "8.5.21" : "untranspiled source";
   var STARTUP_MESSAGE = "set luma.log.level=1 (or higher) to trace rendering";
@@ -18160,7 +18182,7 @@
     throw new Error("luma.gl - multiple VERSIONs detected: ".concat(globalThis.luma.VERSION, " vs ").concat(VERSION6));
   }
   if (!globalThis.luma) {
-    if (isBrowser5()) {
+    if (isBrowser6()) {
       log2.log(1, "luma.gl ".concat(VERSION6, " - ").concat(STARTUP_MESSAGE))();
     }
     globalThis.luma = globalThis.luma || {
@@ -18185,7 +18207,7 @@
   }
 
   // node_modules/@luma.gl/webgl/dist/esm/utils/assert.js
-  function assert6(condition, message) {
+  function assert7(condition, message) {
     if (!condition) {
       throw new Error(message || "luma.gl: assertion failed.");
     }
@@ -18202,7 +18224,7 @@
     }
     name = name.replace(/^.*\./, "");
     const value = gl[name];
-    assert6(value !== void 0, "Accessing undefined constant GL.".concat(name));
+    assert7(value !== void 0, "Accessing undefined constant GL.".concat(name));
     return value;
   }
   function getKey(gl, value) {
@@ -18224,7 +18246,7 @@
     return "".concat(id, "-").concat(count2);
   }
   function isPowerOfTwo(n2) {
-    assert6(typeof n2 === "number", "Input must be a number");
+    assert7(typeof n2 === "number", "Input must be a number");
     return n2 && (n2 & n2 - 1) === 0;
   }
   function isObjectEmpty2(obj) {
@@ -18320,9 +18342,9 @@
     getParameter(pname) {
       let opts = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
       pname = getKeyValue(this.gl, pname);
-      assert6(pname);
-      const parameters = this.constructor.PARAMETERS || {};
-      const parameter = parameters[pname];
+      assert7(pname);
+      const parameters2 = this.constructor.PARAMETERS || {};
+      const parameter = parameters2[pname];
       if (parameter) {
         const isWebgl2 = isWebGL2(this.gl);
         const parameterAvailable = (!("webgl2" in parameter) || isWebgl2) && (!("extension" in parameter) || this.gl.getExtension(parameter.extension));
@@ -18338,13 +18360,13 @@
     getParameters() {
       let options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
       const {
-        parameters,
+        parameters: parameters2,
         keys
       } = options;
       const PARAMETERS = this.constructor.PARAMETERS || {};
       const isWebgl2 = isWebGL2(this.gl);
       const values = {};
-      const parameterKeys = parameters || Object.keys(PARAMETERS);
+      const parameterKeys = parameters2 || Object.keys(PARAMETERS);
       for (const pname of parameterKeys) {
         const parameter = PARAMETERS[pname];
         const parameterAvailable = parameter && (!("webgl2" in parameter) || isWebgl2) && (!("extension" in parameter) || this.gl.getExtension(parameter.extension));
@@ -18360,9 +18382,9 @@
     }
     setParameter(pname, value) {
       pname = getKeyValue(this.gl, pname);
-      assert6(pname);
-      const parameters = this.constructor.PARAMETERS || {};
-      const parameter = parameters[pname];
+      assert7(pname);
+      const parameters2 = this.constructor.PARAMETERS || {};
+      const parameter = parameters2[pname];
       if (parameter) {
         const isWebgl2 = isWebGL2(this.gl);
         const parameterAvailable = (!("webgl2" in parameter) || isWebgl2) && (!("extension" in parameter) || this.gl.getExtension(parameter.extension));
@@ -18376,9 +18398,9 @@
       this._setParameter(pname, value);
       return this;
     }
-    setParameters(parameters) {
-      for (const pname in parameters) {
-        this.setParameter(pname, parameters[pname]);
+    setParameters(parameters2) {
+      for (const pname in parameters2) {
+        this.setParameter(pname, parameters2[pname]);
       }
       return this;
     }
@@ -18596,7 +18618,7 @@
       return ArrayType.BYTES_PER_ELEMENT;
     }
     static getBytesPerVertex(accessor) {
-      assert6(accessor.size);
+      assert7(accessor.size);
       const ArrayType = getTypedArrayFromGLType(accessor.type || 5126);
       return ArrayType.BYTES_PER_ELEMENT * accessor.size;
     }
@@ -18771,7 +18793,7 @@
         srcOffset = 0
       } = props;
       const byteLength = props.byteLength || props.length;
-      assert6(data);
+      assert7(data);
       const target = this.gl.webgl2 ? 36663 : this.target;
       this.gl.bindBuffer(target, this.handle);
       if (srcOffset !== 0 || byteLength !== void 0) {
@@ -18828,7 +18850,7 @@
       }
       const copyElementCount = Math.min(sourceAvailableElementCount, dstAvailableElementCount);
       length4 = length4 || copyElementCount;
-      assert6(length4 <= copyElementCount);
+      assert7(length4 <= copyElementCount);
       dstData = dstData || new ArrayType(dstElementCount);
       this.gl.bindBuffer(36662, this.handle);
       this.gl.getBufferSubData(36662, srcByteOffset, dstData, dstOffset, length4);
@@ -18846,7 +18868,7 @@
         if (size !== void 0) {
           this.gl.bindBufferRange(target, index, this.handle, offset, size);
         } else {
-          assert6(offset === 0);
+          assert7(offset === 0);
           this.gl.bindBufferBase(target, index, this.handle);
         }
       } else {
@@ -18888,7 +18910,7 @@
     _setData(data) {
       let offset = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : 0;
       let byteLength = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : data.byteLength + offset;
-      assert6(ArrayBuffer.isView(data));
+      assert7(ArrayBuffer.isView(data));
       this._trackDeallocatedMemory();
       const target = this._getTarget();
       this.gl.bindBuffer(target, this.handle);
@@ -18899,7 +18921,7 @@
       this.bytesUsed = byteLength;
       this._trackAllocatedMemory(byteLength);
       const type = getGLTypeFromTypedArray(data);
-      assert6(type);
+      assert7(type);
       this.setAccessor(new Accessor(this.accessor, {
         type
       }));
@@ -18907,7 +18929,7 @@
     }
     _setByteLength(byteLength) {
       let usage = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.usage;
-      assert6(byteLength >= 0);
+      assert7(byteLength >= 0);
       this._trackDeallocatedMemory();
       let data = byteLength;
       if (byteLength === 0) {
@@ -19131,7 +19153,7 @@
         format = 6408,
         border = 0,
         recreate = false,
-        parameters = {},
+        parameters: parameters2 = {},
         pixelStore = {},
         textureUnit = void 0
       } = props;
@@ -19179,7 +19201,7 @@
       if (mipmaps && this._isNPOT()) {
         log2.warn("texture: ".concat(this, " is Non-Power-Of-Two, disabling mipmaping"))();
         mipmaps = false;
-        this._updateForNPOT(parameters);
+        this._updateForNPOT(parameters2);
       }
       this.mipmaps = mipmaps;
       this.setImageData({
@@ -19198,14 +19220,14 @@
       if (mipmaps) {
         this.generateMipmap();
       }
-      this.setParameters(parameters);
+      this.setParameters(parameters2);
       if (recreate) {
         this.data = data;
       }
       if (isVideo) {
         this._video = {
           video: data,
-          parameters,
+          parameters: parameters2,
           lastTime: data.readyState >= HTMLVideoElement.HAVE_CURRENT_DATA ? data.currentTime : -1
         };
       }
@@ -19215,7 +19237,7 @@
       if (this._video) {
         const {
           video,
-          parameters,
+          parameters: parameters2,
           lastTime
         } = this._video;
         if (lastTime === video.currentTime || video.readyState < HTMLVideoElement.HAVE_CURRENT_DATA) {
@@ -19223,7 +19245,7 @@
         }
         this.setSubImageData({
           data: video,
-          parameters
+          parameters: parameters2
         });
         if (this.mipmaps) {
           this.generateMipmap();
@@ -19273,7 +19295,7 @@
         format = this.format,
         border = this.border,
         offset = 0,
-        parameters = {}
+        parameters: parameters2 = {}
       } = options;
       let {
         data = null,
@@ -19315,7 +19337,7 @@
       }));
       let gl2;
       let compressedTextureSize = 0;
-      withParameters(this.gl, parameters, () => {
+      withParameters(this.gl, parameters2, () => {
         switch (dataType) {
           case "null":
             gl.texImage2D(target, level, format, width, height, border, dataFormat, type, data);
@@ -19343,7 +19365,7 @@
             }
             break;
           default:
-            assert6(false, "Unknown image data type");
+            assert7(false, "Unknown image data type");
         }
       });
       if (dataType === "compressed") {
@@ -19374,7 +19396,7 @@
         compressed = false,
         offset = 0,
         border = this.border,
-        parameters = {}
+        parameters: parameters2 = {}
       } = _ref2;
       ({
         type,
@@ -19391,7 +19413,7 @@
         width,
         height
       }));
-      assert6(this.depth === 0, "texSubImage not supported for 3D textures");
+      assert7(this.depth === 0, "texSubImage not supported for 3D textures");
       if (!data) {
         data = pixels;
       }
@@ -19405,7 +19427,7 @@
         data = data.handle;
       }
       this.gl.bindTexture(this.target, this.handle);
-      withParameters(this.gl, parameters, () => {
+      withParameters(this.gl, parameters2, () => {
         if (compressed) {
           this.gl.compressedTexSubImage2D(target, level, x2, y2, width, height, format, data);
         } else if (data === null) {
@@ -19566,9 +19588,9 @@
           height
         };
       }
-      assert6(size, "Could not deduced texture size");
-      assert6(width === void 0 || size.width === width, "Deduced texture width does not match supplied width");
-      assert6(height === void 0 || size.height === height, "Deduced texture height does not match supplied height");
+      assert7(size, "Could not deduced texture size");
+      assert7(width === void 0 || size.width === width, "Deduced texture width does not match supplied width");
+      assert7(height === void 0 || size.height === height, "Deduced texture height does not match supplied height");
       return size;
     }
     _createHandle() {
@@ -19601,7 +19623,7 @@
           break;
         case 4096:
         case 4097:
-          assert6(false);
+          assert7(false);
           break;
         default:
           this.gl.texParameteri(this.target, pname, param);
@@ -19619,15 +19641,15 @@
       }
       return !isPowerOfTwo(this.width) || !isPowerOfTwo(this.height);
     }
-    _updateForNPOT(parameters) {
-      if (parameters[this.gl.TEXTURE_MIN_FILTER] === void 0) {
-        parameters[this.gl.TEXTURE_MIN_FILTER] = this.gl.LINEAR;
+    _updateForNPOT(parameters2) {
+      if (parameters2[this.gl.TEXTURE_MIN_FILTER] === void 0) {
+        parameters2[this.gl.TEXTURE_MIN_FILTER] = this.gl.LINEAR;
       }
-      if (parameters[this.gl.TEXTURE_WRAP_S] === void 0) {
-        parameters[this.gl.TEXTURE_WRAP_S] = this.gl.CLAMP_TO_EDGE;
+      if (parameters2[this.gl.TEXTURE_WRAP_S] === void 0) {
+        parameters2[this.gl.TEXTURE_WRAP_S] = this.gl.CLAMP_TO_EDGE;
       }
-      if (parameters[this.gl.TEXTURE_WRAP_T] === void 0) {
-        parameters[this.gl.TEXTURE_WRAP_T] = this.gl.CLAMP_TO_EDGE;
+      if (parameters2[this.gl.TEXTURE_WRAP_T] === void 0) {
+        parameters2[this.gl.TEXTURE_WRAP_T] = this.gl.CLAMP_TO_EDGE;
       }
     }
     _getNPOTParam(pname, param) {
@@ -19655,7 +19677,7 @@
   // node_modules/@luma.gl/webgl/dist/esm/utils/load-file.js
   var pathPrefix2 = "";
   function loadImage(url, opts) {
-    assert6(typeof url === "string");
+    assert7(typeof url === "string");
     url = pathPrefix2 + url;
     return new Promise((resolve2, reject) => {
       try {
@@ -19718,7 +19740,7 @@
       let props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
       const {
         mipmaps = true,
-        parameters = {}
+        parameters: parameters2 = {}
       } = props;
       this.opts = props;
       this.setCubeMapImageData(props).then(() => {
@@ -19726,7 +19748,7 @@
         if (mipmaps) {
           this.generateMipmap(props);
         }
-        this.setParameters(parameters);
+        this.setParameters(parameters2);
       });
       return this;
     }
@@ -19844,11 +19866,11 @@
         type = 5121,
         offset = 0,
         data,
-        parameters = {}
+        parameters: parameters2 = {}
       } = _ref;
       this._trackDeallocatedMemory("Texture");
       this.gl.bindTexture(this.target, this.handle);
-      withParameters(this.gl, parameters, () => {
+      withParameters(this.gl, parameters2, () => {
         if (ArrayBuffer.isView(data)) {
           this.gl.texImage3D(this.target, level, dataFormat, width, height, depth, border, format, type, data);
         }
@@ -20075,7 +20097,7 @@
         height = 1,
         samples = 0
       } = _ref2;
-      assert6(format, "Needs format");
+      assert7(format, "Needs format");
       this._trackDeallocatedMemory();
       this.gl.bindRenderbuffer(36161, this.handle);
       if (samples !== 0 && isWebGL2(this.gl)) {
@@ -20144,31 +20166,31 @@
       depth = null,
       stencil = null
     } = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-    const parameters = {};
+    const parameters2 = {};
     if (framebuffer) {
-      parameters.framebuffer = framebuffer;
+      parameters2.framebuffer = framebuffer;
     }
     let clearFlags = 0;
     if (color) {
       clearFlags |= GL_COLOR_BUFFER_BIT;
       if (color !== true) {
-        parameters.clearColor = color;
+        parameters2.clearColor = color;
       }
     }
     if (depth) {
       clearFlags |= GL_DEPTH_BUFFER_BIT;
       if (depth !== true) {
-        parameters.clearDepth = depth;
+        parameters2.clearDepth = depth;
       }
     }
     if (stencil) {
       clearFlags |= GL_STENCIL_BUFFER_BIT;
       if (depth !== true) {
-        parameters.clearStencil = depth;
+        parameters2.clearStencil = depth;
       }
     }
-    assert6(clearFlags !== 0, ERR_ARGUMENTS);
-    withParameters(gl, parameters, () => {
+    assert7(clearFlags !== 0, ERR_ARGUMENTS);
+    withParameters(gl, parameters2, () => {
       gl.clear(clearFlags);
     });
   }
@@ -20208,7 +20230,7 @@
           gl.clearBufferfi(GL_DEPTH_STENCIL, 0, depth, stencil);
           break;
         default:
-          assert6(false, ERR_ARGUMENTS);
+          assert7(false, ERR_ARGUMENTS);
       }
     });
   }
@@ -20230,7 +20252,7 @@
       case 34836:
         return 4;
       default:
-        assert6(false);
+        assert7(false);
         return 0;
     }
   }
@@ -20254,7 +20276,7 @@
       framebuffer,
       deleteFramebuffer
     } = getFramebuffer(source);
-    assert6(framebuffer);
+    assert7(framebuffer);
     const {
       gl,
       handle,
@@ -20265,7 +20287,7 @@
     if (sourceAttachment === 36064 && handle === null) {
       sourceAttachment = 1028;
     }
-    assert6(attachments[sourceAttachment]);
+    assert7(attachments[sourceAttachment]);
     sourceType = sourceType || attachments[sourceAttachment].type;
     target = getPixelArray(target, sourceType, sourceFormat, sourceWidth, sourceHeight);
     sourceType = sourceType || getGLTypeFromTypedArray(target);
@@ -20333,7 +20355,7 @@
       framebuffer,
       deleteFramebuffer
     } = getFramebuffer(source);
-    assert6(framebuffer);
+    assert7(framebuffer);
     const {
       gl,
       handle
@@ -20343,7 +20365,7 @@
     targetY = targetY || 0;
     targetZ = targetZ || 0;
     const prevHandle = gl.bindFramebuffer(36160, handle);
-    assert6(target);
+    assert7(target);
     let texture = null;
     if (target instanceof Texture) {
       texture = target;
@@ -20503,7 +20525,7 @@
   }
   function queryFeature(gl, cap) {
     const feature = webgl_features_table_default[cap];
-    assert6(feature, cap);
+    assert7(feature, cap);
     let isSupported;
     const featureDefinition = isWebGL2(gl) ? feature[1] || feature[0] : feature[0];
     if (typeof featureDefinition === "function") {
@@ -20518,7 +20540,7 @@
     } else if (typeof featureDefinition === "boolean") {
       isSupported = featureDefinition;
     } else {
-      assert6(false);
+      assert7(false);
     }
     return isSupported;
   }
@@ -20597,7 +20619,7 @@
         readBuffer = void 0,
         drawBuffers = void 0
       } = _ref;
-      assert6(width >= 0 && height >= 0, "Width and height need to be integers");
+      assert7(width >= 0 && height >= 0, "Width and height need to be integers");
       this.width = width;
       this.height = height;
       if (attachments) {
@@ -20661,7 +20683,7 @@
         height
       } = options;
       if (this.handle === null) {
-        assert6(width === void 0 && height === void 0);
+        assert7(width === void 0 && height === void 0);
         this.width = this.gl.drawingBufferWidth;
         this.height = this.gl.drawingBufferHeight;
         return this;
@@ -20699,7 +20721,7 @@
       Object.assign(newAttachments, attachments);
       const prevHandle = this.gl.bindFramebuffer(36160, this.handle);
       for (const key in newAttachments) {
-        assert6(key !== void 0, "Misspelled framebuffer binding point?");
+        assert7(key !== void 0, "Misspelled framebuffer binding point?");
         const attachment = Number(key);
         const descriptor = newAttachments[attachment];
         let object = descriptor;
@@ -20848,9 +20870,9 @@
     getAttachmentParameters() {
       let attachment = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : 36064;
       let keys = arguments.length > 1 ? arguments[1] : void 0;
-      let parameters = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.constructor.ATTACHMENT_PARAMETERS || [];
+      let parameters2 = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.constructor.ATTACHMENT_PARAMETERS || [];
       const values = {};
-      for (const pname of parameters) {
+      for (const pname of parameters2) {
         const key = keys ? getKey(this.gl, pname) : pname;
         values[key] = this.getAttachmentParameter(attachment, pname, keys);
       }
@@ -20859,13 +20881,13 @@
     getParameters() {
       let keys = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : true;
       const attachments = Object.keys(this.attachments);
-      const parameters = {};
+      const parameters2 = {};
       for (const attachmentName of attachments) {
         const attachment = Number(attachmentName);
         const key = keys ? getKey(this.gl, attachment) : attachment;
-        parameters[key] = this.getAttachmentParameters(attachment, keys);
+        parameters2[key] = this.getAttachmentParameters(attachment, keys);
       }
-      return parameters;
+      return parameters2;
     }
     show() {
       if (typeof window !== "undefined") {
@@ -20944,7 +20966,7 @@
         });
         this.ownResources.push(defaultAttachments[36096]);
       } else if (stencil) {
-        assert6(false);
+        assert7(false);
       }
       return defaultAttachments;
     }
@@ -20996,7 +21018,7 @@
           gl.framebufferTexture2D(36160, attachment, 3553, texture.handle, level);
           break;
         default:
-          assert6(false, "Illegal texture type");
+          assert7(false, "Illegal texture type");
       }
       gl.bindTexture(texture.target, null);
       this.attachments[attachment] = texture;
@@ -21006,7 +21028,7 @@
       if (gl2) {
         gl2.readBuffer(readBuffer);
       } else {
-        assert6(readBuffer === 36064 || readBuffer === 1029, ERR_MULTIPLE_RENDERTARGETS);
+        assert7(readBuffer === 36064 || readBuffer === 1029, ERR_MULTIPLE_RENDERTARGETS);
       }
       this.readBuffer = readBuffer;
     }
@@ -21022,7 +21044,7 @@
         if (ext) {
           ext.drawBuffersWEBGL(drawBuffers);
         } else {
-          assert6(drawBuffers.length === 1 && (drawBuffers[0] === 36064 || drawBuffers[0] === 1029), ERR_MULTIPLE_RENDERTARGETS);
+          assert7(drawBuffers.length === 1 && (drawBuffers[0] === 36064 || drawBuffers[0] === 1029), ERR_MULTIPLE_RENDERTARGETS);
         }
       }
       this.drawBuffers = drawBuffers;
@@ -21069,7 +21091,7 @@
 
   // node_modules/@luma.gl/webgl/dist/esm/webgl-utils/texture-utils.js
   function cloneTextureFrom(refTexture, overrides) {
-    assert6(refTexture instanceof Texture2D || refTexture instanceof TextureCube || refTexture instanceof Texture3D);
+    assert7(refTexture instanceof Texture2D || refTexture instanceof TextureCube || refTexture instanceof Texture3D);
     const TextureType = refTexture.constructor;
     const {
       gl,
@@ -21228,13 +21250,13 @@
         case 35632:
           return "fragment-shader";
         default:
-          assert6(false);
+          assert7(false);
           return "unknown";
       }
     }
     constructor(gl, props) {
       assertWebGLContext(gl);
-      assert6(typeof props.source === "string", ERR_SOURCE);
+      assert7(typeof props.source === "string", ERR_SOURCE);
       const id = getShaderName(props.source, null) || props.id || uid("unnamed ".concat(_Shader.getTypeName(props.shaderType)));
       super(gl, {
         id
@@ -21436,14 +21458,14 @@
       };
     }
     const UNIFORM_NAME_REGEXP = /([^[]*)(\[[0-9]+\])?/;
-    const matches3 = name.match(UNIFORM_NAME_REGEXP);
-    if (!matches3 || matches3.length < 2) {
+    const matches4 = name.match(UNIFORM_NAME_REGEXP);
+    if (!matches4 || matches4.length < 2) {
       throw new Error("Failed to parse GLSL uniform name ".concat(name));
     }
     return {
-      name: matches3[1],
-      length: matches3[2] || 1,
-      isArray: Boolean(matches3[2])
+      name: matches4[1],
+      length: matches4[2] || 1,
+      isArray: Boolean(matches4[2])
     };
   }
   function checkUniformValues(uniforms, source, uniformMap) {
@@ -21524,7 +21546,7 @@
         cacheLength = length4;
         update = true;
       } else {
-        assert6(cacheLength === length4, "Uniform length cannot change.");
+        assert7(cacheLength === length4, "Uniform length cannot change.");
         for (let i3 = 0; i3 < length4; ++i3) {
           if (arrayValue[i3] !== cache4[i3]) {
             update = true;
@@ -21627,7 +21649,7 @@
       case GL_TRIANGLE_FAN:
         return GL_TRIANGLES;
       default:
-        assert6(false);
+        assert7(false);
         return 0;
     }
   }
@@ -21807,22 +21829,22 @@
       let props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
       const {
         hash,
-        vs: vs8,
-        fs: fs6,
+        vs: vs9,
+        fs: fs7,
         varyings,
         bufferMode = GL_SEPARATE_ATTRIBS
       } = props;
       this.hash = hash || "";
-      this.vs = typeof vs8 === "string" ? new VertexShader(this.gl, {
+      this.vs = typeof vs9 === "string" ? new VertexShader(this.gl, {
         id: "".concat(props.id, "-vs"),
-        source: vs8
-      }) : vs8;
-      this.fs = typeof fs6 === "string" ? new FragmentShader(this.gl, {
+        source: vs9
+      }) : vs9;
+      this.fs = typeof fs7 === "string" ? new FragmentShader(this.gl, {
         id: "".concat(props.id, "-fs"),
-        source: fs6
-      }) : fs6;
-      assert6(this.vs instanceof VertexShader);
-      assert6(this.fs instanceof FragmentShader);
+        source: fs7
+      }) : fs7;
+      assert7(this.vs instanceof VertexShader);
+      assert7(this.fs instanceof FragmentShader);
       this.uniforms = {};
       this._textureUniforms = {};
       if (varyings && varyings.length > 0) {
@@ -21863,7 +21885,7 @@
         vertexArray = null,
         transformFeedback,
         framebuffer,
-        parameters = {},
+        parameters: parameters2 = {},
         uniforms,
         samplers
       } = _ref;
@@ -21876,14 +21898,14 @@
         const message = "mode=".concat(getKey(this.gl, drawMode), " verts=").concat(vertexCount, " ") + "instances=".concat(instanceCount, " indexType=").concat(getKey(this.gl, indexType), " ") + "isInstanced=".concat(isInstanced, " isIndexed=").concat(isIndexed, " ") + "Framebuffer=".concat(fb);
         log2.log(logPriority, message)();
       }
-      assert6(vertexArray);
+      assert7(vertexArray);
       this.gl.useProgram(this.handle);
       if (!this._areTexturesRenderable() || vertexCount === 0 || isInstanced && instanceCount === 0) {
         return false;
       }
       vertexArray.bindForDraw(vertexCount, instanceCount, () => {
         if (framebuffer !== void 0) {
-          parameters = Object.assign({}, parameters, {
+          parameters2 = Object.assign({}, parameters2, {
             framebuffer
           });
         }
@@ -21892,7 +21914,7 @@
           transformFeedback.begin(primitiveMode);
         }
         this._bindTextures();
-        withParameters(this.gl, parameters, () => {
+        withParameters(this.gl, parameters2, () => {
           if (isIndexed && isInstanced) {
             this.gl2.drawElementsInstanced(drawMode, vertexCount, indexType, offset, instanceCount);
           } else if (isIndexed && isWebGL2(this.gl) && !isNaN(start) && !isNaN(end)) {
@@ -22092,7 +22114,7 @@
             supported = supported && hasTimerQuery;
             break;
           default:
-            assert6(false);
+            assert7(false);
         }
       }
       return supported;
@@ -22415,7 +22437,7 @@
           _VertexArrayObject._setConstantUintArray(gl, location, array);
           break;
         default:
-          assert6(false);
+          assert7(false);
       }
     }
     constructor(gl) {
@@ -22451,7 +22473,7 @@
     setElementBuffer() {
       let elementBuffer = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
       let opts = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-      assert6(!elementBuffer || elementBuffer.target === 34963, ERR_ELEMENTS);
+      assert7(!elementBuffer || elementBuffer.target === 34963, ERR_ELEMENTS);
       this.bind(() => {
         this.gl.bindBuffer(34963, elementBuffer ? elementBuffer.handle : null);
       });
@@ -22478,7 +22500,7 @@
       this.bind(() => {
         gl.bindBuffer(34962, buffer.handle);
         if (integer) {
-          assert6(isWebGL2(gl));
+          assert7(isWebGL2(gl));
           gl2.vertexAttribIPointer(location, size, type, stride, offset);
         } else {
           gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
@@ -22552,11 +22574,11 @@
           gl.vertexAttrib4fv(location, array);
           break;
         default:
-          assert6(false);
+          assert7(false);
       }
     }
     static _setConstantIntArray(gl, location, array) {
-      assert6(isWebGL2(gl));
+      assert7(isWebGL2(gl));
       switch (array.length) {
         case 1:
           gl.vertexAttribI1iv(location, array);
@@ -22571,11 +22593,11 @@
           gl.vertexAttribI4iv(location, array);
           break;
         default:
-          assert6(false);
+          assert7(false);
       }
     }
     static _setConstantUintArray(gl, location, array) {
-      assert6(isWebGL2(gl));
+      assert7(isWebGL2(gl));
       switch (array.length) {
         case 1:
           gl.vertexAttribI1uiv(location, array);
@@ -22590,7 +22612,7 @@
           gl.vertexAttribI4uiv(location, array);
           break;
         default:
-          assert6(false);
+          assert7(false);
       }
     }
     _createHandle() {
@@ -22608,7 +22630,7 @@
       let {
         location
       } = _ref;
-      assert6(Number.isFinite(location));
+      assert7(Number.isFinite(location));
       return this.bind(() => {
         switch (pname) {
           case 34373:
@@ -22814,7 +22836,7 @@
         size,
         type
       } = accessor;
-      assert6(Number.isFinite(size) && Number.isFinite(type));
+      assert7(Number.isFinite(size) && Number.isFinite(type));
       return {
         location,
         accessor
@@ -22994,7 +23016,7 @@
       uniforms,
       undefinedOnly = false
     } = _ref;
-    assert6(program);
+    assert7(program);
     const SHADER_MODULE_UNIFORM_REGEXP = ".*_.*";
     const PROJECT_MODULE_UNIFORM_REGEXP = ".*Matrix";
     const uniformLocations = program._uniformSetters;
@@ -23216,7 +23238,7 @@
   }
 
   // node_modules/@luma.gl/engine/dist/esm/lib/animation-loop.js
-  var isPage2 = isBrowser5() && typeof document !== "undefined";
+  var isPage2 = isBrowser6() && typeof document !== "undefined";
   var statIdCounter = 0;
   var AnimationLoop = class {
     constructor() {
@@ -23287,7 +23309,7 @@
       this._setDisplay(null);
     }
     setNeedsRedraw(reason) {
-      assert6(typeof reason === "string");
+      assert7(typeof reason === "string");
       this.needsRedraw = this.needsRedraw || reason;
       return this;
     }
@@ -23640,7 +23662,7 @@
   var FRAGMENT_SHADER = "fs";
 
   // node_modules/@luma.gl/shadertools/dist/esm/utils/assert.js
-  function assert7(condition, message) {
+  function assert8(condition, message) {
     if (!condition) {
       throw new Error(message || "shadertools: assertion failed.");
     }
@@ -23710,26 +23732,26 @@
     constructor(_ref) {
       let {
         name,
-        vs: vs8,
-        fs: fs6,
+        vs: vs9,
+        fs: fs7,
         dependencies = [],
         uniforms,
-        getUniforms: getUniforms5,
+        getUniforms: getUniforms6,
         deprecations = [],
         defines: defines2 = {},
-        inject = {},
+        inject: inject2 = {},
         vertexShader,
         fragmentShader
       } = _ref;
-      assert7(typeof name === "string");
+      assert8(typeof name === "string");
       this.name = name;
-      this.vs = vs8 || vertexShader;
-      this.fs = fs6 || fragmentShader;
-      this.getModuleUniforms = getUniforms5;
+      this.vs = vs9 || vertexShader;
+      this.fs = fs7 || fragmentShader;
+      this.getModuleUniforms = getUniforms6;
       this.dependencies = dependencies;
       this.deprecations = this._parseDeprecationDefinitions(deprecations);
       this.defines = defines2;
-      this.injections = normalizeInjections(inject);
+      this.injections = normalizeInjections(inject2);
       if (uniforms) {
         this.uniforms = parsePropTypes(uniforms);
       }
@@ -23744,7 +23766,7 @@
           moduleSource = this.fs || "";
           break;
         default:
-          assert7(false);
+          assert8(false);
       }
       return "#define MODULE_".concat(this.name.toUpperCase().replace(/[^0-9a-z]/gi, "_"), "\n").concat(moduleSource, "// END MODULE_").concat(this.name, "\n\n");
     }
@@ -23791,7 +23813,7 @@
         const propDef = propTypes[key];
         if (key in opts && !propDef.private) {
           if (propDef.validate) {
-            assert7(propDef.validate(opts[key], propDef), "".concat(this.name, ": invalid ").concat(key));
+            assert8(propDef.validate(opts[key], propDef), "".concat(this.name, ": invalid ").concat(key));
           }
           uniforms[key] = opts[key];
         } else {
@@ -23867,8 +23889,8 @@
       if (module instanceof ShaderModule) {
         return module;
       }
-      assert7(typeof module !== "string", "Shader module use by name is deprecated. Import shader module '".concat(module, "' and use it directly."));
-      assert7(module.name, "shader module has no name");
+      assert8(typeof module !== "string", "Shader module use by name is deprecated. Import shader module '".concat(module, "' and use it directly."));
+      assert8(module.name, "shader module has no name");
       module = new ShaderModule(module);
       module.dependencies = instantiateModules(module.dependencies);
       return module;
@@ -23936,7 +23958,7 @@
   function canCompileGLGSExtension(gl, cap) {
     let opts = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {};
     const feature = WEBGL_FEATURES[cap];
-    assert7(feature, cap);
+    assert8(feature, cap);
     if (!isOldIE(opts)) {
       return true;
     }
@@ -23956,10 +23978,10 @@
   }
   function getFeature(gl, cap) {
     const feature = WEBGL_FEATURES[cap];
-    assert7(feature, cap);
+    assert8(feature, cap);
     const extensionName = isWebGL22(gl) ? feature[1] || feature[0] : feature[0];
     const value = typeof extensionName === "string" ? Boolean(gl.getExtension(extensionName)) : extensionName;
-    assert7(value === false || value === true);
+    assert8(value === false || value === true);
     return value;
   }
   function hasFeatures2(gl, features) {
@@ -24013,11 +24035,11 @@
   var REGEX_START_OF_MAIN = /void\s+main\s*\([^)]*\)\s*\{\n?/;
   var REGEX_END_OF_MAIN = /}\n?[^{}]*$/;
   var fragments = [];
-  function injectShader(source, type, inject) {
+  function injectShader(source, type, inject2) {
     let injectStandardStubs = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : false;
     const isVertex = type === VERTEX_SHADER;
-    for (const key in inject) {
-      const fragmentData = inject[key];
+    for (const key in inject2) {
+      const fragmentData = inject2[key];
       fragmentData.sort((a2, b2) => a2.order - b2.order);
       fragments.length = fragmentData.length;
       for (let i3 = 0, len2 = fragmentData.length; i3 < len2; ++i3) {
@@ -24067,10 +24089,10 @@
   }
   function combineInjects(injects) {
     const result = {};
-    assert7(Array.isArray(injects) && injects.length > 1);
-    injects.forEach((inject) => {
-      for (const key in inject) {
-        result[key] = result[key] ? "".concat(result[key], "\n").concat(inject[key]) : inject[key];
+    assert8(Array.isArray(injects) && injects.length > 1);
+    injects.forEach((inject2) => {
+      for (const key in inject2) {
+        result[key] = result[key] ? "".concat(result[key], "\n").concat(inject2[key]) : inject2[key];
       }
     });
     return result;
@@ -24136,19 +24158,19 @@
   var FRAGMENT_SHADER_PROLOGUE = "precision highp float;\n\n";
   function assembleShaders(gl, opts) {
     const {
-      vs: vs8,
-      fs: fs6
+      vs: vs9,
+      fs: fs7
     } = opts;
     const modules = resolveModules(opts.modules || []);
     return {
       gl,
       vs: assembleShader(gl, Object.assign({}, opts, {
-        source: vs8,
+        source: vs9,
         type: VERTEX_SHADER,
         modules
       })),
       fs: assembleShader(gl, Object.assign({}, opts, {
-        source: fs6,
+        source: fs7,
         type: FRAGMENT_SHADER,
         modules
       })),
@@ -24163,12 +24185,12 @@
       modules,
       defines: defines2 = {},
       hookFunctions = [],
-      inject = {},
+      inject: inject2 = {},
       transpileToGLSL100 = false,
       prologue = true,
       log: log4
     } = _ref;
-    assert7(typeof source === "string", "shader source must be a string");
+    assert8(typeof source === "string", "shader source must be a string");
     const isVertex = type === VERTEX_SHADER;
     const sourceLines = source.split("\n");
     let glslVersion = 100;
@@ -24197,11 +24219,11 @@
     const hookInjections = {};
     const declInjections = {};
     const mainInjections = {};
-    for (const key in inject) {
-      const injection = typeof inject[key] === "string" ? {
-        injection: inject[key],
+    for (const key in inject2) {
+      const injection = typeof inject2[key] === "string" ? {
+        injection: inject2[key],
         order: 0
-      } : inject[key];
+      } : inject2[key];
       const match = key.match(/^(v|f)s:(#)?([\w-]+)$/);
       if (match) {
         const hash = match[2];
@@ -24248,7 +24270,7 @@
     return assembledSource;
   }
   function assembleGetUniforms(modules) {
-    return function getUniforms5(opts) {
+    return function getUniforms6(opts) {
       const uniforms = {};
       for (const module of modules) {
         const moduleUniforms = module.getUniforms(opts, uniforms);
@@ -24387,7 +24409,7 @@
       case "vec4":
         return "xyzw";
       default:
-        assert7(false);
+        assert8(false);
         return null;
     }
   }
@@ -24402,7 +24424,7 @@
       case "vec4":
         return 4;
       default:
-        assert7(false);
+        assert8(false);
         return null;
     }
   }
@@ -24417,7 +24439,7 @@
       case "vec4":
         return variable;
       default:
-        assert7(false);
+        assert8(false);
         return null;
     }
   }
@@ -24431,7 +24453,7 @@
   };
 
   // node_modules/@math.gl/core/dist/esm/lib/assert.js
-  function assert8(condition, message) {
+  function assert9(condition, message) {
     if (!condition) {
       throw new Error("math.gl assertion ".concat(message));
     }
@@ -24830,11 +24852,11 @@
       return this.distanceSquared(vector);
     }
     getComponent(i3) {
-      assert8(i3 >= 0 && i3 < this.ELEMENTS, "index is out of range");
+      assert9(i3 >= 0 && i3 < this.ELEMENTS, "index is out of range");
       return checkNumber(this[i3]);
     }
     setComponent(i3, value) {
-      assert8(i3 >= 0 && i3 < this.ELEMENTS, "index is out of range");
+      assert9(i3 >= 0 && i3 < this.ELEMENTS, "index is out of range");
       this[i3] = value;
       return this.check();
     }
@@ -27474,21 +27496,21 @@
     get() {
       let props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
       const {
-        vs: vs8 = "",
-        fs: fs6 = "",
+        vs: vs9 = "",
+        fs: fs7 = "",
         defines: defines2 = {},
-        inject = {},
+        inject: inject2 = {},
         varyings = [],
         bufferMode = 35981,
         transpileToGLSL100 = false
       } = props;
       const modules = this._getModuleList(props.modules);
-      const vsHash = this._getHash(vs8);
-      const fsHash = this._getHash(fs6);
+      const vsHash = this._getHash(vs9);
+      const fsHash = this._getHash(fs7);
       const moduleHashes = modules.map((m) => this._getHash(m.name)).sort();
       const varyingHashes = varyings.map((v2) => this._getHash(v2));
       const defineKeys = Object.keys(defines2).sort();
-      const injectKeys = Object.keys(inject).sort();
+      const injectKeys = Object.keys(inject2).sort();
       const defineHashes = [];
       const injectHashes = [];
       for (const key of defineKeys) {
@@ -27497,15 +27519,15 @@
       }
       for (const key of injectKeys) {
         injectHashes.push(this._getHash(key));
-        injectHashes.push(this._getHash(inject[key]));
+        injectHashes.push(this._getHash(inject2[key]));
       }
       const hash = "".concat(vsHash, "/").concat(fsHash, "D").concat(defineHashes.join("/"), "M").concat(moduleHashes.join("/"), "I").concat(injectHashes.join("/"), "V").concat(varyingHashes.join("/"), "H").concat(this.stateHash, "B").concat(bufferMode).concat(transpileToGLSL100 ? "T" : "");
       if (!this._programCache[hash]) {
         const assembled = assembleShaders(this.gl, {
-          vs: vs8,
-          fs: fs6,
+          vs: vs9,
+          fs: fs7,
           modules,
-          inject,
+          inject: inject2,
           defines: defines2,
           hookFunctions: this._hookFunctions,
           transpileToGLSL100
@@ -27598,7 +27620,7 @@
     }
     if (indices) {
       const data = indices.value || indices;
-      assert6(data instanceof Uint16Array || data instanceof Uint32Array, 'attribute array for "indices" must be of integer type');
+      assert7(data instanceof Uint16Array || data instanceof Uint32Array, 'attribute array for "indices" must be of integer type');
       const accessor = {
         size: 1,
         isIndexed: indices.isIndexed === void 0 ? true : indices.isIndexed
@@ -27642,7 +27664,7 @@
         break;
       default:
     }
-    assert6(Number.isFinite(attribute.size), "attribute ".concat(attributeName, " needs size"));
+    assert7(Number.isFinite(attribute.size), "attribute ".concat(attributeName, " needs size"));
   }
 
   // node_modules/@luma.gl/engine/dist/esm/lib/model.js
@@ -27658,7 +27680,7 @@
       const {
         id = uid("model")
       } = props;
-      assert6(isWebGL(gl));
+      assert7(isWebGL(gl));
       this.id = id;
       this.gl = gl;
       this.id = props.id || uid("Model");
@@ -27673,22 +27695,22 @@
       this._managedProgram = false;
       const {
         program = null,
-        vs: vs8,
-        fs: fs6,
+        vs: vs9,
+        fs: fs7,
         modules,
         defines: defines2,
-        inject,
+        inject: inject2,
         varyings,
         bufferMode,
         transpileToGLSL100
       } = props;
       this.programProps = {
         program,
-        vs: vs8,
-        fs: fs6,
+        vs: vs9,
+        fs: fs7,
         modules,
         defines: defines2,
-        inject,
+        inject: inject2,
         varyings,
         bufferMode,
         transpileToGLSL100
@@ -27710,7 +27732,7 @@
       this.isInstanced = props.isInstanced || props.instanced || props.instanceCount > 0;
       this._setModelProps(props);
       this.geometry = {};
-      assert6(this.drawMode !== void 0 && Number.isFinite(this.vertexCount), ERR_MODEL_PARAMS);
+      assert7(this.drawMode !== void 0 && Number.isFinite(this.vertexCount), ERR_MODEL_PARAMS);
     }
     setProps(props) {
       this._setModelProps(props);
@@ -27746,22 +27768,22 @@
     setProgram(props) {
       const {
         program,
-        vs: vs8,
-        fs: fs6,
+        vs: vs9,
+        fs: fs7,
         modules,
         defines: defines2,
-        inject,
+        inject: inject2,
         varyings,
         bufferMode,
         transpileToGLSL100
       } = props;
       this.programProps = {
         program,
-        vs: vs8,
-        fs: fs6,
+        vs: vs9,
+        fs: fs7,
         modules,
         defines: defines2,
-        inject,
+        inject: inject2,
         varyings,
         bufferMode,
         transpileToGLSL100
@@ -27776,12 +27798,12 @@
       return this;
     }
     setVertexCount(vertexCount) {
-      assert6(Number.isFinite(vertexCount));
+      assert7(Number.isFinite(vertexCount));
       this.vertexCount = vertexCount;
       return this;
     }
     setInstanceCount(instanceCount) {
-      assert6(Number.isFinite(instanceCount));
+      assert7(Number.isFinite(instanceCount));
       this.instanceCount = instanceCount;
       return this;
     }
@@ -27813,9 +27835,9 @@
     }
     getModuleUniforms(opts) {
       this._checkProgram();
-      const getUniforms5 = this.programManager.getUniforms(this.program);
-      if (getUniforms5) {
-        return getUniforms5(opts);
+      const getUniforms6 = this.programManager.getUniforms(this.program);
+      if (getUniforms6) {
+        return getUniforms6(opts);
       }
       return {};
     }
@@ -27836,7 +27858,7 @@
         uniforms = {},
         attributes = {},
         transformFeedback = this.transformFeedback,
-        parameters = {},
+        parameters: parameters2 = {},
         vertexArray = this.vertexArray
       } = opts;
       this.setAttributes(attributes);
@@ -27870,7 +27892,7 @@
         logPriority,
         uniforms: null,
         framebuffer,
-        parameters,
+        parameters: parameters2,
         drawMode: this.getDrawMode(),
         vertexCount: this.getVertexCount(),
         vertexArray,
@@ -27895,20 +27917,20 @@
         unbindModels = []
       } = opts;
       let {
-        parameters
+        parameters: parameters2
       } = opts;
       if (feedbackBuffers) {
         this._setFeedbackBuffers(feedbackBuffers);
       }
       if (discard) {
-        parameters = Object.assign({}, parameters, {
+        parameters2 = Object.assign({}, parameters2, {
           [35977]: discard
         });
       }
       unbindModels.forEach((model) => model.vertexArray.unbindBuffers());
       try {
         this.draw(Object.assign({}, opts, {
-          parameters
+          parameters: parameters2
         }));
       } finally {
         unbindModels.forEach((model) => model.vertexArray.bindBuffers());
@@ -27953,20 +27975,20 @@
         this._managedProgram = false;
       } else {
         const {
-          vs: vs8,
-          fs: fs6,
+          vs: vs9,
+          fs: fs7,
           modules,
-          inject,
+          inject: inject2,
           defines: defines2,
           varyings,
           bufferMode,
           transpileToGLSL100
         } = this.programProps;
         program = this.programManager.get({
-          vs: vs8,
-          fs: fs6,
+          vs: vs9,
+          fs: fs7,
           modules,
-          inject,
+          inject: inject2,
           defines: defines2,
           varyings,
           bufferMode,
@@ -27978,7 +28000,7 @@
         this._programManagerState = this.programManager.stateHash;
         this._managedProgram = true;
       }
-      assert6(program instanceof Program, "Model needs a program");
+      assert7(program instanceof Program, "Model needs a program");
       this._programDirty = false;
       if (program === this.program) {
         return;
@@ -28006,7 +28028,7 @@
     }
     _setAnimationProps(animationProps) {
       if (this.animated) {
-        assert6(animationProps, "Model.draw(): animated uniforms but no animationProps");
+        assert7(animationProps, "Model.draw(): animated uniforms but no animationProps");
       }
     }
     _setFeedbackBuffers() {
@@ -28166,7 +28188,7 @@
       this._setupBuffers(props);
       this.varyings = props.varyings || Object.keys(this.bindings[this.currentIndex].feedbackBuffers);
       if (this.varyings.length > 0) {
-        assert6(isWebGL2(this.gl));
+        assert7(isWebGL2(this.gl));
       }
     }
     _getFeedbackBuffers(props) {
@@ -28266,7 +28288,7 @@
         const dstName = this.feedbackMap[srcName];
         sourceBuffers[srcName] = opts.feedbackBuffers[dstName];
         feedbackBuffers[dstName] = opts.sourceBuffers[srcName];
-        assert6(feedbackBuffers[dstName] instanceof Buffer2);
+        assert7(feedbackBuffers[dstName] instanceof Buffer2);
       }
       return {
         sourceBuffers,
@@ -28292,7 +28314,7 @@
   var VS_POS_VARIABLE = "transform_position";
   function updateForTextures(_ref) {
     let {
-      vs: vs8,
+      vs: vs9,
       sourceTextureMap,
       targetTextureVarying,
       targetTexture
@@ -28301,7 +28323,7 @@
     let sourceCount = texAttributeNames.length;
     let targetTextureType = null;
     const samplerTextureMap = {};
-    let updatedVs = vs8;
+    let updatedVs = vs9;
     let finalInject = {};
     if (sourceCount > 0 || targetTextureVarying) {
       const vsLines = updatedVs.split("\n");
@@ -28312,10 +28334,10 @@
           if (updated) {
             const {
               updatedLine,
-              inject
+              inject: inject2
             } = updated;
             updateVsLines[index] = updatedLine;
-            finalInject = combineInjects([finalInject, inject]);
+            finalInject = combineInjects([finalInject, inject2]);
             Object.assign(samplerTextureMap, updated.samplerTextureMap);
             sourceCount--;
           }
@@ -28325,15 +28347,15 @@
         }
       });
       if (targetTextureVarying) {
-        assert6(targetTexture);
+        assert7(targetTexture);
         const sizeName = "".concat(SIZE_UNIFORM_PREFIX).concat(targetTextureVarying);
         const uniformDeclaration = "uniform vec2 ".concat(sizeName, ";\n");
         const posInstructions = "     vec2 ".concat(VS_POS_VARIABLE, " = transform_getPos(").concat(sizeName, ");\n     gl_Position = vec4(").concat(VS_POS_VARIABLE, ", 0, 1.);\n");
-        const inject = {
+        const inject2 = {
           "vs:#decl": uniformDeclaration,
           "vs:#main-start": posInstructions
         };
-        finalInject = combineInjects([finalInject, inject]);
+        finalInject = combineInjects([finalInject, inject2]);
       }
       updatedVs = updateVsLines.join("\n");
     }
@@ -28409,13 +28431,13 @@
       const channels2 = typeToChannelSuffix(type);
       const sampleInstruction = "  ".concat(type, " ").concat(name, " = transform_getInput(").concat(samplerName, ", ").concat(sizeName, ").").concat(channels2, ";\n");
       samplerTextureMap[samplerName] = name;
-      const inject = {
+      const inject2 = {
         "vs:#decl": uniformDeclerations,
         "vs:#main-start": sampleInstruction
       };
       return {
         updatedLine,
-        inject,
+        inject: inject2,
         samplerTextureMap
       };
     }
@@ -28459,7 +28481,7 @@
       } = this.bindings[this.currentIndex];
       const attributes = Object.assign({}, sourceBuffers, opts.attributes);
       const uniforms = Object.assign({}, opts.uniforms);
-      const parameters = Object.assign({}, opts.parameters);
+      const parameters2 = Object.assign({}, opts.parameters);
       let discard = opts.discard;
       if (this.hasSourceTextures || this.hasTargetTexture) {
         attributes.transform_elementID = this.elementIDBuffer;
@@ -28477,14 +28499,14 @@
       }
       if (this.hasTargetTexture) {
         discard = false;
-        parameters.viewport = [0, 0, framebuffer.width, framebuffer.height];
+        parameters2.viewport = [0, 0, framebuffer.width, framebuffer.height];
       }
       return {
         attributes,
         framebuffer,
         uniforms,
         discard,
-        parameters
+        parameters: parameters2
       };
     }
     swap() {
@@ -28718,10 +28740,10 @@
         targetTexture
       } = this.bindings[this.currentIndex];
       const {
-        vs: vs8,
+        vs: vs9,
         uniforms,
         targetTextureType,
-        inject,
+        inject: inject2,
         samplerTextureMap
       } = updateForTextures({
         vs: props.vs,
@@ -28729,19 +28751,19 @@
         targetTextureVarying: this.targetTextureVarying,
         targetTexture
       });
-      const combinedInject = combineInjects([props.inject || {}, inject]);
+      const combinedInject = combineInjects([props.inject || {}, inject2]);
       this.targetTextureType = targetTextureType;
       this.samplerTextureMap = samplerTextureMap;
-      const fs6 = props._fs || getPassthroughFS({
-        version: getShaderVersion(vs8),
+      const fs7 = props._fs || getPassthroughFS({
+        version: getShaderVersion(vs9),
         input: this.targetTextureVarying,
         inputType: targetTextureType,
         output: FS_OUTPUT_VARIABLE
       });
       const modules = this.hasSourceTextures || this.targetTextureVarying ? [transform].concat(props.modules || []) : props.modules;
       return {
-        vs: vs8,
-        fs: fs6,
+        vs: vs9,
+        fs: fs7,
         modules,
         uniforms,
         inject: combinedInject
@@ -28800,7 +28822,7 @@
       for (const resourceTransform of resourceTransforms) {
         swapped = swapped || resourceTransform.swap();
       }
-      assert6(swapped, "Nothing to swap");
+      assert7(swapped, "Nothing to swap");
     }
     getBuffer() {
       let varyingName = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null;
@@ -28864,7 +28886,7 @@
       if (canCreateTextureTransform(props)) {
         this.textureTransform = new TextureTransform(gl, props);
       }
-      assert6(this.bufferTransform || this.textureTransform, "must provide source/feedback buffers or source/target textures");
+      assert7(this.bufferTransform || this.textureTransform, "must provide source/feedback buffers or source/target textures");
     }
     _updateDrawOptions(opts) {
       let updatedOpts = Object.assign({}, opts);
@@ -28945,12 +28967,12 @@
         attribute = ArrayBuffer.isView(attribute) ? {
           value: attribute
         } : attribute;
-        assert6(ArrayBuffer.isView(attribute.value), "".concat(this._print(attributeName), ": must be typed array or object with value as typed array"));
+        assert7(ArrayBuffer.isView(attribute.value), "".concat(this._print(attributeName), ": must be typed array or object with value as typed array"));
         if ((attributeName === "POSITION" || attributeName === "positions") && !attribute.size) {
           attribute.size = 3;
         }
         if (attributeName === "indices") {
-          assert6(!this.indices);
+          assert7(!this.indices);
           this.indices = attribute;
         } else {
           this.attributes[attributeName] = attribute;
@@ -28978,7 +29000,7 @@
           vertexCount = Math.min(vertexCount, value.length / size);
         }
       }
-      assert6(Number.isFinite(vertexCount));
+      assert7(Number.isFinite(vertexCount));
       return vertexCount;
     }
   };
@@ -29772,7 +29794,7 @@
   var log22 = Math.log2 || ieLog2;
 
   // node_modules/@math.gl/web-mercator/dist/esm/assert.js
-  function assert9(condition, message) {
+  function assert10(condition, message) {
     if (!condition) {
       throw new Error(message || "@math.gl/web-mercator: assertion failed.");
     }
@@ -29792,8 +29814,8 @@
   }
   function lngLatToWorld(lngLat) {
     const [lng, lat] = lngLat;
-    assert9(Number.isFinite(lng));
-    assert9(Number.isFinite(lat) && lat >= -90 && lat <= 90, "invalid latitude");
+    assert10(Number.isFinite(lng));
+    assert10(Number.isFinite(lat) && lat >= -90 && lat <= 90, "invalid latitude");
     const lambda2 = lng * DEGREES_TO_RADIANS2;
     const phi2 = lat * DEGREES_TO_RADIANS2;
     const x2 = TILE_SIZE * (lambda2 + PI) / (2 * PI);
@@ -29810,7 +29832,7 @@
     const {
       latitude
     } = options;
-    assert9(Number.isFinite(latitude));
+    assert10(Number.isFinite(latitude));
     const latCosine = Math.cos(latitude * DEGREES_TO_RADIANS2);
     return scaleToZoom(EARTH_CIRCUMFERENCE * latCosine) - 9;
   }
@@ -29824,7 +29846,7 @@
       longitude,
       highPrecision = false
     } = options;
-    assert9(Number.isFinite(latitude) && Number.isFinite(longitude));
+    assert10(Number.isFinite(latitude) && Number.isFinite(longitude));
     const worldSize = TILE_SIZE;
     const latCosine = Math.cos(latitude * DEGREES_TO_RADIANS2);
     const unitsPerDegreeX = worldSize / 360;
@@ -29930,12 +29952,12 @@
   }
   function worldToPixels(xyz, pixelProjectionMatrix) {
     const [x2, y2, z = 0] = xyz;
-    assert9(Number.isFinite(x2) && Number.isFinite(y2) && Number.isFinite(z));
+    assert10(Number.isFinite(x2) && Number.isFinite(y2) && Number.isFinite(z));
     return transformVector(pixelProjectionMatrix, [x2, y2, z, 1]);
   }
   function pixelsToWorld(xyz, pixelUnprojectionMatrix, targetZ = 0) {
     const [x2, y2, z] = xyz;
-    assert9(Number.isFinite(x2) && Number.isFinite(y2), "invalid pixel coordinate");
+    assert10(Number.isFinite(x2) && Number.isFinite(y2), "invalid pixel coordinate");
     if (Number.isFinite(z)) {
       const coord = transformVector(pixelUnprojectionMatrix, [x2, y2, z, 1]);
       return coord;
@@ -29964,7 +29986,7 @@
     const se = lngLatToWorld([east, clamp2(south, -MAX_LATITUDE, MAX_LATITUDE)]);
     const size = [Math.max(Math.abs(se[0] - nw[0]), minExtent), Math.max(Math.abs(se[1] - nw[1]), minExtent)];
     const targetSize = [width - padding.left - padding.right - Math.abs(offset[0]) * 2, height - padding.top - padding.bottom - Math.abs(offset[1]) * 2];
-    assert9(targetSize[0] > 0 && targetSize[1] > 0);
+    assert10(targetSize[0] > 0 && targetSize[1] > 0);
     const scaleX2 = targetSize[0] / size[0];
     const scaleY2 = targetSize[1] / size[1];
     const offsetX = (padding.right - padding.left) / 2 / scaleX2;
@@ -29972,7 +29994,7 @@
     const center = [(se[0] + nw[0]) / 2 + offsetX, (se[1] + nw[1]) / 2 + offsetY];
     const centerLngLat = worldToLngLat(center);
     const zoom = Math.min(maxZoom, log22(Math.abs(Math.min(scaleX2, scaleY2))));
-    assert9(Number.isFinite(zoom));
+    assert10(Number.isFinite(zoom));
     return {
       longitude: centerLngLat[0],
       latitude: centerLngLat[1],
@@ -29988,7 +30010,7 @@
         right: padding
       };
     }
-    assert9(Number.isFinite(padding.top) && Number.isFinite(padding.bottom) && Number.isFinite(padding.left) && Number.isFinite(padding.right));
+    assert10(Number.isFinite(padding.top) && Number.isFinite(padding.bottom) && Number.isFinite(padding.left) && Number.isFinite(padding.right));
     return padding;
   }
 
@@ -30284,13 +30306,13 @@
       }
     }
     getModuleParameters(layer) {
-      const parameters = this.shadow ? {
+      const parameters2 = this.shadow ? {
         shadowMaps: this.shadowMaps,
         dummyShadowMap: this.dummyShadowMap,
         shadowColor: this.shadowColor,
         shadowMatrices: this.shadowMatrices
       } : {};
-      parameters.lightSources = {
+      parameters2.lightSources = {
         ambientLight: this.ambientLight,
         directionalLights: this.directionalLights.map((directionalLight) => directionalLight.getProjectedLight({
           layer
@@ -30299,7 +30321,7 @@
           layer
         }))
       };
-      return parameters;
+      return parameters2;
     }
     cleanup() {
       for (const shadowPass of this.shadowPasses) {
@@ -31499,8 +31521,8 @@
   var SHADER_HOOKS = ["vs:DECKGL_FILTER_SIZE(inout vec3 size, VertexGeometry geometry)", "vs:DECKGL_FILTER_GL_POSITION(inout vec4 position, VertexGeometry geometry)", "vs:DECKGL_FILTER_COLOR(inout vec4 color, VertexGeometry geometry)", "fs:DECKGL_FILTER_COLOR(inout vec4 color, FragmentGeometry geometry)"];
   function createProgramManager(gl) {
     const programManager = ProgramManager.getDefaultProgramManager(gl);
-    for (const shaderModule of DEFAULT_MODULES) {
-      programManager.addDefaultModule(shaderModule);
+    for (const shaderModule2 of DEFAULT_MODULES) {
+      programManager.addDefaultModule(shaderModule2);
     }
     for (const shaderHook of SHADER_HOOKS) {
       programManager.addShaderHook(shaderHook);
@@ -32048,7 +32070,7 @@
   }
 
   // node_modules/@deck.gl/core/dist/esm/utils/assert.js
-  function assert10(condition, message) {
+  function assert11(condition, message) {
     if (!condition) {
       throw new Error(message || "deck.gl: assertion failed.");
     }
@@ -32074,7 +32096,7 @@
         padding = null,
         viewportInstance
       } = props || {};
-      assert10(!viewportInstance || viewportInstance instanceof Viewport);
+      assert11(!viewportInstance || viewportInstance instanceof Viewport);
       this.viewportInstance = viewportInstance;
       this.id = id || this.constructor.displayName || "view";
       this.props = {
@@ -32457,7 +32479,7 @@
       }
       this._requiredProps.forEach((propName) => {
         const value = props[propName];
-        assert10(Number.isFinite(value) || Array.isArray(value), "".concat(propName, " is required for transition"));
+        assert11(Number.isFinite(value) || Array.isArray(value), "".concat(propName, " is required for transition"));
       });
     }
   };
@@ -33210,9 +33232,9 @@
         startZoom,
         normalize: normalize5 = true
       } = options;
-      assert10(Number.isFinite(longitude));
-      assert10(Number.isFinite(latitude));
-      assert10(Number.isFinite(zoom));
+      assert11(Number.isFinite(longitude));
+      assert11(Number.isFinite(latitude));
+      assert11(Number.isFinite(zoom));
       super({
         width,
         height,
@@ -34583,7 +34605,7 @@
 
   // node_modules/mjolnir.js/dist/esm/utils/globals.js
   var userAgent = typeof navigator !== "undefined" && navigator.userAgent ? navigator.userAgent.toLowerCase() : "";
-  var window_5 = typeof window !== "undefined" ? window : global;
+  var window_6 = typeof window !== "undefined" ? window : global;
   var passiveSupported = false;
   try {
     const options = {
@@ -34594,8 +34616,8 @@
         return true;
       }
     };
-    window_5.addEventListener("test", null, options);
-    window_5.removeEventListener("test", null);
+    window_6.addEventListener("test", null, options);
+    window_6.removeEventListener("test", null);
   } catch (err3) {
     passiveSupported = false;
   }
@@ -34615,11 +34637,11 @@
           return;
         }
         let value = event.deltaY;
-        if (window_5.WheelEvent) {
-          if (firefox && event.deltaMode === window_5.WheelEvent.DOM_DELTA_PIXEL) {
-            value /= window_5.devicePixelRatio;
+        if (window_6.WheelEvent) {
+          if (firefox && event.deltaMode === window_6.WheelEvent.DOM_DELTA_PIXEL) {
+            value /= window_6.devicePixelRatio;
           }
-          if (event.deltaMode === window_5.WheelEvent.DOM_DELTA_LINE) {
+          if (event.deltaMode === window_6.WheelEvent.DOM_DELTA_LINE) {
             value *= WHEEL_DELTA_PER_LINE;
           }
         }
@@ -35563,11 +35585,11 @@
       return this.viewManager !== null;
     }
     getViews() {
-      assert10(this.viewManager);
+      assert11(this.viewManager);
       return this.viewManager.views;
     }
     getViewports(rect) {
-      assert10(this.viewManager);
+      assert11(this.viewManager);
       return this.viewManager.getViewports(rect);
     }
     getCanvas() {
@@ -35602,7 +35624,7 @@
       this.effectManager.addDefaultEffect(effect);
     }
     _pick(method, statKey, opts) {
-      assert10(this.deckPicker);
+      assert11(this.deckPicker);
       const {
         stats
       } = this;
@@ -35623,7 +35645,7 @@
       let canvas = props.canvas;
       if (typeof canvas === "string") {
         canvas = document.getElementById(canvas);
-        assert10(canvas);
+        assert11(canvas);
       }
       if (!canvas) {
         canvas = document.createElement("canvas");
@@ -36882,7 +36904,7 @@
           };
         }
         const binaryValue = buffer;
-        assert10(ArrayBuffer.isView(binaryValue.value), "invalid ".concat(settings.accessor));
+        assert11(ArrayBuffer.isView(binaryValue.value), "invalid ".concat(settings.accessor));
         const needsNormalize = Boolean(binaryValue.size) && binaryValue.size !== this.size;
         state.binaryAccessor = getAccessorFromBuffer(binaryValue.value, {
           size: binaryValue.size || this.size,
@@ -36936,7 +36958,7 @@
         transform: transform2
       } = settings;
       const accessorFunc = state.binaryAccessor || (typeof accessor === "function" ? accessor : props[accessor]);
-      assert10(typeof accessorFunc === "function", 'accessor "'.concat(accessor, '" is not a function'));
+      assert11(typeof accessorFunc === "function", 'accessor "'.concat(accessor, '" is not a function'));
       let i3 = attribute.getVertexOffset(startRow);
       const {
         iterable,
@@ -38074,7 +38096,7 @@
     [10243]: 33071
   };
   var internalTextures = {};
-  function createTexture(owner, gl, image, parameters) {
+  function createTexture(owner, gl, image, parameters2) {
     if (image instanceof Texture2D) {
       return image;
     } else if (image.constructor && image.constructor.name !== "Object") {
@@ -38093,7 +38115,7 @@
       parameters: {
         ...DEFAULT_TEXTURE_PARAMETERS,
         ...specialTextureParameters,
-        ...parameters
+        ...parameters2
       }
     });
     internalTextures[texture.id] = owner;
@@ -38203,7 +38225,7 @@
   };
   function parsePropTypes2(propDefs) {
     const propTypes = {};
-    const defaultProps18 = {};
+    const defaultProps19 = {};
     const deprecatedProps = {};
     for (const [propName, propDef] of Object.entries(propDefs)) {
       const deprecated = propDef === null || propDef === void 0 ? void 0 : propDef.deprecatedFor;
@@ -38212,12 +38234,12 @@
       } else {
         const propType = parsePropType2(propName, propDef);
         propTypes[propName] = propType;
-        defaultProps18[propName] = propType.value;
+        defaultProps19[propName] = propType.value;
       }
     }
     return {
       propTypes,
-      defaultProps: defaultProps18,
+      defaultProps: defaultProps19,
       deprecatedProps
     };
   }
@@ -38323,11 +38345,11 @@
         }
       }
     }
-    const defaultProps18 = getOwnProperty(componentClass, cacheKey);
-    if (!defaultProps18) {
+    const defaultProps19 = getOwnProperty(componentClass, cacheKey);
+    if (!defaultProps19) {
       return componentClass[cacheKey] = createPropsPrototypeAndTypes(componentClass, extensions || []);
     }
-    return defaultProps18;
+    return defaultProps19;
   }
   function createPropsPrototypeAndTypes(componentClass, extensions) {
     const parent = componentClass.prototype;
@@ -38338,39 +38360,39 @@
     const parentDefaultProps = getPropsPrototype(parentClass);
     const componentDefaultProps = getOwnProperty(componentClass, "defaultProps") || {};
     const componentPropDefs = parsePropTypes2(componentDefaultProps);
-    const defaultProps18 = Object.assign(/* @__PURE__ */ Object.create(null), parentDefaultProps, componentPropDefs.defaultProps);
+    const defaultProps19 = Object.assign(/* @__PURE__ */ Object.create(null), parentDefaultProps, componentPropDefs.defaultProps);
     const propTypes = Object.assign(/* @__PURE__ */ Object.create(null), parentDefaultProps === null || parentDefaultProps === void 0 ? void 0 : parentDefaultProps[PROP_TYPES_SYMBOL], componentPropDefs.propTypes);
     const deprecatedProps = Object.assign(/* @__PURE__ */ Object.create(null), parentDefaultProps === null || parentDefaultProps === void 0 ? void 0 : parentDefaultProps[DEPRECATED_PROPS_SYMBOL], componentPropDefs.deprecatedProps);
     for (const extension of extensions) {
       const extensionDefaultProps = getPropsPrototype(extension.constructor);
       if (extensionDefaultProps) {
-        Object.assign(defaultProps18, extensionDefaultProps);
+        Object.assign(defaultProps19, extensionDefaultProps);
         Object.assign(propTypes, extensionDefaultProps[PROP_TYPES_SYMBOL]);
         Object.assign(deprecatedProps, extensionDefaultProps[DEPRECATED_PROPS_SYMBOL]);
       }
     }
-    createPropsPrototype(defaultProps18, componentClass);
-    addAsyncPropsToPropPrototype(defaultProps18, propTypes);
-    addDeprecatedPropsToPropPrototype(defaultProps18, deprecatedProps);
-    defaultProps18[PROP_TYPES_SYMBOL] = propTypes;
-    defaultProps18[DEPRECATED_PROPS_SYMBOL] = deprecatedProps;
+    createPropsPrototype(defaultProps19, componentClass);
+    addAsyncPropsToPropPrototype(defaultProps19, propTypes);
+    addDeprecatedPropsToPropPrototype(defaultProps19, deprecatedProps);
+    defaultProps19[PROP_TYPES_SYMBOL] = propTypes;
+    defaultProps19[DEPRECATED_PROPS_SYMBOL] = deprecatedProps;
     if (extensions.length === 0 && !hasOwnProperty(componentClass, "_propTypes")) {
       componentClass._propTypes = propTypes;
     }
-    return defaultProps18;
+    return defaultProps19;
   }
-  function createPropsPrototype(defaultProps18, componentClass) {
+  function createPropsPrototype(defaultProps19, componentClass) {
     const id = getComponentName(componentClass);
-    Object.defineProperties(defaultProps18, {
+    Object.defineProperties(defaultProps19, {
       id: {
         writable: true,
         value: id
       }
     });
   }
-  function addDeprecatedPropsToPropPrototype(defaultProps18, deprecatedProps) {
+  function addDeprecatedPropsToPropPrototype(defaultProps19, deprecatedProps) {
     for (const propName in deprecatedProps) {
-      Object.defineProperty(defaultProps18, propName, {
+      Object.defineProperty(defaultProps19, propName, {
         enumerable: false,
         set(newValue) {
           const nameStr = "".concat(this.id, ": ").concat(propName);
@@ -38384,7 +38406,7 @@
       });
     }
   }
-  function addAsyncPropsToPropPrototype(defaultProps18, propTypes) {
+  function addAsyncPropsToPropPrototype(defaultProps19, propTypes) {
     const defaultValues = {};
     const descriptors = {};
     for (const propName in propTypes) {
@@ -38398,9 +38420,9 @@
         descriptors[name] = getDescriptorForAsyncProp(name);
       }
     }
-    defaultProps18[ASYNC_DEFAULTS_SYMBOL] = defaultValues;
-    defaultProps18[ASYNC_ORIGINAL_SYMBOL] = {};
-    Object.defineProperties(defaultProps18, descriptors);
+    defaultProps19[ASYNC_DEFAULTS_SYMBOL] = defaultValues;
+    defaultProps19[ASYNC_ORIGINAL_SYMBOL] = {};
+    Object.defineProperties(defaultProps19, descriptors);
   }
   function getDescriptorForAsyncProp(name) {
     return {
@@ -38949,7 +38971,7 @@
       return "".concat(className, "({id: '").concat(this.props.id, "'})");
     }
     project(xyz) {
-      assert10(this.internalState);
+      assert11(this.internalState);
       const viewport = this.internalState.viewport || this.context.viewport;
       const worldPosition = getWorldPosition(xyz, {
         viewport,
@@ -38961,12 +38983,12 @@
       return xyz.length === 2 ? [x2, y2] : [x2, y2, z];
     }
     unproject(xy) {
-      assert10(this.internalState);
+      assert11(this.internalState);
       const viewport = this.internalState.viewport || this.context.viewport;
       return viewport.unproject(xy);
     }
     projectPosition(xyz, params) {
-      assert10(this.internalState);
+      assert11(this.internalState);
       const viewport = this.internalState.viewport || this.context.viewport;
       return projectPosition(xyz, {
         viewport,
@@ -39051,7 +39073,7 @@
       return target;
     }
     decodePickingColor(color) {
-      assert10(color instanceof Uint8Array);
+      assert11(color instanceof Uint8Array);
       const [i1, i22, i3] = color;
       const index = i1 + i22 * 256 + i3 * 65536 - 1;
       return index;
@@ -39366,8 +39388,8 @@
       });
     }
     _initialize() {
-      assert10(!this.internalState);
-      assert10(Number.isFinite(this.props.coordinateSystem));
+      assert11(!this.internalState);
+      assert11(Number.isFinite(this.props.coordinateSystem));
       debug(TRACE_INITIALIZE, this);
       const attributeManager = this._getAttributeManager();
       if (attributeManager) {
@@ -39469,7 +39491,7 @@
     _drawLayer({
       moduleParameters = null,
       uniforms = {},
-      parameters = {}
+      parameters: parameters2 = {}
     }) {
       this._updateAttributeTransition();
       const currentProps = this.props;
@@ -39488,11 +39510,11 @@
         setParameters(context.gl, {
           polygonOffset: offsets
         });
-        withParameters(context.gl, parameters, () => {
+        withParameters(context.gl, parameters2, () => {
           const opts = {
             moduleParameters,
             uniforms,
-            parameters,
+            parameters: parameters2,
             context
           };
           for (const extension of this.props.extensions) {
@@ -39616,17 +39638,17 @@
         highlightColor
       } = props;
       if (forceUpdate || oldProps.autoHighlight !== autoHighlight || oldProps.highlightedObjectIndex !== highlightedObjectIndex || oldProps.highlightColor !== highlightColor) {
-        const parameters = {};
+        const parameters2 = {};
         if (!autoHighlight) {
-          parameters.pickingSelectedColor = null;
+          parameters2.pickingSelectedColor = null;
         }
         if (Array.isArray(highlightColor)) {
-          parameters.pickingHighlightColor = highlightColor;
+          parameters2.pickingHighlightColor = highlightColor;
         }
         if (forceUpdate || highlightedObjectIndex !== oldProps.highlightedObjectIndex) {
-          parameters.pickingSelectedColor = Number.isFinite(highlightedObjectIndex) && highlightedObjectIndex >= 0 ? this.encodePickingColor(highlightedObjectIndex) : null;
+          parameters2.pickingSelectedColor = Number.isFinite(highlightedObjectIndex) && highlightedObjectIndex >= 0 ? this.encodePickingColor(highlightedObjectIndex) : null;
         }
-        this.setModuleParameters(parameters);
+        this.setModuleParameters(parameters2);
       }
     }
     _getUpdateParams() {
@@ -39737,7 +39759,7 @@
         opacity,
         pickable,
         visible,
-        parameters,
+        parameters: parameters2,
         getPolygonOffset,
         highlightedObjectIndex,
         autoHighlight,
@@ -39758,7 +39780,7 @@
         opacity,
         pickable,
         visible,
-        parameters,
+        parameters: parameters2,
         getPolygonOffset,
         highlightedObjectIndex,
         autoHighlight,
@@ -40554,14 +40576,14 @@
     }
     getSubLayerProps(extension) {
       const {
-        defaultProps: defaultProps18
+        defaultProps: defaultProps19
       } = extension.constructor;
       const newProps = {
         updateTriggers: {}
       };
-      for (const key in defaultProps18) {
+      for (const key in defaultProps19) {
         if (key in this.props) {
-          const propDef = defaultProps18[key];
+          const propDef = defaultProps19[key];
           const propValue = this.props[key];
           newProps[key] = propValue;
           if (propDef && propDef.type === "accessor") {
@@ -40634,7 +40656,7 @@
       this.buffers = buffers;
       this.normalize = normalize5;
       if (geometryBuffer) {
-        assert10(data.startIndices);
+        assert11(data.startIndices);
         this.getGeometry = this.getGeometryFromBuffer(geometryBuffer);
         if (!normalize5) {
           buffers.positions = geometryBuffer;
@@ -41130,13 +41152,13 @@
   function getIconId(icon) {
     return icon && (icon.id || icon.url);
   }
-  function resizeTexture(texture, width, height, parameters) {
+  function resizeTexture(texture, width, height, parameters2) {
     const oldWidth = texture.width;
     const oldHeight = texture.height;
     const newTexture = new Texture2D(texture.gl, {
       width,
       height,
-      parameters
+      parameters: parameters2
     });
     copyToTexture(texture, newTexture, {
       targetY: 0,
@@ -46495,7 +46517,7 @@
       this.fromNormalDistance(normal, distance2);
     }
     fromNormalDistance(normal, distance2) {
-      assert8(Number.isFinite(distance2));
+      assert9(Number.isFinite(distance2));
       this.normal.from(normal).normalize();
       this.distance = distance2;
       return this;
@@ -46509,7 +46531,7 @@
     }
     fromCoefficients(a2, b2, c2, d2) {
       this.normal.set(a2, b2, c2);
-      assert8(equals(this.normal.len(), 1));
+      assert9(equals(this.normal.len(), 1));
       this.distance = d2;
       return this;
     }
@@ -46586,7 +46608,7 @@
       return intersect2;
     }
     computeVisibilityWithPlaneMask(boundingVolume, parentPlaneMask) {
-      assert8(Number.isFinite(parentPlaneMask), "parentPlaneMask is required.");
+      assert9(Number.isFinite(parentPlaneMask), "parentPlaneMask is required.");
       if (parentPlaneMask === _CullingVolume.MASK_OUTSIDE || parentPlaneMask === _CullingVolume.MASK_INSIDE) {
         return parentPlaneMask;
       }
@@ -47805,6 +47827,313 @@
   _defineProperty(TileLayer, "defaultProps", defaultProps15);
   _defineProperty(TileLayer, "layerName", "TileLayer");
 
+  // node_modules/@deck.gl/extensions/dist/esm/data-filter/shader-module.js
+  var vs7 = "\nuniform DATAFILTER_TYPE filter_min;\nuniform DATAFILTER_TYPE filter_softMin;\nuniform DATAFILTER_TYPE filter_softMax;\nuniform DATAFILTER_TYPE filter_max;\nuniform bool filter_useSoftMargin;\nuniform bool filter_enabled;\nuniform bool filter_transformSize;\n\n#ifdef NON_INSTANCED_MODEL\n  #define DATAFILTER_ATTRIB filterValues\n  #define DATAFILTER_ATTRIB_64LOW filterValues64Low\n#else\n  #define DATAFILTER_ATTRIB instanceFilterValues\n  #define DATAFILTER_ATTRIB_64LOW instanceFilterValues64Low\n#endif\n\nattribute DATAFILTER_TYPE DATAFILTER_ATTRIB;\n#ifdef DATAFILTER_DOUBLE\n  attribute DATAFILTER_TYPE DATAFILTER_ATTRIB_64LOW;\n\n  uniform DATAFILTER_TYPE filter_min64High;\n  uniform DATAFILTER_TYPE filter_max64High;\n#endif\n\nvarying float dataFilter_value;\n\nfloat dataFilter_reduceValue(float value) {\n  return value;\n}\nfloat dataFilter_reduceValue(vec2 value) {\n  return min(value.x, value.y);\n}\nfloat dataFilter_reduceValue(vec3 value) {\n  return min(min(value.x, value.y), value.z);\n}\nfloat dataFilter_reduceValue(vec4 value) {\n  return min(min(value.x, value.y), min(value.z, value.w));\n}\nvoid dataFilter_setValue(DATAFILTER_TYPE valueFromMin, DATAFILTER_TYPE valueFromMax) {\n  if (filter_enabled) {\n    if (filter_useSoftMargin) {\n      dataFilter_value = dataFilter_reduceValue(\n        smoothstep(filter_min, filter_softMin, valueFromMin) *\n        (1.0 - smoothstep(filter_softMax, filter_max, valueFromMax))\n      );\n    } else {\n      dataFilter_value = dataFilter_reduceValue(\n        step(filter_min, valueFromMin) * step(valueFromMax, filter_max)\n      );\n    }\n  } else {\n    dataFilter_value = 1.0;\n  }\n}\n";
+  var fs4 = "\nuniform bool filter_transformColor;\nvarying float dataFilter_value;\n";
+  function getUniforms5(opts) {
+    if (!opts || !("extensions" in opts)) {
+      return {};
+    }
+    const {
+      filterRange = [-1, 1],
+      filterEnabled = true,
+      filterTransformSize = true,
+      filterTransformColor = true
+    } = opts;
+    const filterSoftRange = opts.filterSoftRange || filterRange;
+    return {
+      ...Number.isFinite(filterRange[0]) ? {
+        filter_min: filterRange[0],
+        filter_softMin: filterSoftRange[0],
+        filter_softMax: filterSoftRange[1],
+        filter_max: filterRange[1]
+      } : {
+        filter_min: filterRange.map((r2) => r2[0]),
+        filter_softMin: filterSoftRange.map((r2) => r2[0]),
+        filter_softMax: filterSoftRange.map((r2) => r2[1]),
+        filter_max: filterRange.map((r2) => r2[1])
+      },
+      filter_enabled: filterEnabled,
+      filter_useSoftMargin: Boolean(opts.filterSoftRange),
+      filter_transformSize: filterEnabled && filterTransformSize,
+      filter_transformColor: filterEnabled && filterTransformColor
+    };
+  }
+  function getUniforms64(opts) {
+    if (!opts || !("extensions" in opts)) {
+      return {};
+    }
+    const uniforms = getUniforms5(opts);
+    if (Number.isFinite(uniforms.filter_min)) {
+      const min64High = Math.fround(uniforms.filter_min);
+      uniforms.filter_min -= min64High;
+      uniforms.filter_softMin -= min64High;
+      uniforms.filter_min64High = min64High;
+      const max64High = Math.fround(uniforms.filter_max);
+      uniforms.filter_max -= max64High;
+      uniforms.filter_softMax -= max64High;
+      uniforms.filter_max64High = max64High;
+    } else {
+      const min64High = uniforms.filter_min.map(Math.fround);
+      uniforms.filter_min = uniforms.filter_min.map((x2, i3) => x2 - min64High[i3]);
+      uniforms.filter_softMin = uniforms.filter_softMin.map((x2, i3) => x2 - min64High[i3]);
+      uniforms.filter_min64High = min64High;
+      const max64High = uniforms.filter_max.map(Math.fround);
+      uniforms.filter_max = uniforms.filter_max.map((x2, i3) => x2 - max64High[i3]);
+      uniforms.filter_softMax = uniforms.filter_softMax.map((x2, i3) => x2 - max64High[i3]);
+      uniforms.filter_max64High = max64High;
+    }
+    return uniforms;
+  }
+  var inject = {
+    "vs:#main-start": "\n    #ifdef DATAFILTER_DOUBLE\n      dataFilter_setValue(\n        DATAFILTER_ATTRIB - filter_min64High + DATAFILTER_ATTRIB_64LOW,\n        DATAFILTER_ATTRIB - filter_max64High + DATAFILTER_ATTRIB_64LOW\n      );\n    #else\n      dataFilter_setValue(DATAFILTER_ATTRIB, DATAFILTER_ATTRIB);\n    #endif\n  ",
+    "vs:#main-end": "\n    if (dataFilter_value == 0.0) {\n      gl_Position = vec4(0.);\n    }\n  ",
+    "vs:DECKGL_FILTER_SIZE": "\n    if (filter_transformSize) {\n      size = size * dataFilter_value;\n    }\n  ",
+    "fs:DECKGL_FILTER_COLOR": "\n    if (dataFilter_value == 0.0) discard;\n    if (filter_transformColor) {\n      color.a *= dataFilter_value;\n    }\n  "
+  };
+  var shaderModule = {
+    name: "data-filter",
+    vs: vs7,
+    fs: fs4,
+    inject,
+    getUniforms: getUniforms5
+  };
+  var shaderModule64 = {
+    name: "data-filter-fp64",
+    vs: vs7,
+    fs: fs4,
+    inject,
+    getUniforms: getUniforms64
+  };
+
+  // node_modules/@deck.gl/extensions/dist/esm/data-filter/aggregator.js
+  var AGGREGATE_VS = "#define SHADER_NAME data-filter-vertex-shader\n\n#ifdef FLOAT_TARGET\n  attribute float filterIndices;\n  attribute float filterPrevIndices;\n#else\n  attribute vec2 filterIndices;\n  attribute vec2 filterPrevIndices;\n#endif\n\nvarying vec4 vColor;\nconst float component = 1.0 / 255.0;\n\nvoid main() {\n  #ifdef FLOAT_TARGET\n    dataFilter_value *= float(filterIndices != filterPrevIndices);\n    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n    vColor = vec4(0.0, 0.0, 0.0, 1.0);\n  #else\n    // Float texture is not supported: pack result into 4 channels x 256 px x 64px\n    dataFilter_value *= float(filterIndices.x != filterPrevIndices.x);\n    float col = filterIndices.x;\n    float row = filterIndices.y * 4.0;\n    float channel = floor(row);\n    row = fract(row);\n    vColor = component * vec4(bvec4(channel == 0.0, channel == 1.0, channel == 2.0, channel == 3.0));\n    gl_Position = vec4(col * 2.0 - 1.0, row * 2.0 - 1.0, 0.0, 1.0);\n  #endif\n  gl_PointSize = 1.0;\n}\n";
+  var AGGREGATE_FS = "#define SHADER_NAME data-filter-fragment-shader\nprecision highp float;\n\nvarying vec4 vColor;\n\nvoid main() {\n  if (dataFilter_value < 0.5) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
+  function supportsFloatTarget(gl) {
+    return Boolean(gl.getExtension("EXT_float_blend") && (gl.getExtension("EXT_color_buffer_float") || gl.getExtension("WEBGL_color_buffer_float")));
+  }
+  function getFramebuffer3(gl, useFloatTarget) {
+    if (useFloatTarget) {
+      return new Framebuffer(gl, {
+        width: 1,
+        height: 1,
+        attachments: {
+          [36064]: new Texture2D(gl, {
+            format: isWebGL2(gl) ? 34836 : 6408,
+            type: 5126,
+            mipmaps: false
+          })
+        }
+      });
+    }
+    return new Framebuffer(gl, {
+      width: 256,
+      height: 64,
+      depth: false
+    });
+  }
+  function getModel(gl, shaderOptions, useFloatTarget) {
+    shaderOptions.defines.NON_INSTANCED_MODEL = 1;
+    if (useFloatTarget) {
+      shaderOptions.defines.FLOAT_TARGET = 1;
+    }
+    return new Model(gl, {
+      id: "data-filter-aggregation-model",
+      vertexCount: 1,
+      isInstanced: false,
+      drawMode: 0,
+      vs: AGGREGATE_VS,
+      fs: AGGREGATE_FS,
+      ...shaderOptions
+    });
+  }
+  var parameters = {
+    blend: true,
+    blendFunc: [1, 1, 1, 1],
+    blendEquation: [32774, 32774],
+    depthTest: false
+  };
+
+  // node_modules/@deck.gl/extensions/dist/esm/data-filter/data-filter-extension.js
+  var defaultProps16 = {
+    getFilterValue: {
+      type: "accessor",
+      value: 0
+    },
+    onFilteredItemsChange: {
+      type: "function",
+      value: null,
+      optional: true
+    },
+    filterEnabled: true,
+    filterRange: [-1, 1],
+    filterSoftRange: null,
+    filterTransformSize: true,
+    filterTransformColor: true
+  };
+  var DATA_TYPE_FROM_SIZE = {
+    1: "float",
+    2: "vec2",
+    3: "vec3",
+    4: "vec4"
+  };
+  var DataFilterExtension = class extends LayerExtension {
+    constructor({
+      filterSize = 1,
+      fp64: fp642 = false,
+      countItems = false
+    } = {}) {
+      if (!DATA_TYPE_FROM_SIZE[filterSize]) {
+        throw new Error("filterSize out of range");
+      }
+      super({
+        filterSize,
+        fp64: fp642,
+        countItems
+      });
+    }
+    getShaders(extension) {
+      const {
+        filterSize,
+        fp64: fp642
+      } = extension.opts;
+      return {
+        modules: [fp642 ? shaderModule64 : shaderModule],
+        defines: {
+          DATAFILTER_TYPE: DATA_TYPE_FROM_SIZE[filterSize],
+          DATAFILTER_DOUBLE: Boolean(fp642)
+        }
+      };
+    }
+    initializeState(context, extension) {
+      const attributeManager = this.getAttributeManager();
+      if (attributeManager) {
+        attributeManager.add({
+          filterValues: {
+            size: extension.opts.filterSize,
+            type: extension.opts.fp64 ? 5130 : 5126,
+            accessor: "getFilterValue",
+            shaderAttributes: {
+              filterValues: {
+                divisor: 0
+              },
+              instanceFilterValues: {
+                divisor: 1
+              }
+            }
+          }
+        });
+      }
+      const {
+        gl
+      } = this.context;
+      if (attributeManager && extension.opts.countItems) {
+        const useFloatTarget = supportsFloatTarget(gl);
+        attributeManager.add({
+          filterIndices: {
+            size: useFloatTarget ? 1 : 2,
+            vertexOffset: 1,
+            type: 5121,
+            normalized: true,
+            accessor: (object, {
+              index
+            }) => {
+              const i3 = object && object.__source ? object.__source.index : index;
+              return useFloatTarget ? (i3 + 1) % 255 : [(i3 + 1) % 255, Math.floor(i3 / 255) % 255];
+            },
+            shaderAttributes: {
+              filterPrevIndices: {
+                vertexOffset: 0
+              },
+              filterIndices: {
+                vertexOffset: 1
+              }
+            }
+          }
+        });
+        const filterFBO = getFramebuffer3(gl, useFloatTarget);
+        const filterModel = getModel(gl, extension.getShaders.call(this, extension), useFloatTarget);
+        this.setState({
+          filterFBO,
+          filterModel
+        });
+      }
+    }
+    updateState({
+      props,
+      oldProps
+    }) {
+      if (this.state.filterModel) {
+        const attributeManager = this.getAttributeManager();
+        const filterNeedsUpdate = attributeManager.attributes.filterValues.needsUpdate() || props.filterEnabled !== oldProps.filterEnabled || props.filterRange !== oldProps.filterRange || props.filterSoftRange !== oldProps.filterSoftRange;
+        if (filterNeedsUpdate) {
+          this.setState({
+            filterNeedsUpdate
+          });
+        }
+      }
+    }
+    draw(params, extension) {
+      const {
+        filterFBO,
+        filterModel,
+        filterNeedsUpdate
+      } = this.state;
+      const {
+        onFilteredItemsChange
+      } = this.props;
+      if (filterNeedsUpdate && onFilteredItemsChange && filterModel) {
+        const {
+          attributes: {
+            filterValues,
+            filterIndices
+          }
+        } = this.getAttributeManager();
+        filterModel.setVertexCount(this.getNumInstances());
+        const {
+          gl
+        } = this.context;
+        clear(gl, {
+          framebuffer: filterFBO,
+          color: [0, 0, 0, 0]
+        });
+        filterModel.updateModuleSettings(params.moduleParameters).setAttributes({
+          ...filterValues.getShaderAttributes(),
+          ...filterIndices && filterIndices.getShaderAttributes()
+        }).draw({
+          framebuffer: filterFBO,
+          parameters: {
+            ...parameters,
+            viewport: [0, 0, filterFBO.width, filterFBO.height]
+          }
+        });
+        const color = readPixelsToArray(filterFBO);
+        let count2 = 0;
+        for (let i3 = 0; i3 < color.length; i3++) {
+          count2 += color[i3];
+        }
+        onFilteredItemsChange({
+          id: this.id,
+          count: count2
+        });
+        this.state.filterNeedsUpdate = false;
+      }
+    }
+    finalizeState() {
+      const {
+        filterFBO,
+        filterModel
+      } = this.state;
+      if (filterFBO) {
+        filterFBO.color.delete();
+        filterFBO.delete();
+        filterModel.delete();
+      }
+    }
+  };
+  _defineProperty(DataFilterExtension, "defaultProps", defaultProps16);
+  _defineProperty(DataFilterExtension, "extensionName", "DataFilterExtension");
+
   // node_modules/@deck.gl/carto/dist/esm/style/palette.js
   var cartoColors = __toESM(require_cartocolor2());
 
@@ -47812,14 +48141,14 @@
   var ALLOWED_ATTR_TYPES = Object.freeze(["function", "string"]);
   function getAttrValue(attr, d2) {
     var _properties;
-    assert11(typeof d2 === "object", 'Expected "data" to be an object');
-    assert11(ALLOWED_ATTR_TYPES.includes(typeof attr), 'Expected "attr" to be a function or string');
+    assert12(typeof d2 === "object", 'Expected "data" to be an object');
+    assert12(ALLOWED_ATTR_TYPES.includes(typeof attr), 'Expected "attr" to be a function or string');
     if (typeof attr === "function") {
       return attr(d2);
     }
     return d2 === null || d2 === void 0 ? void 0 : (_properties = d2.properties) === null || _properties === void 0 ? void 0 : _properties[attr];
   }
-  function assert11(condition, message = "") {
+  function assert12(condition, message = "") {
     if (!condition) {
       throw new Error("CARTO style error: ".concat(message));
     }
@@ -47832,7 +48161,7 @@
   function getPalette(name, numCategories) {
     const palette = cartoColors[name];
     let paletteIndex = numCategories;
-    assert11(palette, 'Palette "'.concat(name, '" not found. Expected a CARTOColors string'));
+    assert12(palette, 'Palette "'.concat(name, '" not found. Expected a CARTOColors string'));
     const palettesColorVariants = Object.keys(palette).filter((p2) => p2 !== "tags").map(Number);
     const longestPaletteIndex = Math.max(...palettesColorVariants);
     const smallestPaletteIndex = Math.min(...palettesColorVariants);
@@ -47861,7 +48190,7 @@
       return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), 255];
     }
     result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    assert11(result, 'Hexadecimal color "'.concat(hex, '" was not parsed correctly'));
+    assert12(result, 'Hexadecimal color "'.concat(hex, '" was not parsed correctly'));
     return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), parseInt(result[4], 16)];
   }
 
@@ -47873,7 +48202,7 @@
     nullColor = NULL_COLOR,
     othersColor = OTHERS_COLOR
   }) {
-    assert11(Array.isArray(domain), 'Expected "domain" to be an array of numbers or strings');
+    assert12(Array.isArray(domain), 'Expected "domain" to be an array of numbers or strings');
     const colorsByCategory = {};
     const palette = typeof colors === "string" ? getPalette(colors, domain.length) : colors;
     for (const [i3, c2] of domain.entries()) {
@@ -59667,7 +59996,7 @@ rgba = apply_opacity(rgb);
   };
   ColorPaletteExtension.extensionName = "ColorPaletteExtension";
   ColorPaletteExtension.defaultProps = defaultProps$3;
-  var fs4 = `// lens bounds for ellipse
+  var fs5 = `// lens bounds for ellipse
 uniform float majorLensAxis;
 uniform float minorLensAxis;
 uniform vec2 lensCenter;
@@ -59729,7 +60058,7 @@ void mutate_color(inout vec3 rgb, float intensity0, float intensity1, float inte
 `;
   var lens = {
     name: "lens-module",
-    fs: fs4,
+    fs: fs5,
     inject: {
       "fs:DECKGL_MUTATE_COLOR": `
    vec3 rgb = rgba.rgb;
@@ -59859,14 +60188,14 @@ void mutate_color(inout vec3 rgb, float intensity0, float intensity1, float inte
   LensExtension.extensionName = "LensExtension";
   LensExtension.defaultProps = defaultProps$2;
   function colormapModuleFactory3D(name, apply_cmap) {
-    const fs6 = `${apply_cmap}
+    const fs7 = `${apply_cmap}
 
 vec4 colormap(float intensity, float opacity) {
   return vec4(apply_cmap(min(1.,intensity)).xyz, opacity);
 }`;
     return {
       name: `additive-colormap-3d-${name}`,
-      fs: fs6
+      fs: fs7
     };
   }
   var defaultProps$1 = {
@@ -59977,7 +60306,7 @@ vec4 colormap(float intensity, float opacity) {
     }
   };
   MinimumIntensityProjectionExtension$1.extensionName = "MinimumIntensityProjectionExtension";
-  var defaultProps16 = {
+  var defaultProps17 = {
     colors: { type: "array", value: null, compare: true }
   };
   var BaseExtension2 = class extends LayerExtension {
@@ -59998,7 +60327,7 @@ vec4 colormap(float intensity, float opacity) {
     }
   };
   BaseExtension2.extensionName = "BaseExtension";
-  BaseExtension2.defaultProps = defaultProps16;
+  BaseExtension2.defaultProps = defaultProps17;
   var _BEFORE_RENDER$2 = ``;
   var _RENDER$2 = `  vec3 rgbCombo = vec3(0.0);
   vec3 hsvCombo = vec3(0.0);
@@ -60344,7 +60673,7 @@ void main(void) {
      */
     getShaders() {
       const { dtype, interpolation } = this.props;
-      const { shaderModule, sampler } = getRenderingAttrs$1(
+      const { shaderModule: shaderModule2, sampler } = getRenderingAttrs$1(
         dtype,
         this.context.gl,
         interpolation
@@ -60357,7 +60686,7 @@ void main(void) {
       `;
       }
       return super.getShaders({
-        ...shaderModule,
+        ...shaderModule2,
         defines: {
           SAMPLER_TYPE: sampler
         },
@@ -60368,8 +60697,8 @@ void main(void) {
       const { extensions } = this.props;
       return extensions?.some((e2) => {
         const shaders = e2.getShaders();
-        const { inject = {}, modules = [] } = shaders;
-        const definesInjection = inject[hookName];
+        const { inject: inject2 = {}, modules = [] } = shaders;
+        const definesInjection = inject2[hookName];
         const moduleDefinesInjection = modules.some((m) => m?.inject[hookName]);
         return definesInjection || moduleDefinesInjection;
       });
@@ -61205,7 +61534,7 @@ void main(void) {
   };
   ScaleBarLayer.layerName = "ScaleBarLayer";
   ScaleBarLayer.defaultProps = defaultProps$22;
-  var vs7 = `#version 300 es
+  var vs8 = `#version 300 es
 #define SHADER_NAME xr-layer-vertex-shader
 
 // Unit-cube vertices
@@ -61277,7 +61606,7 @@ void main() {
   vray_dir = positions - transformed_eye;
 }
 `;
-  var fs5 = `#version 300 es
+  var fs6 = `#version 300 es
 precision highp int;
 precision highp float;
 precision highp SAMPLER_TYPE;
@@ -61522,8 +61851,8 @@ void main(void) {
       return extensions?.some((e2) => {
         const shaders = e2.getShaders();
         if (shaders) {
-          const { inject = {}, modules = [] } = shaders;
-          const definesInjection = inject[hookName];
+          const { inject: inject2 = {}, modules = [] } = shaders;
+          const definesInjection = inject2[hookName];
           const moduleDefinesInjection = modules.some(
             (m) => m.inject && m?.inject[hookName]
           );
@@ -61547,8 +61876,8 @@ void main(void) {
       `;
       }
       return super.getShaders({
-        vs: vs7,
-        fs: fs5.replace("_BEFORE_RENDER", _BEFORE_RENDER2).replace("_RENDER", _RENDER2).replace("_AFTER_RENDER", _AFTER_RENDER2),
+        vs: vs8,
+        fs: fs6.replace("_BEFORE_RENDER", _BEFORE_RENDER2).replace("_RENDER", _RENDER2).replace("_AFTER_RENDER", _AFTER_RENDER2),
         defines: {
           SAMPLER_TYPE: sampler,
           NUM_PLANES: String(clippingPlanes.length || NUM_PLANES_DEFAULT)
@@ -61783,7 +62112,7 @@ void main(void) {
       fontFamily: "Helvetica"
     });
   };
-  var defaultProps17 = {
+  var defaultProps18 = {
     pickable: false,
     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
     contrastLimits: { type: "array", value: [], compare: true },
@@ -61944,7 +62273,7 @@ void main(void) {
     }
   };
   VolumeLayer.layerName = "VolumeLayer";
-  VolumeLayer.defaultProps = defaultProps17;
+  VolumeLayer.defaultProps = defaultProps18;
 
   // src/hra-node-dist-vis.js
   var import_cartocolor = __toESM(require_cartocolor2(), 1);
@@ -62012,6 +62341,12 @@ void main(void) {
       target: [0.5, 0.5]
     };
   }
+  function parseSelectionValue(value) {
+    if (value === "") {
+      return void 0;
+    }
+    return typeof value === "string" ? JSON.parse(value) : value;
+  }
   var template = document.createElement("template");
   template.innerHTML = `<style>
 #vis {
@@ -62022,6 +62357,9 @@ void main(void) {
 </style>
 <canvas id="vis"></canvas>
 `;
+  var SELECTION_RANGE = [0, 10];
+  var SELECTION_VALUE_INSIDE_RANGE = 5;
+  var SELECTION_VALUE_OUT_OF_RANGE = 100;
   var HraNodeDistanceVisualization = class extends HTMLElement {
     static observedAttributes = [
       "nodes",
@@ -62031,7 +62369,8 @@ void main(void) {
       "color-map-value",
       "node-target-key",
       "node-target-value",
-      "max-edge-distance"
+      "max-edge-distance",
+      "selection"
     ];
     nodesUrl = a();
     nodesData = a();
@@ -62044,6 +62383,7 @@ void main(void) {
     nodeTargetKey = a();
     nodeTargetValue = a();
     maxEdgeDistance = a();
+    selection = a();
     viewState = a();
     toDispose = [];
     initialized = false;
@@ -62152,6 +62492,13 @@ void main(void) {
         return (d2) => scale5(attr(d2));
       };
     });
+    selectionMapper = p(() => {
+      if (this.selection.value === void 0) {
+        return (_attr) => (_d) => SELECTION_VALUE_INSIDE_RANGE;
+      }
+      const selection = new Set(this.selection.value);
+      return (attr) => (d2) => selection.has(attr(d2)) ? SELECTION_VALUE_INSIDE_RANGE : SELECTION_VALUE_OUT_OF_RANGE;
+    });
     nodesLayer = p(() => {
       if (this.colorCoding.value && this.nodes.value.length > 0) {
         const nodeKey = this.nodeTargetKey.value;
@@ -62163,8 +62510,13 @@ void main(void) {
           pickable: true,
           coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
           pointSize: 1.5,
+          getFilterValue: this.selectionMapper.value((d2) => d2[nodeKey]),
+          filterRange: SELECTION_RANGE,
+          filterEnabled: this.selection.value !== void 0,
+          extensions: [new DataFilterExtension()],
           updateTriggers: {
-            getColor: this.colorCoding.value.range
+            getColor: this.colorCoding.value.range,
+            getFilterValue: this.selection.value
           }
         });
       } else {
@@ -62172,7 +62524,10 @@ void main(void) {
       }
     });
     edgesLayer = p(() => {
-      if (this.colorCoding.value && this.edges.value.length > 0) {
+      const selection = this.selection.value;
+      const nodeTargetValue = this.nodeTargetValue.value;
+      const selectionIncludesTarget = selection === void 0 || selection.includes(nodeTargetValue);
+      if (this.colorCoding.value && this.edges.value.length > 0 && selectionIncludesTarget) {
         const nodeKey = this.nodeTargetKey.value;
         const nodes = this.nodes.value;
         return new LineLayer({
@@ -62184,8 +62539,13 @@ void main(void) {
           pickable: false,
           coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
           getWidth: 1,
+          getFilterValue: this.selectionMapper.value(([node_index]) => nodes[node_index][nodeKey]),
+          filterRange: SELECTION_RANGE,
+          filterEnabled: this.selection.value !== void 0,
+          extensions: [new DataFilterExtension()],
           updateTriggers: {
-            getColor: this.colorCoding.value.range
+            getColor: this.colorCoding.value.range,
+            getFilterValue: this.selection.value
           }
         });
       } else {
@@ -62288,6 +62648,7 @@ void main(void) {
         this.nodeTargetKey.value = this.getAttribute("node-target-key");
         this.nodeTargetValue.value = this.getAttribute("node-target-value");
         this.maxEdgeDistance.value = parseFloat(this.getAttribute("max-edge-distance"));
+        this.selection.value = parseSelectionValue(this.getAttribute("selection"));
         this.initialized = true;
       });
     }
@@ -62299,12 +62660,15 @@ void main(void) {
       "color-map-value": this.colorMapValue,
       "node-target-key": this.nodeTargetKey,
       "node-target-value": this.nodeTargetValue,
-      "max-edge-distance": this.maxEdgeDistance
+      "max-edge-distance": this.maxEdgeDistance,
+      selection: this.selection
     };
     attributeChangedCallback(name, _oldValue, newValue) {
       if (this.initialized) {
         if (name === "max-edge-distance" && typeof newValue === "string") {
           newValue = parseFloat(newValue);
+        } else if (name === "selection" && typeof newValue === "string") {
+          newValue = parseSelectionValue(newValue);
         }
         this.attributesLookup[name].value = newValue;
       }

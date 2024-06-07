@@ -1,5 +1,6 @@
 import { colorCategories } from '@deck.gl/carto';
 import { COORDINATE_SYSTEM, Deck, OrbitView } from '@deck.gl/core';
+import { DataFilterExtension } from '@deck.gl/extensions';
 import { LineLayer, PointCloudLayer } from '@deck.gl/layers';
 import { batch, computed, effect, signal } from '@preact/signals-core';
 import { ScaleBarLayer } from '@vivjs/layers';
@@ -59,6 +60,13 @@ function getInitialViewState() {
   };
 }
 
+function parseSelectionValue(value) {
+  if (value === '') {
+    return undefined;
+  }
+  return typeof value === 'string' ? JSON.parse(value) : value;
+}
+
 const template = document.createElement('template');
 template.innerHTML = `<style>
 #vis {
@@ -70,6 +78,10 @@ template.innerHTML = `<style>
 <canvas id="vis"></canvas>
 `;
 
+const SELECTION_RANGE = [0, 10];
+const SELECTION_VALUE_INSIDE_RANGE = 5;
+const SELECTION_VALUE_OUT_OF_RANGE = 100;
+
 class HraNodeDistanceVisualization extends HTMLElement {
   static observedAttributes = [
     'nodes',
@@ -80,7 +92,9 @@ class HraNodeDistanceVisualization extends HTMLElement {
     'node-target-key',
     'node-target-value',
     'max-edge-distance',
+    'selection',
   ];
+
   nodesUrl = signal();
   nodesData = signal();
   edgesUrl = signal();
@@ -92,6 +106,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
   nodeTargetKey = signal();
   nodeTargetValue = signal();
   maxEdgeDistance = signal();
+  selection = signal();
   viewState = signal();
   toDispose = [];
   initialized = false;
@@ -161,7 +176,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
         colorDomain.push(row[this.colorMapKey.value]);
         const color = row[this.colorMapValue.value];
         if (Array.isArray(color)) {
-          colorRange.push(color)
+          colorRange.push(color);
         } else if (color?.startsWith('[')) {
           colorRange.push(JSON.parse(color));
         } else {
@@ -192,7 +207,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
           othersColor: [255, 255, 255],
           nullColor: [255, 255, 255],
         }),
-    }
+    };
   });
 
   positionScaling = computed(() => {
@@ -206,11 +221,20 @@ class HraNodeDistanceVisualization extends HTMLElement {
     const scale = ([x, y, z]) => [
       (x - minDimSize) / dimDifference,
       1 - (y - minDimSize) / dimDifference,
-      (z - minDimSize) / dimDifference
+      (z - minDimSize) / dimDifference,
     ];
     return (attr) => {
       return (d) => scale(attr(d));
     };
+  });
+
+  selectionMapper = computed(() => {
+    if (this.selection.value === undefined) {
+      return (_attr) => (_d) => SELECTION_VALUE_INSIDE_RANGE;
+    }
+
+    const selection = new Set(this.selection.value);
+    return (attr) => (d) => selection.has(attr(d)) ? SELECTION_VALUE_INSIDE_RANGE : SELECTION_VALUE_OUT_OF_RANGE;
   });
 
   nodesLayer = computed(() => {
@@ -224,8 +248,13 @@ class HraNodeDistanceVisualization extends HTMLElement {
         pickable: true,
         coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
         pointSize: 1.5,
+        getFilterValue: this.selectionMapper.value((d) => d[nodeKey]),
+        filterRange: SELECTION_RANGE,
+        filterEnabled: this.selection.value !== undefined,
+        extensions: [new DataFilterExtension()],
         updateTriggers: {
-          getColor: this.colorCoding.value.range
+          getColor: this.colorCoding.value.range,
+          getFilterValue: this.selection.value,
         },
       });
     } else {
@@ -234,7 +263,10 @@ class HraNodeDistanceVisualization extends HTMLElement {
   });
 
   edgesLayer = computed(() => {
-    if (this.colorCoding.value && this.edges.value.length > 0) {
+    const selection = this.selection.value;
+    const nodeTargetValue = this.nodeTargetValue.value;
+    const selectionIncludesTarget = selection === undefined || selection.includes(nodeTargetValue);
+    if (this.colorCoding.value && this.edges.value.length > 0 && selectionIncludesTarget) {
       const nodeKey = this.nodeTargetKey.value;
       const nodes = this.nodes.value;
       return new LineLayer({
@@ -246,8 +278,13 @@ class HraNodeDistanceVisualization extends HTMLElement {
         pickable: false,
         coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
         getWidth: 1,
+        getFilterValue: this.selectionMapper.value(([node_index]) => nodes[node_index][nodeKey]),
+        filterRange: SELECTION_RANGE,
+        filterEnabled: this.selection.value !== undefined,
+        extensions: [new DataFilterExtension()],
         updateTriggers: {
-          getColor: this.colorCoding.value.range
+          getColor: this.colorCoding.value.range,
+          getFilterValue: this.selection.value,
         },
       });
     } else {
@@ -295,7 +332,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
       controller: true,
       views: [new OrbitView({ id: 'orbit', orbitAxis: 'Y' })],
       initialViewState: getInitialViewState(),
-      onClick: (e) => e.picked ? this.dispatch('nodeClicked', e.object) : undefined,
+      onClick: (e) => (e.picked ? this.dispatch('nodeClicked', e.object) : undefined),
       onViewStateChange: ({ viewState }) => (this.viewState.value = viewState),
       onLoad: () => (this.viewState.value = this.deck.viewState),
       onHover: (e) => {
@@ -360,6 +397,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
       this.nodeTargetKey.value = this.getAttribute('node-target-key');
       this.nodeTargetValue.value = this.getAttribute('node-target-value');
       this.maxEdgeDistance.value = parseFloat(this.getAttribute('max-edge-distance'));
+      this.selection.value = parseSelectionValue(this.getAttribute('selection'));
       this.initialized = true;
     });
   }
@@ -373,12 +411,15 @@ class HraNodeDistanceVisualization extends HTMLElement {
     'node-target-key': this.nodeTargetKey,
     'node-target-value': this.nodeTargetValue,
     'max-edge-distance': this.maxEdgeDistance,
+    selection: this.selection,
   };
 
   attributeChangedCallback(name, _oldValue, newValue) {
     if (this.initialized) {
       if (name === 'max-edge-distance' && typeof newValue === 'string') {
         newValue = parseFloat(newValue);
+      } else if (name === 'selection' && typeof newValue === 'string') {
+        newValue = parseSelectionValue(newValue);
       }
       this.attributesLookup[name].value = newValue;
     }
