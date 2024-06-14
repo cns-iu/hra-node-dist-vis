@@ -265,7 +265,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
   edgesLayer = computed(() => {
     const selection = this.selection.value;
     const nodeTargetValue = this.nodeTargetValue.value;
-    const selectionIncludesTarget = selection === undefined || selection.includes(nodeTargetValue);
+    const selectionIncludesTarget = selection?.includes(nodeTargetValue) ?? true;
     if (this.colorCoding.value && this.edges.value.length > 0 && selectionIncludesTarget) {
       const nodeKey = this.nodeTargetKey.value;
       const nodes = this.nodes.value;
