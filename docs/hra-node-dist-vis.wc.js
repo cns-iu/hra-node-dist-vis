@@ -62341,11 +62341,17 @@ void main(void) {
       target: [0.5, 0.5]
     };
   }
-  function parseSelectionValue(value) {
-    if (!value) {
+  function tryParseJson(value) {
+    try {
+      if (typeof value === "string") {
+        return JSON.parse(value);
+      }
+    } catch {
+    }
+    if (value === "" || value === void 0 || value === null) {
       return void 0;
     }
-    return typeof value === "string" ? JSON.parse(value) : value;
+    return value;
   }
   var template = document.createElement("template");
   template.innerHTML = `<style>
@@ -62360,6 +62366,61 @@ void main(void) {
   var SELECTION_RANGE = [0, 10];
   var SELECTION_VALUE_INSIDE_RANGE = 5;
   var SELECTION_VALUE_OUT_OF_RANGE = 100;
+  var ATTRIBUTE_DEFS = {
+    nodes: {
+      parse: tryParseJson,
+      select: Array.isArray,
+      signal: ["nodesUrl", "nodesData"]
+    },
+    edges: {
+      parse: tryParseJson,
+      select: Array.isArray,
+      signal: ["edgesUrl", "edgesData"]
+    },
+    "color-map": {
+      parse: tryParseJson,
+      select: Array.isArray,
+      signal: ["colorMapUrl", "colorMapData"]
+    },
+    "color-map-key": {
+      signal: "colorMapKey",
+      default: "cell_type"
+    },
+    "color-map-value": {
+      signal: "colorMapValue",
+      default: "cell_color"
+    },
+    "node-target-key": {
+      signal: "nodeTargetKey"
+    },
+    "node-target-value": {
+      signal: "nodeTargetValue"
+    },
+    "max-edge-distance": {
+      parse: parseFloat,
+      signal: "maxEdgeDistance"
+    },
+    selection: {
+      parse: (value) => {
+        const data = tryParseJson(value);
+        return Array.isArray(data) ? data : void 0;
+      },
+      signal: "selection"
+    }
+  };
+  function setAttributeUsingDef(instance2, def, value) {
+    if (typeof def.parse === "function") {
+      value = def.parse(value);
+    }
+    let signal = def.signal;
+    if (typeof def.select === "function" && Array.isArray(signal)) {
+      signal = signal[Number(def.select(value))];
+    }
+    if (value === "" || value === void 0 || value === null) {
+      value = def.default;
+    }
+    instance2[signal].value = value;
+  }
   var HraNodeDistanceVisualization = class extends HTMLElement {
     static observedAttributes = [
       "nodes",
@@ -62640,37 +62701,15 @@ void main(void) {
         })
       );
       n(() => {
-        this.nodesUrl.value = this.getAttribute("nodes");
-        this.edgesUrl.value = this.getAttribute("edges");
-        this.colorMapUrl.value = this.getAttribute("color-map");
-        this.colorMapKey.value = this.getAttribute("color-map-key") || "cell_type";
-        this.colorMapValue.value = this.getAttribute("color-map-value") || "cell_color";
-        this.nodeTargetKey.value = this.getAttribute("node-target-key");
-        this.nodeTargetValue.value = this.getAttribute("node-target-value");
-        this.maxEdgeDistance.value = parseFloat(this.getAttribute("max-edge-distance"));
-        this.selection.value = parseSelectionValue(this.getAttribute("selection"));
+        for (const [key, def] of Object.entries(ATTRIBUTE_DEFS)) {
+          setAttributeUsingDef(this, def, this.getAttribute(key));
+        }
         this.initialized = true;
       });
     }
-    attributesLookup = {
-      nodes: this.nodesUrl,
-      edges: this.edgesUrl,
-      "color-map": this.colorMapUrl,
-      "color-map-key": this.colorMapKey,
-      "color-map-value": this.colorMapValue,
-      "node-target-key": this.nodeTargetKey,
-      "node-target-value": this.nodeTargetValue,
-      "max-edge-distance": this.maxEdgeDistance,
-      selection: this.selection
-    };
     attributeChangedCallback(name, _oldValue, newValue) {
       if (this.initialized) {
-        if (name === "max-edge-distance" && typeof newValue === "string") {
-          newValue = parseFloat(newValue);
-        } else if (name === "selection" && typeof newValue === "string") {
-          newValue = parseSelectionValue(newValue);
-        }
-        this.attributesLookup[name].value = newValue;
+        setAttributeUsingDef(this, ATTRIBUTE_DEFS[name], newValue);
       }
     }
     trackDisposal(disposable) {
