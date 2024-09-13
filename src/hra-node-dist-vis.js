@@ -61,7 +61,7 @@ function getInitialViewState() {
 }
 
 function parseSelectionValue(value) {
-  if (value === '') {
+  if (!value) {
     return undefined;
   }
   return typeof value === 'string' ? JSON.parse(value) : value;
