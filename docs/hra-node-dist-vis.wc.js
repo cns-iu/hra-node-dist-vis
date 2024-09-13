@@ -1815,8 +1815,8 @@
         });
         var freeGlobal = typeof window3 !== "undefined" ? window3 : typeof self !== "undefined" ? self : {};
         freeGlobal.Hammer = Hammer;
-        if (typeof define === "function" && define.amd) {
-          define(function() {
+        if (false) {
+          (void 0)(function() {
             return Hammer;
           });
         } else if (typeof module != "undefined" && module.exports) {
@@ -2599,8 +2599,8 @@
           11: ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5"],
           12: ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
         } };
-        if (typeof define === "function" && define.amd) {
-          define(colorbrewer);
+        if (false) {
+          (void 0)(colorbrewer);
         } else if (typeof module === "object" && module.exports) {
           module.exports = colorbrewer;
         } else {
@@ -4483,8 +4483,8 @@
           }
           cartocolor2["cb_" + r2] = augmentedRamps;
         }
-        if (typeof define === "function" && define.amd) {
-          define(cartocolor2);
+        if (false) {
+          (void 0)(cartocolor2);
         } else if (typeof module === "object" && module.exports) {
           module.exports = cartocolor2;
         } else {
@@ -12023,8 +12023,8 @@
             return decodedPixelBlock;
           }
         };
-        if (typeof define === "function" && define.amd) {
-          define([], function() {
+        if (false) {
+          (void 0)([], function() {
             return Lerc2;
           });
         } else if (typeof module !== "undefined" && module.exports) {
@@ -12165,7 +12165,7 @@
   var require_papaparse_min = __commonJS({
     "node_modules/papaparse/papaparse.min.js"(exports, module) {
       !function(e2, t2) {
-        "function" == typeof define && define.amd ? define([], t2) : "object" == typeof module && "undefined" != typeof exports ? module.exports = t2() : e2.Papa = t2();
+        false ? (void 0)([], t2) : "object" == typeof module && "undefined" != typeof exports ? module.exports = t2() : e2.Papa = t2();
       }(exports, function s() {
         "use strict";
         var f2 = "undefined" != typeof self ? self : "undefined" != typeof window ? window : void 0 !== f2 ? f2 : {};
@@ -62342,7 +62342,7 @@ void main(void) {
     };
   }
   function parseSelectionValue(value) {
-    if (value === "") {
+    if (!value) {
       return void 0;
     }
     return typeof value === "string" ? JSON.parse(value) : value;
