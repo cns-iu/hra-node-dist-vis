@@ -19,6 +19,9 @@ const webComponent = {
   plugins: [inlineWorkerPlugin()],
   entryPoints: ['src/hra-node-dist-vis.js'],
   platform: 'browser',
+  define: {
+    define: 'undefined',
+  },
 };
 
 const all = [webComponent, demo];
