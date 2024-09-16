@@ -2294,6 +2294,158 @@
     }
   });
 
+  // node_modules/@mapbox/tiny-sdf/index.js
+  var require_tiny_sdf = __commonJS({
+    "node_modules/@mapbox/tiny-sdf/index.js"(exports, module) {
+      "use strict";
+      module.exports = TinySDF2;
+      module.exports.default = TinySDF2;
+      var INF = 1e20;
+      function TinySDF2(fontSize, buffer, radius, cutoff, fontFamily, fontWeight) {
+        this.fontSize = fontSize || 24;
+        this.buffer = buffer === void 0 ? 3 : buffer;
+        this.cutoff = cutoff || 0.25;
+        this.fontFamily = fontFamily || "sans-serif";
+        this.fontWeight = fontWeight || "normal";
+        this.radius = radius || 8;
+        var size = this.size = this.fontSize + this.buffer * 2;
+        var gridSize = size + this.buffer * 2;
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = this.canvas.height = size;
+        this.ctx = this.canvas.getContext("2d");
+        this.ctx.font = this.fontWeight + " " + this.fontSize + "px " + this.fontFamily;
+        this.ctx.textAlign = "left";
+        this.ctx.fillStyle = "black";
+        this.gridOuter = new Float64Array(gridSize * gridSize);
+        this.gridInner = new Float64Array(gridSize * gridSize);
+        this.f = new Float64Array(gridSize);
+        this.z = new Float64Array(gridSize + 1);
+        this.v = new Uint16Array(gridSize);
+        this.useMetrics = this.ctx.measureText("A").actualBoundingBoxLeft !== void 0;
+        this.middle = Math.round(size / 2 * (navigator.userAgent.indexOf("Gecko/") >= 0 ? 1.2 : 1));
+      }
+      function prepareGrids(imgData, width, height, glyphWidth, glyphHeight, gridOuter, gridInner) {
+        gridOuter.fill(INF, 0, width * height);
+        gridInner.fill(0, 0, width * height);
+        var offset = (width - glyphWidth) / 2;
+        for (var y2 = 0; y2 < glyphHeight; y2++) {
+          for (var x2 = 0; x2 < glyphWidth; x2++) {
+            var j = (y2 + offset) * width + x2 + offset;
+            var a2 = imgData.data[4 * (y2 * glyphWidth + x2) + 3] / 255;
+            if (a2 === 1) {
+              gridOuter[j] = 0;
+              gridInner[j] = INF;
+            } else if (a2 === 0) {
+              gridOuter[j] = INF;
+              gridInner[j] = 0;
+            } else {
+              var b2 = Math.max(0, 0.5 - a2);
+              var c2 = Math.max(0, a2 - 0.5);
+              gridOuter[j] = b2 * b2;
+              gridInner[j] = c2 * c2;
+            }
+          }
+        }
+      }
+      function extractAlpha(alphaChannel, width, height, gridOuter, gridInner, radius, cutoff) {
+        for (var i3 = 0; i3 < width * height; i3++) {
+          var d2 = Math.sqrt(gridOuter[i3]) - Math.sqrt(gridInner[i3]);
+          alphaChannel[i3] = Math.round(255 - 255 * (d2 / radius + cutoff));
+        }
+      }
+      TinySDF2.prototype._draw = function(char, getMetrics) {
+        var textMetrics = this.ctx.measureText(char);
+        var advance = textMetrics.width;
+        var doubleBuffer = 2 * this.buffer;
+        var width, glyphWidth, height, glyphHeight, top;
+        var imgTop, imgLeft, baselinePosition;
+        if (getMetrics && this.useMetrics) {
+          top = Math.floor(textMetrics.actualBoundingBoxAscent);
+          baselinePosition = this.buffer + Math.ceil(textMetrics.actualBoundingBoxAscent);
+          imgTop = this.buffer;
+          imgLeft = this.buffer;
+          glyphWidth = Math.min(
+            this.size,
+            Math.ceil(textMetrics.actualBoundingBoxRight - textMetrics.actualBoundingBoxLeft)
+          );
+          glyphHeight = Math.min(
+            this.size - imgTop,
+            Math.ceil(textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent)
+          );
+          width = glyphWidth + doubleBuffer;
+          height = glyphHeight + doubleBuffer;
+          this.ctx.textBaseline = "alphabetic";
+        } else {
+          width = glyphWidth = this.size;
+          height = glyphHeight = this.size;
+          top = 19 * this.fontSize / 24;
+          imgTop = imgLeft = 0;
+          baselinePosition = this.middle;
+          this.ctx.textBaseline = "middle";
+        }
+        var imgData;
+        if (glyphWidth && glyphHeight) {
+          this.ctx.clearRect(imgLeft, imgTop, glyphWidth, glyphHeight);
+          this.ctx.fillText(char, this.buffer, baselinePosition);
+          imgData = this.ctx.getImageData(imgLeft, imgTop, glyphWidth, glyphHeight);
+        }
+        var alphaChannel = new Uint8ClampedArray(width * height);
+        prepareGrids(imgData, width, height, glyphWidth, glyphHeight, this.gridOuter, this.gridInner);
+        edt(this.gridOuter, width, height, this.f, this.v, this.z);
+        edt(this.gridInner, width, height, this.f, this.v, this.z);
+        extractAlpha(alphaChannel, width, height, this.gridOuter, this.gridInner, this.radius, this.cutoff);
+        return {
+          data: alphaChannel,
+          metrics: {
+            width: glyphWidth,
+            height: glyphHeight,
+            sdfWidth: width,
+            sdfHeight: height,
+            top,
+            left: 0,
+            advance
+          }
+        };
+      };
+      TinySDF2.prototype.draw = function(char) {
+        return this._draw(char, false).data;
+      };
+      TinySDF2.prototype.drawWithMetrics = function(char) {
+        return this._draw(char, true);
+      };
+      function edt(data, width, height, f2, v2, z) {
+        for (var x2 = 0; x2 < width; x2++)
+          edt1d(data, x2, width, height, f2, v2, z);
+        for (var y2 = 0; y2 < height; y2++)
+          edt1d(data, y2 * width, 1, width, f2, v2, z);
+      }
+      function edt1d(grid, offset, stride, length4, f2, v2, z) {
+        var q, k, s, r2;
+        v2[0] = 0;
+        z[0] = -INF;
+        z[1] = INF;
+        for (q = 0; q < length4; q++)
+          f2[q] = grid[offset + q * stride];
+        for (q = 1, k = 0, s = 0; q < length4; q++) {
+          do {
+            r2 = v2[k];
+            s = (f2[q] - f2[r2] + q * q - r2 * r2) / (q - r2) / 2;
+          } while (s <= z[k] && --k > -1);
+          k++;
+          v2[k] = q;
+          z[k] = s;
+          z[k + 1] = INF;
+        }
+        for (q = 0, k = 0; q < length4; q++) {
+          while (z[k + 1] < q)
+            k++;
+          r2 = v2[k];
+          grid[offset + q * stride] = f2[r2] + (q - r2) * (q - r2);
+        }
+      }
+    }
+  });
+
   // node_modules/colorbrewer/colorbrewer.js
   var require_colorbrewer = __commonJS({
     "node_modules/colorbrewer/colorbrewer.js"(exports, module) {
@@ -10854,8 +11006,8 @@
               var BITS_MAX = this.HUFFMAN_LUT_BITS_MAX;
               var view = new DataView(input, data.ptr, 16);
               data.ptr += 16;
-              var version = view.getInt32(0, true);
-              if (version < 2) {
+              var version2 = view.getInt32(0, true);
+              if (version2 < 2) {
                 throw "unsupported Huffman version";
               }
               var size = view.getInt32(4, true);
@@ -13242,11 +13394,11 @@
       url = "modules/".concat(worker.module, "/dist/").concat(workerFile);
     }
     if (!url) {
-      let version = worker.version;
-      if (version === "latest") {
-        version = NPM_TAG;
+      let version2 = worker.version;
+      if (version2 === "latest") {
+        version2 = NPM_TAG;
       }
-      const versionTag = version ? "@".concat(version) : "";
+      const versionTag = version2 ? "@".concat(version2) : "";
       url = "https://unpkg.com/@loaders.gl/".concat(worker.module).concat(versionTag, "/dist/").concat(workerFile);
     }
     assert2(url);
@@ -16630,70 +16782,27 @@
   };
 
   // node_modules/@deck.gl/core/dist/esm/lib/init.js
-  function checkVersion() {
-    const version = true ? "8.9.35" : globalThis.DECK_VERSION || "untranspiled source";
-    const existingVersion = globalThis.deck && globalThis.deck.VERSION;
-    if (existingVersion && existingVersion !== version) {
-      throw new Error("deck.gl - multiple versions detected: ".concat(existingVersion, " vs ").concat(version));
-    }
-    if (!existingVersion) {
-      log_default.log(1, "deck.gl ".concat(version))();
-      globalThis.deck = {
-        ...globalThis.deck,
-        VERSION: version,
-        version,
-        log: log_default,
-        _registerLoggers: register
-      };
-      registerLoaders([json_loader_default, [ImageLoader, {
-        imagebitmap: {
-          premultiplyAlpha: "none"
-        }
-      }]]);
-    }
-    return version;
+  var version = true ? "8.8.27" : globalThis.DECK_VERSION || "untranspiled source";
+  var existingVersion = globalThis.deck && globalThis.deck.VERSION;
+  if (existingVersion && existingVersion !== version) {
+    throw new Error("deck.gl - multiple versions detected: ".concat(existingVersion, " vs ").concat(version));
   }
-  var VERSION5 = checkVersion();
-
-  // node_modules/@deck.gl/core/dist/esm/lib/constants.js
-  var COORDINATE_SYSTEM = {
-    DEFAULT: -1,
-    LNGLAT: 1,
-    METER_OFFSETS: 2,
-    LNGLAT_OFFSETS: 3,
-    CARTESIAN: 0
-  };
-  Object.defineProperty(COORDINATE_SYSTEM, "IDENTITY", {
-    get: () => {
-      log_default.deprecated("COORDINATE_SYSTEM.IDENTITY", "COORDINATE_SYSTEM.CARTESIAN")();
-      return 0;
-    }
-  });
-  var PROJECTION_MODE = {
-    WEB_MERCATOR: 1,
-    GLOBE: 2,
-    WEB_MERCATOR_AUTO_OFFSET: 4,
-    IDENTITY: 0
-  };
-  var UNIT = {
-    common: 0,
-    meters: 1,
-    pixels: 2
-  };
-  var EVENTS = {
-    click: {
-      handler: "onClick"
-    },
-    panstart: {
-      handler: "onDragStart"
-    },
-    panmove: {
-      handler: "onDrag"
-    },
-    panend: {
-      handler: "onDragEnd"
-    }
-  };
+  if (!existingVersion) {
+    log_default.log(1, "deck.gl ".concat(version))();
+    globalThis.deck = {
+      ...globalThis.deck,
+      VERSION: version,
+      version,
+      log: log_default,
+      _registerLoggers: register
+    };
+    registerLoaders([json_loader_default, [ImageLoader, {
+      imagebitmap: {
+        premultiplyAlpha: "none"
+      }
+    }]]);
+  }
+  var init_default = globalThis.deck;
 
   // node_modules/@luma.gl/gltools/dist/esm/utils/log.js
   var log2 = new Log2({
@@ -18162,7 +18271,7 @@
   }
 
   // node_modules/@luma.gl/webgl/dist/esm/init.js
-  var VERSION6 = true ? "8.5.21" : "untranspiled source";
+  var VERSION5 = true ? "8.5.21" : "untranspiled source";
   var STARTUP_MESSAGE = "set luma.log.level=1 (or higher) to trace rendering";
   var StatsManager = class {
     constructor() {
@@ -18178,16 +18287,16 @@
     }
   };
   var lumaStats = new StatsManager();
-  if (globalThis.luma && globalThis.luma.VERSION !== VERSION6) {
-    throw new Error("luma.gl - multiple VERSIONs detected: ".concat(globalThis.luma.VERSION, " vs ").concat(VERSION6));
+  if (globalThis.luma && globalThis.luma.VERSION !== VERSION5) {
+    throw new Error("luma.gl - multiple VERSIONs detected: ".concat(globalThis.luma.VERSION, " vs ").concat(VERSION5));
   }
   if (!globalThis.luma) {
     if (isBrowser6()) {
-      log2.log(1, "luma.gl ".concat(VERSION6, " - ").concat(STARTUP_MESSAGE))();
+      log2.log(1, "luma.gl ".concat(VERSION5, " - ").concat(STARTUP_MESSAGE))();
     }
     globalThis.luma = globalThis.luma || {
-      VERSION: VERSION6,
-      version: VERSION6,
+      VERSION: VERSION5,
+      version: VERSION5,
       log: log2,
       stats: lumaStats,
       globals: {
@@ -18196,7 +18305,7 @@
       }
     };
   }
-  var init_default = globalThis.luma;
+  var init_default2 = globalThis.luma;
 
   // node_modules/@luma.gl/webgl/dist/esm/webgl-utils/request-animation-frame.js
   function requestAnimationFrame2(callback) {
@@ -18259,8 +18368,8 @@
   }
 
   // node_modules/@luma.gl/webgl/dist/esm/utils/stub-methods.js
-  function stubRemovedMethods(instance2, className, version, methodNames) {
-    const upgradeMessage = "See luma.gl ".concat(version, " Upgrade Guide at https://luma.gl/docs/upgrade-guide");
+  function stubRemovedMethods(instance2, className, version2, methodNames) {
+    const upgradeMessage = "See luma.gl ".concat(version2, " Upgrade Guide at https://luma.gl/docs/upgrade-guide");
     const prototype = Object.getPrototypeOf(instance2);
     methodNames.forEach((methodName) => {
       if (prototype.methodName) {
@@ -18404,8 +18513,8 @@
       }
       return this;
     }
-    stubRemovedMethods(className, version, methodNames) {
-      return stubRemovedMethods(this, className, version, methodNames);
+    stubRemovedMethods(className, version2, methodNames) {
+      return stubRemovedMethods(this, className, version2, methodNames);
     }
     initialize(opts) {
     }
@@ -21226,15 +21335,15 @@
 
   // node_modules/@luma.gl/webgl/dist/esm/glsl-utils/get-shader-version.js
   function getShaderVersion(source) {
-    let version = 100;
+    let version2 = 100;
     const words = source.match(/[^\s]+/g);
     if (words.length >= 2 && words[0] === "#version") {
       const v2 = parseInt(words[1], 10);
       if (Number.isFinite(v2)) {
-        version = v2;
+        version2 = v2;
       }
     }
-    return version;
+    return version2;
   }
 
   // node_modules/@luma.gl/webgl/dist/esm/classes/shader.js
@@ -24379,22 +24488,22 @@
   function getPassthroughFS() {
     let options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
     const {
-      version = 100,
+      version: version2 = 100,
       input,
       inputType,
       output
     } = options;
     if (!input) {
-      if (version === 300) {
+      if (version2 === 300) {
         return FS300;
-      } else if (version > 300) {
-        return "#version ".concat(version, "\n").concat(FS_GLES);
+      } else if (version2 > 300) {
+        return "#version ".concat(version2, "\n").concat(FS_GLES);
       }
       return FS100;
     }
     const outputValue = convertToVec4(input, inputType);
-    if (version >= 300) {
-      return "#version ".concat(version, " ").concat(version === 300 ? "es" : "", "\nin ").concat(inputType, " ").concat(input, ";\nout vec4 ").concat(output, ";\nvoid main() {\n  ").concat(output, " = ").concat(outputValue, ";\n}");
+    if (version2 >= 300) {
+      return "#version ".concat(version2, " ").concat(version2 === 300 ? "es" : "", "\nin ").concat(inputType, " ").concat(input, ";\nout vec4 ").concat(output, ";\nvoid main() {\n  ").concat(output, " = ").concat(outputValue, ";\n}");
     }
     return "varying ".concat(inputType, " ").concat(input, ";\nvoid main() {\n  gl_FragColor = ").concat(outputValue, ";\n}");
   }
@@ -29118,422 +29227,6 @@
     }
   };
 
-  // node_modules/@deck.gl/core/dist/esm/effects/lighting/ambient-light.js
-  var DEFAULT_LIGHT_COLOR = [255, 255, 255];
-  var DEFAULT_LIGHT_INTENSITY = 1;
-  var idCount = 0;
-  var AmbientLight = class {
-    constructor(props = {}) {
-      _defineProperty(this, "id", void 0);
-      _defineProperty(this, "color", void 0);
-      _defineProperty(this, "intensity", void 0);
-      _defineProperty(this, "type", "ambient");
-      const {
-        color = DEFAULT_LIGHT_COLOR
-      } = props;
-      const {
-        intensity = DEFAULT_LIGHT_INTENSITY
-      } = props;
-      this.id = props.id || "ambient-".concat(idCount++);
-      this.color = color;
-      this.intensity = intensity;
-    }
-  };
-
-  // node_modules/@deck.gl/core/dist/esm/effects/lighting/directional-light.js
-  var DEFAULT_LIGHT_COLOR2 = [255, 255, 255];
-  var DEFAULT_LIGHT_INTENSITY2 = 1;
-  var DEFAULT_LIGHT_DIRECTION = [0, 0, -1];
-  var idCount2 = 0;
-  var DirectionalLight = class {
-    constructor(props = {}) {
-      _defineProperty(this, "id", void 0);
-      _defineProperty(this, "color", void 0);
-      _defineProperty(this, "intensity", void 0);
-      _defineProperty(this, "type", "directional");
-      _defineProperty(this, "direction", void 0);
-      _defineProperty(this, "shadow", void 0);
-      const {
-        color = DEFAULT_LIGHT_COLOR2
-      } = props;
-      const {
-        intensity = DEFAULT_LIGHT_INTENSITY2
-      } = props;
-      const {
-        direction = DEFAULT_LIGHT_DIRECTION
-      } = props;
-      const {
-        _shadow = false
-      } = props;
-      this.id = props.id || "directional-".concat(idCount2++);
-      this.color = color;
-      this.intensity = intensity;
-      this.type = "directional";
-      this.direction = new Vector3(direction).normalize().toArray();
-      this.shadow = _shadow;
-    }
-    getProjectedLight(opts) {
-      return this;
-    }
-  };
-
-  // node_modules/@deck.gl/core/dist/esm/passes/pass.js
-  var Pass = class {
-    constructor(gl, props = {
-      id: "pass"
-    }) {
-      _defineProperty(this, "id", void 0);
-      _defineProperty(this, "gl", void 0);
-      _defineProperty(this, "props", void 0);
-      const {
-        id
-      } = props;
-      this.id = id;
-      this.gl = gl;
-      this.props = {
-        ...props
-      };
-    }
-    setProps(props) {
-      Object.assign(this.props, props);
-    }
-    render(params) {
-    }
-    cleanup() {
-    }
-  };
-
-  // node_modules/@deck.gl/core/dist/esm/passes/layers-pass.js
-  var LayersPass = class extends Pass {
-    constructor(...args) {
-      super(...args);
-      _defineProperty(this, "_lastRenderIndex", -1);
-    }
-    render(options) {
-      const gl = this.gl;
-      setParameters(gl, {
-        framebuffer: options.target
-      });
-      return this._drawLayers(options);
-    }
-    _drawLayers(options) {
-      const {
-        target,
-        moduleParameters,
-        viewports,
-        views,
-        onViewportActive,
-        clearStack = true,
-        clearCanvas = true
-      } = options;
-      options.pass = options.pass || "unknown";
-      const gl = this.gl;
-      if (clearCanvas) {
-        clearGLCanvas(gl, target);
-      }
-      if (clearStack) {
-        this._lastRenderIndex = -1;
-      }
-      const renderStats = [];
-      for (const viewport of viewports) {
-        const view = views && views[viewport.id];
-        onViewportActive === null || onViewportActive === void 0 ? void 0 : onViewportActive(viewport);
-        const drawLayerParams = this._getDrawLayerParams(viewport, options);
-        const subViewports = viewport.subViewports || [viewport];
-        for (const subViewport of subViewports) {
-          const stats = this._drawLayersInViewport(gl, {
-            target,
-            moduleParameters,
-            viewport: subViewport,
-            view,
-            pass: options.pass,
-            layers: options.layers
-          }, drawLayerParams);
-          renderStats.push(stats);
-        }
-      }
-      return renderStats;
-    }
-    _getDrawLayerParams(viewport, {
-      layers,
-      pass,
-      isPicking = false,
-      layerFilter,
-      cullRect,
-      effects,
-      moduleParameters
-    }, evaluateShouldDrawOnly = false) {
-      const drawLayerParams = [];
-      const indexResolver = layerIndexResolver(this._lastRenderIndex + 1);
-      const drawContext = {
-        layer: layers[0],
-        viewport,
-        isPicking,
-        renderPass: pass,
-        cullRect
-      };
-      const layerFilterCache = {};
-      for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
-        const layer = layers[layerIndex];
-        const shouldDrawLayer = this._shouldDrawLayer(layer, drawContext, layerFilter, layerFilterCache);
-        const layerParam = {
-          shouldDrawLayer
-        };
-        if (shouldDrawLayer && !evaluateShouldDrawOnly) {
-          layerParam.layerRenderIndex = indexResolver(layer, shouldDrawLayer);
-          layerParam.moduleParameters = this._getModuleParameters(layer, effects, pass, moduleParameters);
-          layerParam.layerParameters = this.getLayerParameters(layer, layerIndex, viewport);
-        }
-        drawLayerParams[layerIndex] = layerParam;
-      }
-      return drawLayerParams;
-    }
-    _drawLayersInViewport(gl, {
-      layers,
-      moduleParameters: globalModuleParameters,
-      pass,
-      target,
-      viewport,
-      view
-    }, drawLayerParams) {
-      const glViewport = getGLViewport(gl, {
-        moduleParameters: globalModuleParameters,
-        target,
-        viewport
-      });
-      if (view && view.props.clear) {
-        const clearOpts = view.props.clear === true ? {
-          color: true,
-          depth: true
-        } : view.props.clear;
-        withParameters(gl, {
-          scissorTest: true,
-          scissor: glViewport
-        }, () => clear(gl, clearOpts));
-      }
-      const renderStatus = {
-        totalCount: layers.length,
-        visibleCount: 0,
-        compositeCount: 0,
-        pickableCount: 0
-      };
-      setParameters(gl, {
-        viewport: glViewport
-      });
-      for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
-        const layer = layers[layerIndex];
-        const {
-          shouldDrawLayer,
-          layerRenderIndex,
-          moduleParameters,
-          layerParameters
-        } = drawLayerParams[layerIndex];
-        if (shouldDrawLayer && layer.props.pickable) {
-          renderStatus.pickableCount++;
-        }
-        if (layer.isComposite) {
-          renderStatus.compositeCount++;
-        } else if (shouldDrawLayer) {
-          renderStatus.visibleCount++;
-          this._lastRenderIndex = Math.max(this._lastRenderIndex, layerRenderIndex);
-          moduleParameters.viewport = viewport;
-          try {
-            layer._drawLayer({
-              moduleParameters,
-              uniforms: {
-                layerIndex: layerRenderIndex
-              },
-              parameters: layerParameters
-            });
-          } catch (err3) {
-            layer.raiseError(err3, "drawing ".concat(layer, " to ").concat(pass));
-          }
-        }
-      }
-      return renderStatus;
-    }
-    shouldDrawLayer(layer) {
-      return true;
-    }
-    getModuleParameters(layer, effects) {
-      return null;
-    }
-    getLayerParameters(layer, layerIndex, viewport) {
-      return layer.props.parameters;
-    }
-    _shouldDrawLayer(layer, drawContext, layerFilter, layerFilterCache) {
-      const shouldDrawLayer = layer.props.visible && this.shouldDrawLayer(layer);
-      if (!shouldDrawLayer) {
-        return false;
-      }
-      drawContext.layer = layer;
-      let parent = layer.parent;
-      while (parent) {
-        if (!parent.props.visible || !parent.filterSubLayer(drawContext)) {
-          return false;
-        }
-        drawContext.layer = parent;
-        parent = parent.parent;
-      }
-      if (layerFilter) {
-        const rootLayerId = drawContext.layer.id;
-        if (!(rootLayerId in layerFilterCache)) {
-          layerFilterCache[rootLayerId] = layerFilter(drawContext);
-        }
-        if (!layerFilterCache[rootLayerId]) {
-          return false;
-        }
-      }
-      layer.activateViewport(drawContext.viewport);
-      return true;
-    }
-    _getModuleParameters(layer, effects, pass, overrides) {
-      var _layer$internalState;
-      const moduleParameters = Object.assign(Object.create(((_layer$internalState = layer.internalState) === null || _layer$internalState === void 0 ? void 0 : _layer$internalState.propsInTransition) || layer.props), {
-        autoWrapLongitude: layer.wrapLongitude,
-        viewport: layer.context.viewport,
-        mousePosition: layer.context.mousePosition,
-        pickingActive: 0,
-        devicePixelRatio: cssToDeviceRatio(this.gl)
-      });
-      if (effects) {
-        for (const effect of effects) {
-          var _effect$getModulePara;
-          Object.assign(moduleParameters, (_effect$getModulePara = effect.getModuleParameters) === null || _effect$getModulePara === void 0 ? void 0 : _effect$getModulePara.call(effect, layer));
-        }
-      }
-      return Object.assign(moduleParameters, this.getModuleParameters(layer, effects), overrides);
-    }
-  };
-  function layerIndexResolver(startIndex = 0, layerIndices = {}) {
-    const resolvers = {};
-    const resolveLayerIndex = (layer, isDrawn) => {
-      const indexOverride = layer.props._offset;
-      const layerId = layer.id;
-      const parentId = layer.parent && layer.parent.id;
-      let index;
-      if (parentId && !(parentId in layerIndices)) {
-        resolveLayerIndex(layer.parent, false);
-      }
-      if (parentId in resolvers) {
-        const resolver = resolvers[parentId] = resolvers[parentId] || layerIndexResolver(layerIndices[parentId], layerIndices);
-        index = resolver(layer, isDrawn);
-        resolvers[layerId] = resolver;
-      } else if (Number.isFinite(indexOverride)) {
-        index = indexOverride + (layerIndices[parentId] || 0);
-        resolvers[layerId] = null;
-      } else {
-        index = startIndex;
-      }
-      if (isDrawn && index >= startIndex) {
-        startIndex = index + 1;
-      }
-      layerIndices[layerId] = index;
-      return index;
-    };
-    return resolveLayerIndex;
-  }
-  function getGLViewport(gl, {
-    moduleParameters,
-    target,
-    viewport
-  }) {
-    const useTarget = target && target.id !== "default-framebuffer";
-    const pixelRatio = moduleParameters && moduleParameters.devicePixelRatio || cssToDeviceRatio(gl);
-    const height = useTarget ? target.height : gl.drawingBufferHeight;
-    const dimensions = viewport;
-    return [dimensions.x * pixelRatio, height - (dimensions.y + dimensions.height) * pixelRatio, dimensions.width * pixelRatio, dimensions.height * pixelRatio];
-  }
-  function clearGLCanvas(gl, targetFramebuffer) {
-    const width = targetFramebuffer ? targetFramebuffer.width : gl.drawingBufferWidth;
-    const height = targetFramebuffer ? targetFramebuffer.height : gl.drawingBufferHeight;
-    setParameters(gl, {
-      viewport: [0, 0, width, height]
-    });
-    gl.clear(16384 | 256);
-  }
-
-  // node_modules/@deck.gl/core/dist/esm/passes/shadow-pass.js
-  var ShadowPass = class extends LayersPass {
-    constructor(gl, props) {
-      super(gl, props);
-      _defineProperty(this, "shadowMap", void 0);
-      _defineProperty(this, "depthBuffer", void 0);
-      _defineProperty(this, "fbo", void 0);
-      this.shadowMap = new Texture2D(gl, {
-        width: 1,
-        height: 1,
-        parameters: {
-          [10241]: 9729,
-          [10240]: 9729,
-          [10242]: 33071,
-          [10243]: 33071
-        }
-      });
-      this.depthBuffer = new Renderbuffer(gl, {
-        format: 33189,
-        width: 1,
-        height: 1
-      });
-      this.fbo = new Framebuffer(gl, {
-        id: "shadowmap",
-        width: 1,
-        height: 1,
-        attachments: {
-          [36064]: this.shadowMap,
-          [36096]: this.depthBuffer
-        }
-      });
-    }
-    render(params) {
-      const target = this.fbo;
-      withParameters(this.gl, {
-        depthRange: [0, 1],
-        depthTest: true,
-        blend: false,
-        clearColor: [1, 1, 1, 1]
-      }, () => {
-        const viewport = params.viewports[0];
-        const pixelRatio = cssToDeviceRatio(this.gl);
-        const width = viewport.width * pixelRatio;
-        const height = viewport.height * pixelRatio;
-        if (width !== target.width || height !== target.height) {
-          target.resize({
-            width,
-            height
-          });
-        }
-        super.render({
-          ...params,
-          target,
-          pass: "shadow"
-        });
-      });
-    }
-    shouldDrawLayer(layer) {
-      return layer.props.shadowEnabled !== false;
-    }
-    getModuleParameters() {
-      return {
-        drawToShadowMap: true
-      };
-    }
-    delete() {
-      if (this.fbo) {
-        this.fbo.delete();
-        this.fbo = null;
-      }
-      if (this.shadowMap) {
-        this.shadowMap.delete();
-        this.shadowMap = null;
-      }
-      if (this.depthBuffer) {
-        this.depthBuffer.delete();
-        this.depthBuffer = null;
-      }
-    }
-  };
-
   // node_modules/@deck.gl/core/dist/esm/shaderlib/misc/geometry.js
   var defines = "#define SMOOTH_EDGE_RADIUS 0.5";
   var vs3 = "\n".concat(defines, "\n\nstruct VertexGeometry {\n  vec4 position;\n  vec3 worldPosition;\n  vec3 worldPositionAlt;\n  vec3 normal;\n  vec2 uv;\n  vec3 pickingColor;\n} geometry = VertexGeometry(\n  vec4(0.0, 0.0, 1.0, 0.0),\n  vec3(0.0),\n  vec3(0.0),\n  vec3(0.0),\n  vec2(0.0),\n  vec3(0.0)\n);\n");
@@ -29544,11 +29237,55 @@
     fs: fs2
   };
 
+  // node_modules/@deck.gl/core/dist/esm/lib/constants.js
+  var COORDINATE_SYSTEM = {
+    DEFAULT: -1,
+    LNGLAT: 1,
+    METER_OFFSETS: 2,
+    LNGLAT_OFFSETS: 3,
+    CARTESIAN: 0
+  };
+  Object.defineProperty(COORDINATE_SYSTEM, "IDENTITY", {
+    get: () => {
+      log_default.deprecated("COORDINATE_SYSTEM.IDENTITY", "COORDINATE_SYSTEM.CARTESIAN")();
+      return 0;
+    }
+  });
+  var PROJECTION_MODE = {
+    WEB_MERCATOR: 1,
+    GLOBE: 2,
+    WEB_MERCATOR_AUTO_OFFSET: 4,
+    IDENTITY: 0
+  };
+  var UNIT = {
+    common: 0,
+    meters: 1,
+    pixels: 2
+  };
+  var EVENTS = {
+    click: {
+      handler: "onClick"
+    },
+    panstart: {
+      handler: "onDragStart"
+    },
+    panmove: {
+      handler: "onDrag"
+    },
+    panend: {
+      handler: "onDragEnd"
+    }
+  };
+  var OPERATION = {
+    DRAW: "draw",
+    MASK: "mask"
+  };
+
   // node_modules/@deck.gl/core/dist/esm/shaderlib/project/project.glsl.js
   var COORDINATE_SYSTEM_GLSL_CONSTANTS = Object.keys(COORDINATE_SYSTEM).map((key) => "const int COORDINATE_SYSTEM_".concat(key, " = ").concat(COORDINATE_SYSTEM[key], ";")).join("");
   var PROJECTION_MODE_GLSL_CONSTANTS = Object.keys(PROJECTION_MODE).map((key) => "const int PROJECTION_MODE_".concat(key, " = ").concat(PROJECTION_MODE[key], ";")).join("");
   var UNIT_GLSL_CONSTANTS = Object.keys(UNIT).map((key) => "const int UNIT_".concat(key.toUpperCase(), " = ").concat(UNIT[key], ";")).join("");
-  var project_glsl_default = "".concat(COORDINATE_SYSTEM_GLSL_CONSTANTS, "\n").concat(PROJECTION_MODE_GLSL_CONSTANTS, "\n").concat(UNIT_GLSL_CONSTANTS, "\n\nuniform int project_uCoordinateSystem;\nuniform int project_uProjectionMode;\nuniform float project_uScale;\nuniform bool project_uWrapLongitude;\nuniform vec3 project_uCommonUnitsPerMeter;\nuniform vec3 project_uCommonUnitsPerWorldUnit;\nuniform vec3 project_uCommonUnitsPerWorldUnit2;\nuniform vec4 project_uCenter;\nuniform mat4 project_uModelMatrix;\nuniform mat4 project_uViewProjectionMatrix;\nuniform vec2 project_uViewportSize;\nuniform float project_uDevicePixelRatio;\nuniform float project_uFocalDistance;\nuniform vec3 project_uCameraPosition;\nuniform vec3 project_uCoordinateOrigin;\nuniform vec3 project_uCommonOrigin;\nuniform bool project_uPseudoMeters;\n\nconst float TILE_SIZE = 512.0;\nconst float PI = 3.1415926536;\nconst float WORLD_SCALE = TILE_SIZE / (PI * 2.0);\nconst vec3 ZERO_64_LOW = vec3(0.0);\nconst float EARTH_RADIUS = 6370972.0;\nconst float GLOBE_RADIUS = 256.0;\nfloat project_size_at_latitude(float lat) {\n  float y = clamp(lat, -89.9, 89.9);\n  return 1.0 / cos(radians(y));\n}\n\nfloat project_size() {\n  if (project_uProjectionMode == PROJECTION_MODE_WEB_MERCATOR &&\n    project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT &&\n    project_uPseudoMeters == false) {\n    \n    if (geometry.position.w == 0.0) {\n      return project_size_at_latitude(geometry.worldPosition.y);\n    }\n  \n    float y = geometry.position.y / TILE_SIZE * 2.0 - 1.0;\n    float y2 = y * y;\n    float y4 = y2 * y2;\n    float y6 = y4 * y2;\n    return 1.0 + 4.9348 * y2 + 4.0587 * y4 + 1.5642 * y6;\n  }\n  return 1.0;\n}\n\nfloat project_size_at_latitude(float meters, float lat) {\n  return meters * project_uCommonUnitsPerMeter.z * project_size_at_latitude(lat);\n}\nfloat project_size(float meters) {\n  return meters * project_uCommonUnitsPerMeter.z * project_size();\n}\n\nvec2 project_size(vec2 meters) {\n  return meters * project_uCommonUnitsPerMeter.xy * project_size();\n}\n\nvec3 project_size(vec3 meters) {\n  return meters * project_uCommonUnitsPerMeter * project_size();\n}\n\nvec4 project_size(vec4 meters) {\n  return vec4(meters.xyz * project_uCommonUnitsPerMeter, meters.w);\n}\nmat3 project_get_orientation_matrix(vec3 up) {\n  vec3 uz = normalize(up);\n  vec3 ux = abs(uz.z) == 1.0 ? vec3(1.0, 0.0, 0.0) : normalize(vec3(uz.y, -uz.x, 0));\n  vec3 uy = cross(uz, ux);\n  return mat3(ux, uy, uz);\n}\n\nbool project_needs_rotation(vec3 commonPosition, out mat3 transform) {\n  if (project_uProjectionMode == PROJECTION_MODE_GLOBE) {\n    transform = project_get_orientation_matrix(commonPosition);\n    return true;\n  }\n  return false;\n}\nvec3 project_normal(vec3 vector) {\n  vec4 normal_modelspace = project_uModelMatrix * vec4(vector, 0.0);\n  vec3 n = normalize(normal_modelspace.xyz * project_uCommonUnitsPerMeter);\n  mat3 rotation;\n  if (project_needs_rotation(geometry.position.xyz, rotation)) {\n    n = rotation * n;\n  }\n  return n;\n}\n\nvec4 project_offset_(vec4 offset) {\n  float dy = offset.y;\n  vec3 commonUnitsPerWorldUnit = project_uCommonUnitsPerWorldUnit + project_uCommonUnitsPerWorldUnit2 * dy;\n  return vec4(offset.xyz * commonUnitsPerWorldUnit, offset.w);\n}\nvec2 project_mercator_(vec2 lnglat) {\n  float x = lnglat.x;\n  if (project_uWrapLongitude) {\n    x = mod(x + 180., 360.0) - 180.;\n  }\n  float y = clamp(lnglat.y, -89.9, 89.9);\n  return vec2(\n    radians(x) + PI,\n    PI + log(tan_fp32(PI * 0.25 + radians(y) * 0.5))\n  ) * WORLD_SCALE;\n}\n\nvec3 project_globe_(vec3 lnglatz) {\n  float lambda = radians(lnglatz.x);\n  float phi = radians(lnglatz.y);\n  float cosPhi = cos(phi);\n  float D = (lnglatz.z / EARTH_RADIUS + 1.0) * GLOBE_RADIUS;\n\n  return vec3(\n    sin(lambda) * cosPhi,\n    -cos(lambda) * cosPhi,\n    sin(phi)\n  ) * D;\n}\nvec4 project_position(vec4 position, vec3 position64Low) {\n  vec4 position_world = project_uModelMatrix * position;\n  if (project_uProjectionMode == PROJECTION_MODE_WEB_MERCATOR) {\n    if (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT) {\n      return vec4(\n        project_mercator_(position_world.xy),\n        project_size_at_latitude(position_world.z, position_world.y),\n        position_world.w\n      );\n    }\n    if (project_uCoordinateSystem == COORDINATE_SYSTEM_CARTESIAN) {\n      position_world.xyz += project_uCoordinateOrigin;\n    }\n  }\n  if (project_uProjectionMode == PROJECTION_MODE_GLOBE) {\n    if (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT) {\n      return vec4(\n        project_globe_(position_world.xyz),\n        position_world.w\n      );\n    }\n  }\n  if (project_uProjectionMode == PROJECTION_MODE_WEB_MERCATOR_AUTO_OFFSET) {\n    if (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT) {\n      if (abs(position_world.y - project_uCoordinateOrigin.y) > 0.25) {\n        return vec4(\n          project_mercator_(position_world.xy) - project_uCommonOrigin.xy,\n          project_size(position_world.z),\n          position_world.w\n        );\n      }\n    }\n  }\n  if (project_uProjectionMode == PROJECTION_MODE_IDENTITY ||\n    (project_uProjectionMode == PROJECTION_MODE_WEB_MERCATOR_AUTO_OFFSET &&\n    (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT ||\n     project_uCoordinateSystem == COORDINATE_SYSTEM_CARTESIAN))) {\n    position_world.xyz -= project_uCoordinateOrigin;\n  }\n  return project_offset_(position_world) + project_offset_(project_uModelMatrix * vec4(position64Low, 0.0));\n}\n\nvec4 project_position(vec4 position) {\n  return project_position(position, ZERO_64_LOW);\n}\n\nvec3 project_position(vec3 position, vec3 position64Low) {\n  vec4 projected_position = project_position(vec4(position, 1.0), position64Low);\n  return projected_position.xyz;\n}\n\nvec3 project_position(vec3 position) {\n  vec4 projected_position = project_position(vec4(position, 1.0), ZERO_64_LOW);\n  return projected_position.xyz;\n}\n\nvec2 project_position(vec2 position) {\n  vec4 projected_position = project_position(vec4(position, 0.0, 1.0), ZERO_64_LOW);\n  return projected_position.xy;\n}\n\nvec4 project_common_position_to_clipspace(vec4 position, mat4 viewProjectionMatrix, vec4 center) {\n  return viewProjectionMatrix * position + center;\n}\nvec4 project_common_position_to_clipspace(vec4 position) {\n  return project_common_position_to_clipspace(position, project_uViewProjectionMatrix, project_uCenter);\n}\nvec2 project_pixel_size_to_clipspace(vec2 pixels) {\n  vec2 offset = pixels / project_uViewportSize * project_uDevicePixelRatio * 2.0;\n  return offset * project_uFocalDistance;\n}\n\nfloat project_size_to_pixel(float meters) {\n  return project_size(meters) * project_uScale;\n}\nfloat project_size_to_pixel(float size, int unit) {\n  if (unit == UNIT_METERS) return project_size_to_pixel(size);\n  if (unit == UNIT_COMMON) return size * project_uScale;\n  return size;\n}\nfloat project_pixel_size(float pixels) {\n  return pixels / project_uScale;\n}\nvec2 project_pixel_size(vec2 pixels) {\n  return pixels / project_uScale;\n}\n");
+  var project_glsl_default = "".concat(COORDINATE_SYSTEM_GLSL_CONSTANTS, "\n").concat(PROJECTION_MODE_GLSL_CONSTANTS, "\n").concat(UNIT_GLSL_CONSTANTS, '\n\nuniform int project_uCoordinateSystem;\nuniform int project_uProjectionMode;\nuniform float project_uScale;\nuniform bool project_uWrapLongitude;\nuniform vec3 project_uCommonUnitsPerMeter;\nuniform vec3 project_uCommonUnitsPerWorldUnit;\nuniform vec3 project_uCommonUnitsPerWorldUnit2;\nuniform vec4 project_uCenter;\nuniform mat4 project_uModelMatrix;\nuniform mat4 project_uViewProjectionMatrix;\nuniform vec2 project_uViewportSize;\nuniform float project_uDevicePixelRatio;\nuniform float project_uFocalDistance;\nuniform vec3 project_uCameraPosition;\nuniform vec3 project_uCoordinateOrigin;\nuniform vec3 project_uCommonOrigin;\nuniform bool project_uPseudoMeters;\n\nconst float TILE_SIZE = 512.0;\nconst float PI = 3.1415926536;\nconst float WORLD_SCALE = TILE_SIZE / (PI * 2.0);\nconst vec3 ZERO_64_LOW = vec3(0.0);\nconst float EARTH_RADIUS = 6370972.0; // meters\nconst float GLOBE_RADIUS = 256.0;\n\n// returns an adjustment factor for uCommonUnitsPerMeter\nfloat project_size_at_latitude(float lat) {\n  float y = clamp(lat, -89.9, 89.9);\n  return 1.0 / cos(radians(y));\n}\n\nfloat project_size() {\n  if (project_uProjectionMode == PROJECTION_MODE_WEB_MERCATOR &&\n    project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT &&\n    project_uPseudoMeters == false) {\n\n    // uCommonUnitsPerMeter in low-zoom Web Mercator is non-linear\n    // Adjust by 1 / cos(latitude)\n    // If geometry.position (vertex in common space) is populated, use it\n    // Otherwise use geometry.worldPosition (anchor in world space)\n    \n    if (geometry.position.w == 0.0) {\n      return project_size_at_latitude(geometry.worldPosition.y);\n    }\n\n    // latitude from common y: 2.0 * (atan(exp(y / TILE_SIZE * 2.0 * PI - PI)) - PI / 4.0)\n    // Taylor series of 1 / cos(latitude)\n    // Max error < 0.003\n  \n    float y = geometry.position.y / TILE_SIZE * 2.0 - 1.0;\n    float y2 = y * y;\n    float y4 = y2 * y2;\n    float y6 = y4 * y2;\n    return 1.0 + 4.9348 * y2 + 4.0587 * y4 + 1.5642 * y6;\n  }\n  return 1.0;\n}\n\nfloat project_size_at_latitude(float meters, float lat) {\n  return meters * project_uCommonUnitsPerMeter.z * project_size_at_latitude(lat);\n}\n\n//\n// Scaling offsets - scales meters to "world distance"\n// Note the scalar version of project_size is for scaling the z component only\n//\nfloat project_size(float meters) {\n  return meters * project_uCommonUnitsPerMeter.z * project_size();\n}\n\nvec2 project_size(vec2 meters) {\n  return meters * project_uCommonUnitsPerMeter.xy * project_size();\n}\n\nvec3 project_size(vec3 meters) {\n  return meters * project_uCommonUnitsPerMeter * project_size();\n}\n\nvec4 project_size(vec4 meters) {\n  return vec4(meters.xyz * project_uCommonUnitsPerMeter, meters.w);\n}\n\n// Get rotation matrix that aligns the z axis with the given up vector\n// Find 3 unit vectors ux, uy, uz that are perpendicular to each other and uz == up\nmat3 project_get_orientation_matrix(vec3 up) {\n  vec3 uz = normalize(up);\n  // Tangent on XY plane\n  vec3 ux = abs(uz.z) == 1.0 ? vec3(1.0, 0.0, 0.0) : normalize(vec3(uz.y, -uz.x, 0));\n  vec3 uy = cross(uz, ux);\n  return mat3(ux, uy, uz);\n}\n\nbool project_needs_rotation(vec3 commonPosition, out mat3 transform) {\n  if (project_uProjectionMode == PROJECTION_MODE_GLOBE) {\n    transform = project_get_orientation_matrix(commonPosition);\n    return true;\n  }\n  return false;\n}\n\n//\n// Projecting normal - transform deltas from current coordinate system to\n// normals in the worldspace\n//\nvec3 project_normal(vec3 vector) {\n  // Apply model matrix\n  vec4 normal_modelspace = project_uModelMatrix * vec4(vector, 0.0);\n  vec3 n = normalize(normal_modelspace.xyz * project_uCommonUnitsPerMeter);\n  mat3 rotation;\n  if (project_needs_rotation(geometry.position.xyz, rotation)) {\n    n = rotation * n;\n  }\n  return n;\n}\n\nvec4 project_offset_(vec4 offset) {\n  float dy = offset.y;\n  vec3 commonUnitsPerWorldUnit = project_uCommonUnitsPerWorldUnit + project_uCommonUnitsPerWorldUnit2 * dy;\n  return vec4(offset.xyz * commonUnitsPerWorldUnit, offset.w);\n}\n\n//\n// Projecting positions - non-linear projection: lnglats => unit tile [0-1, 0-1]\n//\nvec2 project_mercator_(vec2 lnglat) {\n  float x = lnglat.x;\n  if (project_uWrapLongitude) {\n    x = mod(x + 180., 360.0) - 180.;\n  }\n  float y = clamp(lnglat.y, -89.9, 89.9);\n  return vec2(\n    radians(x) + PI,\n    PI + log(tan_fp32(PI * 0.25 + radians(y) * 0.5))\n  ) * WORLD_SCALE;\n}\n\nvec3 project_globe_(vec3 lnglatz) {\n  float lambda = radians(lnglatz.x);\n  float phi = radians(lnglatz.y);\n  float cosPhi = cos(phi);\n  float D = (lnglatz.z / EARTH_RADIUS + 1.0) * GLOBE_RADIUS;\n\n  return vec3(\n    sin(lambda) * cosPhi,\n    -cos(lambda) * cosPhi,\n    sin(phi)\n  ) * D;\n}\n\n//\n// Projects positions (defined by project_uCoordinateSystem) to common space (defined by project_uProjectionMode)\n//\nvec4 project_position(vec4 position, vec3 position64Low) {\n  vec4 position_world = project_uModelMatrix * position;\n\n  // Work around for a Mac+NVIDIA bug https://github.com/visgl/deck.gl/issues/4145\n  if (project_uProjectionMode == PROJECTION_MODE_WEB_MERCATOR) {\n    if (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT) {\n      return vec4(\n        project_mercator_(position_world.xy),\n        project_size_at_latitude(position_world.z, position_world.y),\n        position_world.w\n      );\n    }\n    if (project_uCoordinateSystem == COORDINATE_SYSTEM_CARTESIAN) {\n      position_world.xyz += project_uCoordinateOrigin;\n    }\n  }\n  if (project_uProjectionMode == PROJECTION_MODE_GLOBE) {\n    if (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT) {\n      return vec4(\n        project_globe_(position_world.xyz),\n        position_world.w\n      );\n    }\n  }\n  if (project_uProjectionMode == PROJECTION_MODE_WEB_MERCATOR_AUTO_OFFSET) {\n    if (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT) {\n      if (abs(position_world.y - project_uCoordinateOrigin.y) > 0.25) {\n        // Too far from the projection center for offset mode to be accurate\n        // Only use high parts\n        return vec4(\n          project_mercator_(position_world.xy) - project_uCommonOrigin.xy,\n          project_size(position_world.z),\n          position_world.w\n        );\n      }\n    }\n  }\n  if (project_uProjectionMode == PROJECTION_MODE_IDENTITY ||\n    (project_uProjectionMode == PROJECTION_MODE_WEB_MERCATOR_AUTO_OFFSET &&\n    (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT ||\n     project_uCoordinateSystem == COORDINATE_SYSTEM_CARTESIAN))) {\n    // Subtract high part of 64 bit value. Convert remainder to float32, preserving precision.\n    position_world.xyz -= project_uCoordinateOrigin;\n  }\n\n  // Translation is already added to the high parts\n  return project_offset_(position_world + project_uModelMatrix * vec4(position64Low, 0.0));\n}\n\nvec4 project_position(vec4 position) {\n  return project_position(position, ZERO_64_LOW);\n}\n\nvec3 project_position(vec3 position, vec3 position64Low) {\n  vec4 projected_position = project_position(vec4(position, 1.0), position64Low);\n  return projected_position.xyz;\n}\n\nvec3 project_position(vec3 position) {\n  vec4 projected_position = project_position(vec4(position, 1.0), ZERO_64_LOW);\n  return projected_position.xyz;\n}\n\nvec2 project_position(vec2 position) {\n  vec4 projected_position = project_position(vec4(position, 0.0, 1.0), ZERO_64_LOW);\n  return projected_position.xy;\n}\n\nvec4 project_common_position_to_clipspace(vec4 position, mat4 viewProjectionMatrix, vec4 center) {\n  return viewProjectionMatrix * position + center;\n}\n\n//\n// Projects from common space coordinates to clip space.\n// Uses project_uViewProjectionMatrix\n//\nvec4 project_common_position_to_clipspace(vec4 position) {\n  return project_common_position_to_clipspace(position, project_uViewProjectionMatrix, project_uCenter);\n}\n\n// Returns a clip space offset that corresponds to a given number of screen pixels\nvec2 project_pixel_size_to_clipspace(vec2 pixels) {\n  vec2 offset = pixels / project_uViewportSize * project_uDevicePixelRatio * 2.0;\n  return offset * project_uFocalDistance;\n}\n\nfloat project_size_to_pixel(float meters) {\n  return project_size(meters) * project_uScale;\n}\nfloat project_size_to_pixel(float size, int unit) {\n  if (unit == UNIT_METERS) return project_size_to_pixel(size);\n  if (unit == UNIT_COMMON) return size * project_uScale;\n  // UNIT_PIXELS\n  return size;\n}\nfloat project_pixel_size(float pixels) {\n  return pixels / project_uScale;\n}\nvec2 project_pixel_size(vec2 pixels) {\n  return pixels / project_uScale;\n}\n');
 
   // node_modules/@deck.gl/core/dist/esm/utils/memoize.js
   function isEqual(a2, b2) {
@@ -29772,6 +29509,14 @@
     getUniforms: getUniforms4
   };
 
+  // node_modules/@deck.gl/core/dist/esm/shaderlib/project32/project32.js
+  var vs4 = "\nvec4 project_position_to_clipspace(\n  vec3 position, vec3 position64Low, vec3 offset, out vec4 commonPosition\n) {\n  vec3 projectedPosition = project_position(position, position64Low);\n  mat3 rotation;\n  if (project_needs_rotation(projectedPosition, rotation)) {\n    // offset is specified as ENU\n    // when in globe projection, rotate offset so that the ground alighs with the surface of the globe\n    offset = rotation * offset;\n  }\n  commonPosition = vec4(projectedPosition + offset, 1.0);\n  return project_common_position_to_clipspace(commonPosition);\n}\n\nvec4 project_position_to_clipspace(\n  vec3 position, vec3 position64Low, vec3 offset\n) {\n  vec4 commonPosition;\n  return project_position_to_clipspace(position, position64Low, offset, commonPosition);\n}\n";
+  var project32_default = {
+    name: "project32",
+    dependencies: [project_default],
+    vs: vs4
+  };
+
   // node_modules/@math.gl/web-mercator/dist/esm/math-utils.js
   function createMat4() {
     return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -29836,10 +29581,6 @@
     const latCosine = Math.cos(latitude * DEGREES_TO_RADIANS2);
     return scaleToZoom(EARTH_CIRCUMFERENCE * latCosine) - 9;
   }
-  function unitsPerMeter(latitude) {
-    const latCosine = Math.cos(latitude * DEGREES_TO_RADIANS2);
-    return TILE_SIZE / EARTH_CIRCUMFERENCE / latCosine;
-  }
   function getDistanceScales(options) {
     const {
       latitude,
@@ -29872,7 +29613,7 @@
     const [longitude, latitude, z0] = lngLatZ;
     const [x2, y2, z] = xyz;
     const {
-      unitsPerMeter: unitsPerMeter2,
+      unitsPerMeter: unitsPerMeter3,
       unitsPerMeter2: unitsPerMeter22
     } = getDistanceScales({
       longitude,
@@ -29880,8 +29621,8 @@
       highPrecision: true
     });
     const worldspace = lngLatToWorld(lngLatZ);
-    worldspace[0] += x2 * (unitsPerMeter2[0] + unitsPerMeter22[0] * y2);
-    worldspace[1] += y2 * (unitsPerMeter2[1] + unitsPerMeter22[1] * y2);
+    worldspace[0] += x2 * (unitsPerMeter3[0] + unitsPerMeter22[0] * y2);
+    worldspace[1] += y2 * (unitsPerMeter3[1] + unitsPerMeter22[1] * y2);
     const newLngLat = worldToLngLat(worldspace);
     const newZ = (z0 || 0) + (z || 0);
     return Number.isFinite(z0) || Number.isFinite(z) ? [newLngLat[0], newLngLat[1], newZ] : newLngLat;
@@ -30102,7 +29843,7 @@
   }
 
   // node_modules/@deck.gl/core/dist/esm/shaderlib/shadow/shadow.js
-  var vs4 = "\nconst int max_lights = 2;\nuniform mat4 shadow_uViewProjectionMatrices[max_lights];\nuniform vec4 shadow_uProjectCenters[max_lights];\nuniform bool shadow_uDrawShadowMap;\nuniform bool shadow_uUseShadowMap;\nuniform int shadow_uLightId;\nuniform float shadow_uLightCount;\n\nvarying vec3 shadow_vPosition[max_lights];\n\nvec4 shadow_setVertexPosition(vec4 position_commonspace) {\n  if (shadow_uDrawShadowMap) {\n    return project_common_position_to_clipspace(position_commonspace, shadow_uViewProjectionMatrices[shadow_uLightId], shadow_uProjectCenters[shadow_uLightId]);\n  }\n  if (shadow_uUseShadowMap) {\n    for (int i = 0; i < max_lights; i++) {\n      if(i < int(shadow_uLightCount)) {\n        vec4 shadowMap_position = project_common_position_to_clipspace(position_commonspace, shadow_uViewProjectionMatrices[i], shadow_uProjectCenters[i]);\n        shadow_vPosition[i] = (shadowMap_position.xyz / shadowMap_position.w + 1.0) / 2.0;\n      }\n    }\n  }\n  return gl_Position;\n}\n";
+  var vs5 = "\nconst int max_lights = 2;\nuniform mat4 shadow_uViewProjectionMatrices[max_lights];\nuniform vec4 shadow_uProjectCenters[max_lights];\nuniform bool shadow_uDrawShadowMap;\nuniform bool shadow_uUseShadowMap;\nuniform int shadow_uLightId;\nuniform float shadow_uLightCount;\n\nvarying vec3 shadow_vPosition[max_lights];\n\nvec4 shadow_setVertexPosition(vec4 position_commonspace) {\n  if (shadow_uDrawShadowMap) {\n    return project_common_position_to_clipspace(position_commonspace, shadow_uViewProjectionMatrices[shadow_uLightId], shadow_uProjectCenters[shadow_uLightId]);\n  }\n  if (shadow_uUseShadowMap) {\n    for (int i = 0; i < max_lights; i++) {\n      if(i < int(shadow_uLightCount)) {\n        vec4 shadowMap_position = project_common_position_to_clipspace(position_commonspace, shadow_uViewProjectionMatrices[i], shadow_uProjectCenters[i]);\n        shadow_vPosition[i] = (shadowMap_position.xyz / shadowMap_position.w + 1.0) / 2.0;\n      }\n    }\n  }\n  return gl_Position;\n}\n";
   var fs3 = "\nconst int max_lights = 2;\nuniform bool shadow_uDrawShadowMap;\nuniform bool shadow_uUseShadowMap;\nuniform sampler2D shadow_uShadowMap0;\nuniform sampler2D shadow_uShadowMap1;\nuniform vec4 shadow_uColor;\nuniform float shadow_uLightCount;\n\nvarying vec3 shadow_vPosition[max_lights];\n\nconst vec4 bitPackShift = vec4(1.0, 255.0, 65025.0, 16581375.0);\nconst vec4 bitUnpackShift = 1.0 / bitPackShift;\nconst vec4 bitMask = vec4(1.0 / 255.0, 1.0 / 255.0, 1.0 / 255.0,  0.0);\n\nfloat shadow_getShadowWeight(vec3 position, sampler2D shadowMap) {\n  vec4 rgbaDepth = texture2D(shadowMap, position.xy);\n\n  float z = dot(rgbaDepth, bitUnpackShift);\n  return smoothstep(0.001, 0.01, position.z - z);\n}\n\nvec4 shadow_filterShadowColor(vec4 color) {\n  if (shadow_uDrawShadowMap) {\n    vec4 rgbaDepth = fract(gl_FragCoord.z * bitPackShift);\n    rgbaDepth -= rgbaDepth.gbaa * bitMask;\n    return rgbaDepth;\n  }\n  if (shadow_uUseShadowMap) {\n    float shadowAlpha = 0.0;\n    shadowAlpha += shadow_getShadowWeight(shadow_vPosition[0], shadow_uShadowMap0);\n    if(shadow_uLightCount > 1.0) {\n      shadowAlpha += shadow_getShadowWeight(shadow_vPosition[1], shadow_uShadowMap1);\n    }\n    shadowAlpha *= shadow_uColor.a / shadow_uLightCount;\n    float blendedAlpha = shadowAlpha + color.a * (1.0 - shadowAlpha);\n\n    return vec4(\n      mix(color.rgb, shadow_uColor.rgb, shadowAlpha / blendedAlpha),\n      blendedAlpha\n    );\n  }\n  return color;\n}\n";
   var getMemoizedViewportCenterPosition = memoize(getViewportCenterPosition);
   var getMemoizedViewProjectionMatrices = memoize(getViewProjectionMatrices);
@@ -30196,7 +29937,7 @@
   var shadow_default = {
     name: "shadow",
     dependencies: [project_default],
-    vs: vs4,
+    vs: vs5,
     fs: fs3,
     inject: {
       "vs:DECKGL_FILTER_GL_POSITION": "\n    position = shadow_setVertexPosition(geometry.position);\n    ",
@@ -30207,6 +29948,449 @@
         return createShadowUniforms(opts, context);
       }
       return {};
+    }
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/shaderlib/picking/picking.js
+  var picking_default = {
+    inject: {
+      "vs:DECKGL_FILTER_GL_POSITION": "\n    // for picking depth values\n    picking_setPickingAttribute(position.z / position.w);\n  ",
+      "vs:DECKGL_FILTER_COLOR": "\n  picking_setPickingColor(geometry.pickingColor);\n  ",
+      "fs:#decl": "\nuniform bool picking_uAttribute;\n  ",
+      "fs:DECKGL_FILTER_COLOR": {
+        order: 99,
+        injection: "\n  // use highlight color if this fragment belongs to the selected object.\n  color = picking_filterHighlightColor(color);\n\n  // use picking color if rendering to picking FBO.\n  color = picking_filterPickingColor(color);\n    "
+      }
+    },
+    ...picking
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/shaderlib/index.js
+  var DEFAULT_MODULES = [project_default];
+  var SHADER_HOOKS = ["vs:DECKGL_FILTER_SIZE(inout vec3 size, VertexGeometry geometry)", "vs:DECKGL_FILTER_GL_POSITION(inout vec4 position, VertexGeometry geometry)", "vs:DECKGL_FILTER_COLOR(inout vec4 color, VertexGeometry geometry)", "fs:DECKGL_FILTER_COLOR(inout vec4 color, FragmentGeometry geometry)"];
+  function createProgramManager(gl) {
+    const programManager = ProgramManager.getDefaultProgramManager(gl);
+    for (const shaderModule2 of DEFAULT_MODULES) {
+      programManager.addDefaultModule(shaderModule2);
+    }
+    for (const shaderHook of SHADER_HOOKS) {
+      programManager.addShaderHook(shaderHook);
+    }
+    return programManager;
+  }
+
+  // node_modules/@deck.gl/core/dist/esm/effects/lighting/ambient-light.js
+  var DEFAULT_LIGHT_COLOR = [255, 255, 255];
+  var DEFAULT_LIGHT_INTENSITY = 1;
+  var idCount = 0;
+  var AmbientLight = class {
+    constructor(props = {}) {
+      _defineProperty(this, "id", void 0);
+      _defineProperty(this, "color", void 0);
+      _defineProperty(this, "intensity", void 0);
+      _defineProperty(this, "type", "ambient");
+      const {
+        color = DEFAULT_LIGHT_COLOR
+      } = props;
+      const {
+        intensity = DEFAULT_LIGHT_INTENSITY
+      } = props;
+      this.id = props.id || "ambient-".concat(idCount++);
+      this.color = color;
+      this.intensity = intensity;
+    }
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/effects/lighting/directional-light.js
+  var DEFAULT_LIGHT_COLOR2 = [255, 255, 255];
+  var DEFAULT_LIGHT_INTENSITY2 = 1;
+  var DEFAULT_LIGHT_DIRECTION = [0, 0, -1];
+  var idCount2 = 0;
+  var DirectionalLight = class {
+    constructor(props = {}) {
+      _defineProperty(this, "id", void 0);
+      _defineProperty(this, "color", void 0);
+      _defineProperty(this, "intensity", void 0);
+      _defineProperty(this, "type", "directional");
+      _defineProperty(this, "direction", void 0);
+      _defineProperty(this, "shadow", void 0);
+      const {
+        color = DEFAULT_LIGHT_COLOR2
+      } = props;
+      const {
+        intensity = DEFAULT_LIGHT_INTENSITY2
+      } = props;
+      const {
+        direction = DEFAULT_LIGHT_DIRECTION
+      } = props;
+      const {
+        _shadow = false
+      } = props;
+      this.id = props.id || "directional-".concat(idCount2++);
+      this.color = color;
+      this.intensity = intensity;
+      this.type = "directional";
+      this.direction = new Vector3(direction).normalize().toArray();
+      this.shadow = _shadow;
+    }
+    getProjectedLight(opts) {
+      return this;
+    }
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/passes/pass.js
+  var Pass = class {
+    constructor(gl, props = {
+      id: "pass"
+    }) {
+      _defineProperty(this, "id", void 0);
+      _defineProperty(this, "gl", void 0);
+      _defineProperty(this, "props", void 0);
+      const {
+        id
+      } = props;
+      this.id = id;
+      this.gl = gl;
+      this.props = {
+        ...props
+      };
+    }
+    setProps(props) {
+      Object.assign(this.props, props);
+    }
+    render(params) {
+    }
+    cleanup() {
+    }
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/passes/layers-pass.js
+  var LayersPass = class extends Pass {
+    constructor(...args) {
+      super(...args);
+      _defineProperty(this, "_lastRenderIndex", -1);
+    }
+    render(options) {
+      const gl = this.gl;
+      setParameters(gl, {
+        framebuffer: options.target
+      });
+      return this._drawLayers(options);
+    }
+    _drawLayers(options) {
+      const {
+        target,
+        moduleParameters,
+        viewports,
+        views,
+        onViewportActive,
+        clearStack = true,
+        clearCanvas = true
+      } = options;
+      options.pass = options.pass || "unknown";
+      const gl = this.gl;
+      if (clearCanvas) {
+        clearGLCanvas(gl);
+      }
+      if (clearStack) {
+        this._lastRenderIndex = -1;
+      }
+      const renderStats = [];
+      for (const viewport of viewports) {
+        const view = views && views[viewport.id];
+        onViewportActive(viewport);
+        const drawLayerParams = this._getDrawLayerParams(viewport, options);
+        const subViewports = viewport.subViewports || [viewport];
+        for (const subViewport of subViewports) {
+          const stats = this._drawLayersInViewport(gl, {
+            target,
+            moduleParameters,
+            viewport: subViewport,
+            view,
+            pass: options.pass,
+            layers: options.layers
+          }, drawLayerParams);
+          renderStats.push(stats);
+        }
+      }
+      return renderStats;
+    }
+    _getDrawLayerParams(viewport, {
+      layers,
+      pass,
+      layerFilter,
+      cullRect,
+      effects,
+      moduleParameters
+    }) {
+      const drawLayerParams = [];
+      const indexResolver = layerIndexResolver(this._lastRenderIndex + 1);
+      const drawContext = {
+        layer: layers[0],
+        viewport,
+        isPicking: pass.startsWith("picking"),
+        renderPass: pass,
+        cullRect
+      };
+      const layerFilterCache = {};
+      for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
+        const layer = layers[layerIndex];
+        const shouldDrawLayer = this._shouldDrawLayer(layer, drawContext, layerFilter, layerFilterCache);
+        const layerParam = {
+          shouldDrawLayer
+        };
+        if (shouldDrawLayer) {
+          layerParam.layerRenderIndex = indexResolver(layer, shouldDrawLayer);
+          layerParam.moduleParameters = this._getModuleParameters(layer, effects, pass, moduleParameters);
+          layerParam.layerParameters = this.getLayerParameters(layer, layerIndex, viewport);
+        }
+        drawLayerParams[layerIndex] = layerParam;
+      }
+      return drawLayerParams;
+    }
+    _drawLayersInViewport(gl, {
+      layers,
+      moduleParameters: globalModuleParameters,
+      pass,
+      target,
+      viewport,
+      view
+    }, drawLayerParams) {
+      const glViewport = getGLViewport(gl, {
+        moduleParameters: globalModuleParameters,
+        target,
+        viewport
+      });
+      if (view && view.props.clear) {
+        const clearOpts = view.props.clear === true ? {
+          color: true,
+          depth: true
+        } : view.props.clear;
+        withParameters(gl, {
+          scissorTest: true,
+          scissor: glViewport
+        }, () => clear(gl, clearOpts));
+      }
+      const renderStatus = {
+        totalCount: layers.length,
+        visibleCount: 0,
+        compositeCount: 0,
+        pickableCount: 0
+      };
+      setParameters(gl, {
+        viewport: glViewport
+      });
+      for (let layerIndex = 0; layerIndex < layers.length; layerIndex++) {
+        const layer = layers[layerIndex];
+        const {
+          shouldDrawLayer,
+          layerRenderIndex,
+          moduleParameters,
+          layerParameters
+        } = drawLayerParams[layerIndex];
+        if (shouldDrawLayer && layer.props.pickable) {
+          renderStatus.pickableCount++;
+        }
+        if (layer.isComposite) {
+          renderStatus.compositeCount++;
+        } else if (shouldDrawLayer) {
+          renderStatus.visibleCount++;
+          this._lastRenderIndex = Math.max(this._lastRenderIndex, layerRenderIndex);
+          moduleParameters.viewport = viewport;
+          try {
+            layer._drawLayer({
+              moduleParameters,
+              uniforms: {
+                layerIndex: layerRenderIndex
+              },
+              parameters: layerParameters
+            });
+          } catch (err3) {
+            layer.raiseError(err3, "drawing ".concat(layer, " to ").concat(pass));
+          }
+        }
+      }
+      return renderStatus;
+    }
+    shouldDrawLayer(layer) {
+      return true;
+    }
+    getModuleParameters(layer, effects) {
+      return null;
+    }
+    getLayerParameters(layer, layerIndex, viewport) {
+      return layer.props.parameters;
+    }
+    _shouldDrawLayer(layer, drawContext, layerFilter, layerFilterCache) {
+      const shouldDrawLayer = layer.props.visible && this.shouldDrawLayer(layer);
+      if (!shouldDrawLayer) {
+        return false;
+      }
+      drawContext.layer = layer;
+      let parent = layer.parent;
+      while (parent) {
+        if (!parent.props.visible || !parent.filterSubLayer(drawContext)) {
+          return false;
+        }
+        drawContext.layer = parent;
+        parent = parent.parent;
+      }
+      if (layerFilter) {
+        const rootLayerId = drawContext.layer.id;
+        if (!(rootLayerId in layerFilterCache)) {
+          layerFilterCache[rootLayerId] = layerFilter(drawContext);
+        }
+        if (!layerFilterCache[rootLayerId]) {
+          return false;
+        }
+      }
+      layer.activateViewport(drawContext.viewport);
+      return true;
+    }
+    _getModuleParameters(layer, effects, pass, overrides) {
+      var _layer$internalState;
+      const moduleParameters = Object.assign(Object.create(((_layer$internalState = layer.internalState) === null || _layer$internalState === void 0 ? void 0 : _layer$internalState.propsInTransition) || layer.props), {
+        autoWrapLongitude: layer.wrapLongitude,
+        viewport: layer.context.viewport,
+        mousePosition: layer.context.mousePosition,
+        pickingActive: 0,
+        devicePixelRatio: cssToDeviceRatio(this.gl)
+      });
+      if (effects) {
+        for (const effect of effects) {
+          var _effect$getModulePara;
+          Object.assign(moduleParameters, (_effect$getModulePara = effect.getModuleParameters) === null || _effect$getModulePara === void 0 ? void 0 : _effect$getModulePara.call(effect, layer));
+        }
+      }
+      return Object.assign(moduleParameters, this.getModuleParameters(layer, effects), overrides);
+    }
+  };
+  function layerIndexResolver(startIndex = 0, layerIndices = {}) {
+    const resolvers = {};
+    const resolveLayerIndex = (layer, isDrawn) => {
+      const indexOverride = layer.props._offset;
+      const layerId = layer.id;
+      const parentId = layer.parent && layer.parent.id;
+      let index;
+      if (parentId && !(parentId in layerIndices)) {
+        resolveLayerIndex(layer.parent, false);
+      }
+      if (parentId in resolvers) {
+        const resolver = resolvers[parentId] = resolvers[parentId] || layerIndexResolver(layerIndices[parentId], layerIndices);
+        index = resolver(layer, isDrawn);
+        resolvers[layerId] = resolver;
+      } else if (Number.isFinite(indexOverride)) {
+        index = indexOverride + (layerIndices[parentId] || 0);
+        resolvers[layerId] = null;
+      } else {
+        index = startIndex;
+      }
+      if (isDrawn && index >= startIndex) {
+        startIndex = index + 1;
+      }
+      layerIndices[layerId] = index;
+      return index;
+    };
+    return resolveLayerIndex;
+  }
+  function getGLViewport(gl, {
+    moduleParameters,
+    target,
+    viewport
+  }) {
+    const useTarget = target && target.id !== "default-framebuffer";
+    const pixelRatio = moduleParameters && moduleParameters.devicePixelRatio || cssToDeviceRatio(gl);
+    const height = useTarget ? target.height : gl.drawingBufferHeight;
+    const dimensions = viewport;
+    return [dimensions.x * pixelRatio, height - (dimensions.y + dimensions.height) * pixelRatio, dimensions.width * pixelRatio, dimensions.height * pixelRatio];
+  }
+  function clearGLCanvas(gl) {
+    const width = gl.drawingBufferWidth;
+    const height = gl.drawingBufferHeight;
+    setParameters(gl, {
+      viewport: [0, 0, width, height]
+    });
+    gl.clear(16384 | 256);
+  }
+
+  // node_modules/@deck.gl/core/dist/esm/passes/shadow-pass.js
+  var ShadowPass = class extends LayersPass {
+    constructor(gl, props) {
+      super(gl, props);
+      _defineProperty(this, "shadowMap", void 0);
+      _defineProperty(this, "depthBuffer", void 0);
+      _defineProperty(this, "fbo", void 0);
+      this.shadowMap = new Texture2D(gl, {
+        width: 1,
+        height: 1,
+        parameters: {
+          [10241]: 9729,
+          [10240]: 9729,
+          [10242]: 33071,
+          [10243]: 33071
+        }
+      });
+      this.depthBuffer = new Renderbuffer(gl, {
+        format: 33189,
+        width: 1,
+        height: 1
+      });
+      this.fbo = new Framebuffer(gl, {
+        id: "shadowmap",
+        width: 1,
+        height: 1,
+        attachments: {
+          [36064]: this.shadowMap,
+          [36096]: this.depthBuffer
+        }
+      });
+    }
+    render(params) {
+      const target = this.fbo;
+      withParameters(this.gl, {
+        depthRange: [0, 1],
+        depthTest: true,
+        blend: false,
+        clearColor: [1, 1, 1, 1]
+      }, () => {
+        const viewport = params.viewports[0];
+        const pixelRatio = cssToDeviceRatio(this.gl);
+        const width = viewport.width * pixelRatio;
+        const height = viewport.height * pixelRatio;
+        if (width !== target.width || height !== target.height) {
+          target.resize({
+            width,
+            height
+          });
+        }
+        super.render({
+          ...params,
+          target,
+          pass: "shadow"
+        });
+      });
+    }
+    shouldDrawLayer(layer) {
+      return layer.props.shadowEnabled !== false;
+    }
+    getModuleParameters() {
+      return {
+        drawToShadowMap: true
+      };
+    }
+    delete() {
+      if (this.fbo) {
+        this.fbo.delete();
+        this.fbo = null;
+      }
+      if (this.shadowMap) {
+        this.shadowMap.delete();
+        this.shadowMap = null;
+      }
+      if (this.depthBuffer) {
+        this.depthBuffer.delete();
+        this.depthBuffer = null;
+      }
     }
   };
 
@@ -30228,23 +30412,17 @@
   var LightingEffect = class {
     constructor(props = {}) {
       _defineProperty(this, "id", "lighting-effect");
-      _defineProperty(this, "props", void 0);
+      _defineProperty(this, "props", null);
       _defineProperty(this, "shadowColor", DEFAULT_SHADOW_COLOR2);
       _defineProperty(this, "shadow", void 0);
-      _defineProperty(this, "ambientLight", void 0);
-      _defineProperty(this, "directionalLights", void 0);
-      _defineProperty(this, "pointLights", void 0);
+      _defineProperty(this, "ambientLight", null);
+      _defineProperty(this, "directionalLights", []);
+      _defineProperty(this, "pointLights", []);
       _defineProperty(this, "shadowPasses", []);
       _defineProperty(this, "shadowMaps", []);
       _defineProperty(this, "dummyShadowMap", null);
       _defineProperty(this, "programManager", void 0);
       _defineProperty(this, "shadowMatrices", void 0);
-      this.setProps(props);
-    }
-    setProps(props) {
-      this.ambientLight = null;
-      this.directionalLights = [];
-      this.pointLights = [];
       for (const key in props) {
         const lightSource = props[key];
         switch (lightSource.type) {
@@ -30262,7 +30440,6 @@
       }
       this._applyDefaultLights();
       this.shadow = this.directionalLights.some((light) => light.shadow);
-      this.props = props;
     }
     preRender(gl, {
       layers,
@@ -30512,27 +30689,6 @@
       targetIndex += size * 2;
     }
     return scratchArray.subarray(0, count2 * size * 2);
-  }
-  function mergeBounds(boundsList) {
-    let mergedBounds = null;
-    let isMerged = false;
-    for (const bounds of boundsList) {
-      if (!bounds)
-        continue;
-      if (!mergedBounds) {
-        mergedBounds = bounds;
-      } else {
-        if (!isMerged) {
-          mergedBounds = [[mergedBounds[0][0], mergedBounds[0][1]], [mergedBounds[1][0], mergedBounds[1][1]]];
-          isMerged = true;
-        }
-        mergedBounds[0][0] = Math.min(mergedBounds[0][0], bounds[0][0]);
-        mergedBounds[0][1] = Math.min(mergedBounds[0][1], bounds[0][1]);
-        mergedBounds[1][0] = Math.max(mergedBounds[1][0], bounds[1][0]);
-        mergedBounds[1][1] = Math.max(mergedBounds[1][1], bounds[1][1]);
-      }
-    }
-    return mergedBounds;
   }
 
   // node_modules/@deck.gl/core/dist/esm/viewports/viewport.js
@@ -30814,6 +30970,13 @@
   _defineProperty(Viewport, "displayName", "Viewport");
 
   // node_modules/@deck.gl/core/dist/esm/viewports/web-mercator-viewport.js
+  var TILE_SIZE3 = 512;
+  var EARTH_CIRCUMFERENCE2 = 4003e4;
+  var DEGREES_TO_RADIANS5 = Math.PI / 180;
+  function unitsPerMeter2(latitude) {
+    const latCosine = Math.cos(latitude * DEGREES_TO_RADIANS5);
+    return TILE_SIZE3 / EARTH_CIRCUMFERENCE2 / latCosine;
+  }
   var WebMercatorViewport2 = class _WebMercatorViewport extends Viewport {
     constructor(opts = {}) {
       const {
@@ -30824,14 +30987,10 @@
         bearing = 0,
         nearZMultiplier = 0.1,
         farZMultiplier = 1.01,
-        nearZ,
-        farZ,
         orthographic = false,
         projectionMatrix,
         repeat = false,
         worldOffset = 0,
-        position,
-        padding,
         legacyMeterSizes = false
       } = opts;
       let {
@@ -30854,31 +31013,14 @@
         } else {
           fovy = altitudeToFovy(altitude);
         }
-        let offset;
-        if (padding) {
-          const {
-            top = 0,
-            bottom = 0
-          } = padding;
-          offset = [0, clamp((top + height - bottom) / 2, 0, height) - height / 2];
-        }
         projectionParameters = getProjectionParameters({
           width,
           height,
-          scale: scale5,
-          center: position && [0, 0, position[2] * unitsPerMeter(latitude)],
-          offset,
           pitch,
           fovy,
           nearZMultiplier,
           farZMultiplier
         });
-        if (Number.isFinite(nearZ)) {
-          projectionParameters.near = nearZ;
-        }
-        if (Number.isFinite(farZ)) {
-          projectionParameters.far = farZ;
-        }
       }
       let viewMatrixUncentered = getViewMatrix({
         height,
@@ -30944,7 +31086,7 @@
         return super.projectPosition(xyz);
       }
       const [X, Y] = this.projectFlat(xyz);
-      const Z = (xyz[2] || 0) * unitsPerMeter(xyz[1]);
+      const Z = (xyz[2] || 0) * unitsPerMeter2(xyz[1]);
       return [X, Y, Z];
     }
     unprojectPosition(xyz) {
@@ -30952,7 +31094,7 @@
         return super.unprojectPosition(xyz);
       }
       const [X, Y] = this.unprojectFlat(xyz);
-      const Z = (xyz[2] || 0) / unitsPerMeter(Y);
+      const Z = (xyz[2] || 0) / unitsPerMeter2(Y);
       return [X, Y, Z];
     }
     addMetersToLngLat(lngLatZ, xyz) {
@@ -31000,7 +31142,6 @@
   _defineProperty(WebMercatorViewport2, "displayName", "WebMercatorViewport");
 
   // node_modules/@deck.gl/core/dist/esm/shaderlib/project/project-functions.js
-  var DEFAULT_COORDINATE_ORIGIN2 = [0, 0, 0];
   function lngLatZToWorldPosition(lngLatZ, viewport, offsetMode = false) {
     const p2 = viewport.projectPosition(lngLatZ);
     if (offsetMode && viewport instanceof WebMercatorViewport2) {
@@ -31072,13 +31213,10 @@
       fromCoordinateOrigin
     } = normalizeParameters(params);
     const {
-      autoOffset = true
-    } = params;
-    const {
-      geospatialOrigin = DEFAULT_COORDINATE_ORIGIN2,
-      shaderCoordinateOrigin = DEFAULT_COORDINATE_ORIGIN2,
-      offsetMode = false
-    } = autoOffset ? getOffsetOrigin(viewport, coordinateSystem, coordinateOrigin) : {};
+      geospatialOrigin,
+      shaderCoordinateOrigin,
+      offsetMode
+    } = getOffsetOrigin(viewport, coordinateSystem, coordinateOrigin);
     const worldPosition = getWorldPosition(position, {
       viewport,
       modelMatrix,
@@ -31093,153 +31231,6 @@
     return worldPosition;
   }
 
-  // node_modules/@deck.gl/core/dist/esm/passes/pick-layers-pass.js
-  var PICKING_PARAMETERS = {
-    blendFunc: [1, 0, 32771, 0],
-    blendEquation: 32774
-  };
-  var PickLayersPass = class extends LayersPass {
-    constructor(...args) {
-      super(...args);
-      _defineProperty(this, "pickZ", void 0);
-      _defineProperty(this, "_colorEncoderState", null);
-    }
-    render(props) {
-      if ("pickingFBO" in props) {
-        return this._drawPickingBuffer(props);
-      }
-      return super.render(props);
-    }
-    _drawPickingBuffer({
-      layers,
-      layerFilter,
-      views,
-      viewports,
-      onViewportActive,
-      pickingFBO,
-      deviceRect: {
-        x: x2,
-        y: y2,
-        width,
-        height
-      },
-      cullRect,
-      effects,
-      pass = "picking",
-      pickZ,
-      moduleParameters
-    }) {
-      const gl = this.gl;
-      this.pickZ = pickZ;
-      const colorEncoderState = this._resetColorEncoder(pickZ);
-      const renderStatus = withParameters(gl, {
-        scissorTest: true,
-        scissor: [x2, y2, width, height],
-        clearColor: [0, 0, 0, 0],
-        depthMask: true,
-        depthTest: true,
-        depthRange: [0, 1],
-        colorMask: [true, true, true, true],
-        ...PICKING_PARAMETERS,
-        blend: !pickZ
-      }, () => super.render({
-        target: pickingFBO,
-        layers,
-        layerFilter,
-        views,
-        viewports,
-        onViewportActive,
-        cullRect,
-        effects: effects === null || effects === void 0 ? void 0 : effects.filter((e2) => e2.useInPicking),
-        pass,
-        isPicking: true,
-        moduleParameters
-      }));
-      this._colorEncoderState = null;
-      const decodePickingColor = colorEncoderState && decodeColor.bind(null, colorEncoderState);
-      return {
-        decodePickingColor,
-        stats: renderStatus
-      };
-    }
-    shouldDrawLayer(layer) {
-      const {
-        pickable,
-        operation
-      } = layer.props;
-      return pickable && operation.includes("draw") || operation.includes("terrain") || operation.includes("mask");
-    }
-    getModuleParameters() {
-      return {
-        pickingActive: 1,
-        pickingAttribute: this.pickZ,
-        lightSources: {}
-      };
-    }
-    getLayerParameters(layer, layerIndex, viewport) {
-      const pickParameters = {
-        ...layer.props.parameters
-      };
-      const {
-        pickable,
-        operation
-      } = layer.props;
-      if (!this._colorEncoderState) {
-        pickParameters.blend = false;
-      } else if (pickable && operation.includes("draw")) {
-        Object.assign(pickParameters, PICKING_PARAMETERS);
-        pickParameters.blend = true;
-        pickParameters.blendColor = encodeColor(this._colorEncoderState, layer, viewport);
-      }
-      if (operation.includes("terrain")) {
-        pickParameters.blend = false;
-      }
-      return pickParameters;
-    }
-    _resetColorEncoder(pickZ) {
-      this._colorEncoderState = pickZ ? null : {
-        byLayer: /* @__PURE__ */ new Map(),
-        byAlpha: []
-      };
-      return this._colorEncoderState;
-    }
-  };
-  function encodeColor(encoded, layer, viewport) {
-    const {
-      byLayer,
-      byAlpha
-    } = encoded;
-    let a2;
-    let entry = byLayer.get(layer);
-    if (entry) {
-      entry.viewports.push(viewport);
-      a2 = entry.a;
-    } else {
-      a2 = byLayer.size + 1;
-      if (a2 <= 255) {
-        entry = {
-          a: a2,
-          layer,
-          viewports: [viewport]
-        };
-        byLayer.set(layer, entry);
-        byAlpha[a2] = entry;
-      } else {
-        log_default.warn("Too many pickable layers, only picking the first 255")();
-        a2 = 0;
-      }
-    }
-    return [0, 0, 0, a2 / 255];
-  }
-  function decodeColor(encoded, pickedColor) {
-    const entry = encoded.byAlpha[pickedColor[3]];
-    return entry && {
-      pickedLayer: entry.layer,
-      pickedViewports: entry.viewports,
-      pickedObjectIndex: entry.layer.decodePickingColor(pickedColor)
-    };
-  }
-
   // node_modules/@deck.gl/core/dist/esm/lifecycle/constants.js
   var LIFECYCLE = {
     NO_STATE: "Awaiting state",
@@ -31250,8 +31241,6 @@
     FINALIZED: "Finalized! Awaiting garbage collection"
   };
   var COMPONENT_SYMBOL = Symbol.for("component");
-  var PROP_TYPES_SYMBOL = Symbol.for("propTypes");
-  var DEPRECATED_PROPS_SYMBOL = Symbol.for("deprecatedProps");
   var ASYNC_DEFAULTS_SYMBOL = Symbol.for("asyncPropDefaults");
   var ASYNC_ORIGINAL_SYMBOL = Symbol.for("asyncPropOriginal");
   var ASYNC_RESOLVED_SYMBOL = Symbol.for("asyncPropResolved");
@@ -31494,42 +31483,6 @@
     }
   };
 
-  // node_modules/@deck.gl/core/dist/esm/shaderlib/project32/project32.js
-  var vs5 = "\nvec4 project_position_to_clipspace(\n  vec3 position, vec3 position64Low, vec3 offset, out vec4 commonPosition\n) {\n  vec3 projectedPosition = project_position(position, position64Low);\n  mat3 rotation;\n  if (project_needs_rotation(projectedPosition, rotation)) {\n    // offset is specified as ENU\n    // when in globe projection, rotate offset so that the ground alighs with the surface of the globe\n    offset = rotation * offset;\n  }\n  commonPosition = vec4(projectedPosition + offset, 1.0);\n  return project_common_position_to_clipspace(commonPosition);\n}\n\nvec4 project_position_to_clipspace(\n  vec3 position, vec3 position64Low, vec3 offset\n) {\n  vec4 commonPosition;\n  return project_position_to_clipspace(position, position64Low, offset, commonPosition);\n}\n";
-  var project32_default = {
-    name: "project32",
-    dependencies: [project_default],
-    vs: vs5
-  };
-
-  // node_modules/@deck.gl/core/dist/esm/shaderlib/picking/picking.js
-  var picking_default = {
-    inject: {
-      "vs:DECKGL_FILTER_GL_POSITION": "\n    // for picking depth values\n    picking_setPickingAttribute(position.z / position.w);\n  ",
-      "vs:DECKGL_FILTER_COLOR": "\n  picking_setPickingColor(geometry.pickingColor);\n  ",
-      "fs:#decl": "\nuniform bool picking_uAttribute;\n  ",
-      "fs:DECKGL_FILTER_COLOR": {
-        order: 99,
-        injection: "\n  // use highlight color if this fragment belongs to the selected object.\n  color = picking_filterHighlightColor(color);\n\n  // use picking color if rendering to picking FBO.\n  color = picking_filterPickingColor(color);\n    "
-      }
-    },
-    ...picking
-  };
-
-  // node_modules/@deck.gl/core/dist/esm/shaderlib/index.js
-  var DEFAULT_MODULES = [project_default];
-  var SHADER_HOOKS = ["vs:DECKGL_FILTER_SIZE(inout vec3 size, VertexGeometry geometry)", "vs:DECKGL_FILTER_GL_POSITION(inout vec4 position, VertexGeometry geometry)", "vs:DECKGL_FILTER_COLOR(inout vec4 color, VertexGeometry geometry)", "fs:DECKGL_FILTER_COLOR(inout vec4 color, FragmentGeometry geometry)"];
-  function createProgramManager(gl) {
-    const programManager = ProgramManager.getDefaultProgramManager(gl);
-    for (const shaderModule2 of DEFAULT_MODULES) {
-      programManager.addDefaultModule(shaderModule2);
-    }
-    for (const shaderHook of SHADER_HOOKS) {
-      programManager.addShaderHook(shaderHook);
-    }
-    return programManager;
-  }
-
   // node_modules/@deck.gl/core/dist/esm/lib/layer-manager.js
   var TRACE_SET_LAYERS = "layerManager.setLayers";
   var TRACE_ACTIVATE_VIEWPORT = "layerManager.activateViewport";
@@ -31742,44 +31695,22 @@
   };
 
   // node_modules/@deck.gl/core/dist/esm/utils/deep-equal.js
-  function deepEqual(a2, b2, depth) {
+  function deepEqual(a2, b2) {
     if (a2 === b2) {
       return true;
     }
-    if (!depth || !a2 || !b2) {
+    if (!a2 || !b2) {
       return false;
     }
-    if (Array.isArray(a2)) {
-      if (!Array.isArray(b2) || a2.length !== b2.length) {
+    for (const key in a2) {
+      const aValue = a2[key];
+      const bValue = b2[key];
+      const equals3 = aValue === bValue || Array.isArray(aValue) && Array.isArray(bValue) && deepEqual(aValue, bValue);
+      if (!equals3) {
         return false;
       }
-      for (let i3 = 0; i3 < a2.length; i3++) {
-        if (!deepEqual(a2[i3], b2[i3], depth - 1)) {
-          return false;
-        }
-      }
-      return true;
     }
-    if (Array.isArray(b2)) {
-      return false;
-    }
-    if (typeof a2 === "object" && typeof b2 === "object") {
-      const aKeys = Object.keys(a2);
-      const bKeys = Object.keys(b2);
-      if (aKeys.length !== bKeys.length) {
-        return false;
-      }
-      for (const key of aKeys) {
-        if (!b2.hasOwnProperty(key)) {
-          return false;
-        }
-        if (!deepEqual(a2[key], b2[key], depth - 1)) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
+    return true;
   }
 
   // node_modules/@deck.gl/core/dist/esm/lib/view-manager.js
@@ -31931,7 +31862,7 @@
     }
     _setViewState(viewState) {
       if (viewState) {
-        const viewStateChanged = !deepEqual(viewState, this.viewState, 3);
+        const viewStateChanged = !deepEqual(viewState, this.viewState);
         if (viewStateChanged) {
           this.setNeedsUpdate("viewState changed");
         }
@@ -31968,7 +31899,7 @@
     }
     _updateController(view, viewState, viewport, controller) {
       const controllerProps = view.controller;
-      if (controllerProps && viewport) {
+      if (controllerProps) {
         const resolvedProps = {
           ...viewState,
           ...controllerProps,
@@ -31978,7 +31909,7 @@
           width: viewport.width,
           height: viewport.height
         };
-        if (!controller || controller.constructor !== controllerProps.type) {
+        if (!controller) {
           controller = this._createController(view, resolvedProps);
         }
         if (controller) {
@@ -32014,9 +31945,7 @@
           oldController = null;
         }
         this.controllers[view.id] = this._updateController(view, viewState, viewport, oldController);
-        if (viewport) {
-          this._viewports.unshift(viewport);
-        }
+        this._viewports.unshift(viewport);
       }
       for (const id in oldControllers) {
         const oldController = oldControllers[id];
@@ -32123,7 +32052,7 @@
       if (this.viewportInstance) {
         return view.viewportInstance ? this.viewportInstance.equals(view.viewportInstance) : false;
       }
-      return this.ViewportType === view.ViewportType && deepEqual(this.props, view.props, 2);
+      return this.ViewportType === view.ViewportType && deepEqual(this.props, view.props);
     }
     makeViewport({
       width,
@@ -32138,9 +32067,6 @@
         width,
         height
       });
-      if (!viewportDimensions.height || !viewportDimensions.width) {
-        return null;
-      }
       return new this.ViewportType({
         ...viewState,
         ...this.props,
@@ -32716,7 +32642,7 @@
       } = props;
       const isInteractive = Boolean(this.onViewStateChange);
       this.toggleEvents(EVENT_TYPES.WHEEL, isInteractive && scrollZoom);
-      this.toggleEvents(EVENT_TYPES.PAN, isInteractive);
+      this.toggleEvents(EVENT_TYPES.PAN, isInteractive && (dragPan || dragRotate));
       this.toggleEvents(EVENT_TYPES.PINCH, isInteractive && (touchZoom || touchRotate));
       this.toggleEvents(EVENT_TYPES.TRIPLE_PAN, isInteractive && touchRotate);
       this.toggleEvents(EVENT_TYPES.DOUBLE_TAP, isInteractive && doubleClickZoom);
@@ -32891,11 +32817,11 @@
       if (!this.scrollZoom) {
         return false;
       }
+      event.srcEvent.preventDefault();
       const pos = this.getCenter(event);
       if (!this.isPointInBounds(pos, event)) {
         return false;
       }
-      event.srcEvent.preventDefault();
       const {
         speed = 0.01,
         smooth = false
@@ -33556,40 +33482,801 @@
   };
   _defineProperty(MapView, "displayName", "MapView");
 
+  // node_modules/@deck.gl/core/dist/esm/passes/mask-pass.js
+  var MaskPass = class extends LayersPass {
+    constructor(gl, props) {
+      super(gl, props);
+      _defineProperty(this, "maskMap", void 0);
+      _defineProperty(this, "fbo", void 0);
+      const {
+        mapSize = 2048
+      } = props;
+      this.maskMap = new Texture2D(gl, {
+        width: mapSize,
+        height: mapSize,
+        parameters: {
+          [10241]: 9729,
+          [10240]: 9729,
+          [10242]: 33071,
+          [10243]: 33071
+        }
+      });
+      this.fbo = new Framebuffer(gl, {
+        id: "maskmap",
+        width: mapSize,
+        height: mapSize,
+        attachments: {
+          [36064]: this.maskMap
+        }
+      });
+    }
+    render(options) {
+      const gl = this.gl;
+      const colorMask = [false, false, false, false];
+      colorMask[options.channel] = true;
+      return withParameters(gl, {
+        clearColor: [255, 255, 255, 255],
+        blend: true,
+        blendFunc: [0, 1],
+        blendEquation: 32778,
+        colorMask,
+        depthTest: false
+      }, () => super.render({
+        ...options,
+        target: this.fbo,
+        pass: "mask"
+      }));
+    }
+    shouldDrawLayer(layer) {
+      return layer.props.operation === OPERATION.MASK;
+    }
+    delete() {
+      this.fbo.delete();
+      this.maskMap.delete();
+    }
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/viewports/orthographic-viewport.js
+  var viewMatrix = new Matrix4().lookAt({
+    eye: [0, 0, 1]
+  });
+  function getProjectionMatrix2({
+    width,
+    height,
+    near,
+    far,
+    padding
+  }) {
+    let left = -width / 2;
+    let right = width / 2;
+    let bottom = -height / 2;
+    let top = height / 2;
+    if (padding) {
+      const {
+        left: l2 = 0,
+        right: r2 = 0,
+        top: t2 = 0,
+        bottom: b2 = 0
+      } = padding;
+      const offsetX = clamp((l2 + width - r2) / 2, 0, width) - width / 2;
+      const offsetY = clamp((t2 + height - b2) / 2, 0, height) - height / 2;
+      left -= offsetX;
+      right -= offsetX;
+      bottom += offsetY;
+      top += offsetY;
+    }
+    return new Matrix4().ortho({
+      left,
+      right,
+      bottom,
+      top,
+      near,
+      far
+    });
+  }
+  var OrthographicViewport = class extends Viewport {
+    constructor(props) {
+      const {
+        width,
+        height,
+        near = 0.1,
+        far = 1e3,
+        zoom = 0,
+        target = [0, 0, 0],
+        padding = null,
+        flipY = true
+      } = props;
+      const zoomX = Array.isArray(zoom) ? zoom[0] : zoom;
+      const zoomY = Array.isArray(zoom) ? zoom[1] : zoom;
+      const zoom_ = Math.min(zoomX, zoomY);
+      const scale5 = Math.pow(2, zoom_);
+      let distanceScales;
+      if (zoomX !== zoomY) {
+        const scaleX2 = Math.pow(2, zoomX);
+        const scaleY2 = Math.pow(2, zoomY);
+        distanceScales = {
+          unitsPerMeter: [scaleX2 / scale5, scaleY2 / scale5, 1],
+          metersPerUnit: [scale5 / scaleX2, scale5 / scaleY2, 1]
+        };
+      }
+      super({
+        ...props,
+        longitude: void 0,
+        position: target,
+        viewMatrix: viewMatrix.clone().scale([scale5, scale5 * (flipY ? -1 : 1), scale5]),
+        projectionMatrix: getProjectionMatrix2({
+          width: width || 1,
+          height: height || 1,
+          padding,
+          near,
+          far
+        }),
+        zoom: zoom_,
+        distanceScales
+      });
+    }
+    projectFlat([X, Y]) {
+      const {
+        unitsPerMeter: unitsPerMeter3
+      } = this.distanceScales;
+      return [X * unitsPerMeter3[0], Y * unitsPerMeter3[1]];
+    }
+    unprojectFlat([x2, y2]) {
+      const {
+        metersPerUnit
+      } = this.distanceScales;
+      return [x2 * metersPerUnit[0], y2 * metersPerUnit[1]];
+    }
+    panByPosition(coords, pixel) {
+      const fromLocation = pixelsToWorld(pixel, this.pixelUnprojectionMatrix);
+      const toLocation = this.projectFlat(coords);
+      const translate3 = add([], toLocation, negate([], fromLocation));
+      const newCenter = add([], this.center, translate3);
+      return {
+        target: this.unprojectFlat(newCenter)
+      };
+    }
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/controllers/orbit-controller.js
+  var OrbitState = class extends ViewState {
+    constructor(options) {
+      const {
+        width,
+        height,
+        rotationX = 0,
+        rotationOrbit = 0,
+        target = [0, 0, 0],
+        zoom = 0,
+        minRotationX = -90,
+        maxRotationX = 90,
+        minZoom = -Infinity,
+        maxZoom = Infinity,
+        startPanPosition,
+        startRotatePos,
+        startRotationX,
+        startRotationOrbit,
+        startZoomPosition,
+        startZoom
+      } = options;
+      super({
+        width,
+        height,
+        rotationX,
+        rotationOrbit,
+        target,
+        zoom,
+        minRotationX,
+        maxRotationX,
+        minZoom,
+        maxZoom
+      }, {
+        startPanPosition,
+        startRotatePos,
+        startRotationX,
+        startRotationOrbit,
+        startZoomPosition,
+        startZoom
+      });
+      _defineProperty(this, "makeViewport", void 0);
+      this.makeViewport = options.makeViewport;
+    }
+    panStart({
+      pos
+    }) {
+      return this._getUpdatedState({
+        startPanPosition: this._unproject(pos)
+      });
+    }
+    pan({
+      pos,
+      startPosition
+    }) {
+      const startPanPosition = this.getState().startPanPosition || startPosition;
+      if (!startPanPosition) {
+        return this;
+      }
+      const viewport = this.makeViewport(this.getViewportProps());
+      const newProps = viewport.panByPosition(startPanPosition, pos);
+      return this._getUpdatedState(newProps);
+    }
+    panEnd() {
+      return this._getUpdatedState({
+        startPanPosition: null
+      });
+    }
+    rotateStart({
+      pos
+    }) {
+      return this._getUpdatedState({
+        startRotatePos: pos,
+        startRotationX: this.getViewportProps().rotationX,
+        startRotationOrbit: this.getViewportProps().rotationOrbit
+      });
+    }
+    rotate({
+      pos,
+      deltaAngleX = 0,
+      deltaAngleY = 0
+    }) {
+      const {
+        startRotatePos,
+        startRotationX,
+        startRotationOrbit
+      } = this.getState();
+      const {
+        width,
+        height
+      } = this.getViewportProps();
+      if (!startRotatePos || startRotationX === void 0 || startRotationOrbit === void 0) {
+        return this;
+      }
+      let newRotation;
+      if (pos) {
+        let deltaScaleX = (pos[0] - startRotatePos[0]) / width;
+        const deltaScaleY = (pos[1] - startRotatePos[1]) / height;
+        if (startRotationX < -90 || startRotationX > 90) {
+          deltaScaleX *= -1;
+        }
+        newRotation = {
+          rotationX: startRotationX + deltaScaleY * 180,
+          rotationOrbit: startRotationOrbit + deltaScaleX * 180
+        };
+      } else {
+        newRotation = {
+          rotationX: startRotationX + deltaAngleY,
+          rotationOrbit: startRotationOrbit + deltaAngleX
+        };
+      }
+      return this._getUpdatedState(newRotation);
+    }
+    rotateEnd() {
+      return this._getUpdatedState({
+        startRotationX: null,
+        startRotationOrbit: null
+      });
+    }
+    shortestPathFrom(viewState) {
+      const fromProps = viewState.getViewportProps();
+      const props = {
+        ...this.getViewportProps()
+      };
+      const {
+        rotationOrbit
+      } = props;
+      if (Math.abs(rotationOrbit - fromProps.rotationOrbit) > 180) {
+        props.rotationOrbit = rotationOrbit < 0 ? rotationOrbit + 360 : rotationOrbit - 360;
+      }
+      return props;
+    }
+    zoomStart({
+      pos
+    }) {
+      return this._getUpdatedState({
+        startZoomPosition: this._unproject(pos),
+        startZoom: this.getViewportProps().zoom
+      });
+    }
+    zoom({
+      pos,
+      startPos,
+      scale: scale5
+    }) {
+      let {
+        startZoom,
+        startZoomPosition
+      } = this.getState();
+      if (!startZoomPosition) {
+        startZoom = this.getViewportProps().zoom;
+        startZoomPosition = this._unproject(startPos) || this._unproject(pos);
+      }
+      if (!startZoomPosition) {
+        return this;
+      }
+      const newZoom = this._calculateNewZoom({
+        scale: scale5,
+        startZoom
+      });
+      const zoomedViewport = this.makeViewport({
+        ...this.getViewportProps(),
+        zoom: newZoom
+      });
+      return this._getUpdatedState({
+        zoom: newZoom,
+        ...zoomedViewport.panByPosition(startZoomPosition, pos)
+      });
+    }
+    zoomEnd() {
+      return this._getUpdatedState({
+        startZoomPosition: null,
+        startZoom: null
+      });
+    }
+    zoomIn(speed = 2) {
+      return this._getUpdatedState({
+        zoom: this._calculateNewZoom({
+          scale: speed
+        })
+      });
+    }
+    zoomOut(speed = 2) {
+      return this._getUpdatedState({
+        zoom: this._calculateNewZoom({
+          scale: 1 / speed
+        })
+      });
+    }
+    moveLeft(speed = 50) {
+      return this._panFromCenter([-speed, 0]);
+    }
+    moveRight(speed = 50) {
+      return this._panFromCenter([speed, 0]);
+    }
+    moveUp(speed = 50) {
+      return this._panFromCenter([0, -speed]);
+    }
+    moveDown(speed = 50) {
+      return this._panFromCenter([0, speed]);
+    }
+    rotateLeft(speed = 15) {
+      return this._getUpdatedState({
+        rotationOrbit: this.getViewportProps().rotationOrbit - speed
+      });
+    }
+    rotateRight(speed = 15) {
+      return this._getUpdatedState({
+        rotationOrbit: this.getViewportProps().rotationOrbit + speed
+      });
+    }
+    rotateUp(speed = 10) {
+      return this._getUpdatedState({
+        rotationX: this.getViewportProps().rotationX - speed
+      });
+    }
+    rotateDown(speed = 10) {
+      return this._getUpdatedState({
+        rotationX: this.getViewportProps().rotationX + speed
+      });
+    }
+    _unproject(pos) {
+      const viewport = this.makeViewport(this.getViewportProps());
+      return pos && viewport.unproject(pos);
+    }
+    _calculateNewZoom({
+      scale: scale5,
+      startZoom
+    }) {
+      const {
+        maxZoom,
+        minZoom
+      } = this.getViewportProps();
+      if (startZoom === void 0) {
+        startZoom = this.getViewportProps().zoom;
+      }
+      const zoom = startZoom + Math.log2(scale5);
+      return clamp(zoom, minZoom, maxZoom);
+    }
+    _panFromCenter(offset) {
+      const {
+        width,
+        height,
+        target
+      } = this.getViewportProps();
+      return this.pan({
+        startPosition: target,
+        pos: [width / 2 + offset[0], height / 2 + offset[1]]
+      });
+    }
+    _getUpdatedState(newProps) {
+      return new this.constructor({
+        makeViewport: this.makeViewport,
+        ...this.getViewportProps(),
+        ...this.getState(),
+        ...newProps
+      });
+    }
+    applyConstraints(props) {
+      const {
+        maxZoom,
+        minZoom,
+        zoom,
+        maxRotationX,
+        minRotationX,
+        rotationOrbit
+      } = props;
+      props.zoom = Array.isArray(zoom) ? [clamp(zoom[0], minZoom, maxZoom), clamp(zoom[1], minZoom, maxZoom)] : clamp(zoom, minZoom, maxZoom);
+      props.rotationX = clamp(props.rotationX, minRotationX, maxRotationX);
+      if (rotationOrbit < -180 || rotationOrbit > 180) {
+        props.rotationOrbit = mod2(rotationOrbit + 180, 360) - 180;
+      }
+      return props;
+    }
+  };
+  var OrbitController = class extends Controller {
+    constructor(...args) {
+      super(...args);
+      _defineProperty(this, "ControllerState", OrbitState);
+      _defineProperty(this, "transition", {
+        transitionDuration: 300,
+        transitionInterpolator: new LinearInterpolator({
+          transitionProps: {
+            compare: ["target", "zoom", "rotationX", "rotationOrbit"],
+            required: ["target", "zoom"]
+          }
+        })
+      });
+    }
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/controllers/orthographic-controller.js
+  var OrthographicState = class extends OrbitState {
+    constructor(props) {
+      super(props);
+      _defineProperty(this, "zoomAxis", void 0);
+      this.zoomAxis = props.zoomAxis || "all";
+    }
+    _calculateNewZoom({
+      scale: scale5,
+      startZoom
+    }) {
+      const {
+        maxZoom,
+        minZoom
+      } = this.getViewportProps();
+      if (startZoom === void 0) {
+        startZoom = this.getViewportProps().zoom;
+      }
+      let deltaZoom = Math.log2(scale5);
+      if (Array.isArray(startZoom)) {
+        let [newZoomX, newZoomY] = startZoom;
+        switch (this.zoomAxis) {
+          case "X":
+            newZoomX = clamp(newZoomX + deltaZoom, minZoom, maxZoom);
+            break;
+          case "Y":
+            newZoomY = clamp(newZoomY + deltaZoom, minZoom, maxZoom);
+            break;
+          default:
+            let z = Math.min(newZoomX + deltaZoom, newZoomY + deltaZoom);
+            if (z < minZoom) {
+              deltaZoom += minZoom - z;
+            }
+            z = Math.max(newZoomX + deltaZoom, newZoomY + deltaZoom);
+            if (z > maxZoom) {
+              deltaZoom += maxZoom - z;
+            }
+            newZoomX += deltaZoom;
+            newZoomY += deltaZoom;
+        }
+        return [newZoomX, newZoomY];
+      }
+      return clamp(startZoom + deltaZoom, minZoom, maxZoom);
+    }
+  };
+  var OrthographicController = class extends Controller {
+    constructor(...args) {
+      super(...args);
+      _defineProperty(this, "ControllerState", OrthographicState);
+      _defineProperty(this, "transition", {
+        transitionDuration: 300,
+        transitionInterpolator: new LinearInterpolator(["target", "zoom"])
+      });
+      _defineProperty(this, "dragMode", "pan");
+    }
+    _onPanRotate() {
+      return false;
+    }
+  };
+
+  // node_modules/@deck.gl/core/dist/esm/views/orthographic-view.js
+  var OrthographicView = class extends View {
+    get ViewportType() {
+      return OrthographicViewport;
+    }
+    get ControllerType() {
+      return OrthographicController;
+    }
+  };
+  _defineProperty(OrthographicView, "displayName", "OrthographicView");
+
+  // node_modules/@deck.gl/core/dist/esm/effects/mask/utils.js
+  function getMaskBounds({
+    layers,
+    viewport
+  }) {
+    let bounds = null;
+    for (const layer of layers) {
+      const subLayerBounds = layer.getBounds();
+      if (subLayerBounds) {
+        if (bounds) {
+          bounds[0] = Math.min(bounds[0], subLayerBounds[0][0]);
+          bounds[1] = Math.min(bounds[1], subLayerBounds[0][1]);
+          bounds[2] = Math.max(bounds[2], subLayerBounds[1][0]);
+          bounds[3] = Math.max(bounds[3], subLayerBounds[1][1]);
+        } else {
+          bounds = [subLayerBounds[0][0], subLayerBounds[0][1], subLayerBounds[1][0], subLayerBounds[1][1]];
+        }
+      }
+    }
+    const viewportBounds = viewport.getBounds();
+    if (!bounds) {
+      return viewportBounds;
+    }
+    const paddedBounds = _doubleBounds(viewportBounds);
+    if (bounds[2] - bounds[0] < paddedBounds[2] - paddedBounds[0] || bounds[3] - bounds[1] < paddedBounds[3] - paddedBounds[1]) {
+      return bounds;
+    }
+    bounds[0] = Math.max(bounds[0], paddedBounds[0]);
+    bounds[1] = Math.max(bounds[1], paddedBounds[1]);
+    bounds[2] = Math.min(bounds[2], paddedBounds[2]);
+    bounds[3] = Math.min(bounds[3], paddedBounds[3]);
+    return bounds;
+  }
+  function getMaskViewport({
+    bounds,
+    viewport,
+    width,
+    height
+  }) {
+    if (bounds[2] <= bounds[0] || bounds[3] <= bounds[1]) {
+      return null;
+    }
+    const padding = 1;
+    width -= padding * 2;
+    height -= padding * 2;
+    if (viewport instanceof WebMercatorViewport2) {
+      const {
+        longitude,
+        latitude,
+        zoom
+      } = fitBounds({
+        width,
+        height,
+        bounds: [[bounds[0], bounds[1]], [bounds[2], bounds[3]]],
+        maxZoom: 20
+      });
+      return new WebMercatorViewport2({
+        longitude,
+        latitude,
+        zoom,
+        x: padding,
+        y: padding,
+        width,
+        height
+      });
+    }
+    const center = [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2, 0];
+    const scale5 = Math.min(20, width / (bounds[2] - bounds[0]), height / (bounds[3] - bounds[1]));
+    return new OrthographicView({
+      x: padding,
+      y: padding
+    }).makeViewport({
+      width,
+      height,
+      viewState: {
+        target: center,
+        zoom: Math.log2(scale5)
+      }
+    });
+  }
+  function _doubleBounds(bounds) {
+    const size = {
+      x: bounds[2] - bounds[0],
+      y: bounds[3] - bounds[1]
+    };
+    const center = {
+      x: bounds[0] + 0.5 * size.x,
+      y: bounds[1] + 0.5 * size.y
+    };
+    return [center.x - size.x, center.y - size.y, center.x + size.x, center.y + size.y];
+  }
+
+  // node_modules/@deck.gl/core/dist/esm/effects/mask/mask-effect.js
+  var MaskEffect = class {
+    constructor() {
+      _defineProperty(this, "id", "mask-effect");
+      _defineProperty(this, "props", null);
+      _defineProperty(this, "useInPicking", true);
+      _defineProperty(this, "dummyMaskMap", void 0);
+      _defineProperty(this, "channels", []);
+      _defineProperty(this, "masks", null);
+      _defineProperty(this, "maskPass", void 0);
+      _defineProperty(this, "maskMap", void 0);
+      _defineProperty(this, "lastViewport", void 0);
+    }
+    preRender(gl, {
+      layers,
+      layerFilter,
+      viewports,
+      onViewportActive,
+      views
+    }) {
+      if (!this.dummyMaskMap) {
+        this.dummyMaskMap = new Texture2D(gl, {
+          width: 1,
+          height: 1
+        });
+      }
+      const maskLayers = layers.filter((l2) => l2.props.visible && l2.props.operation === OPERATION.MASK);
+      if (maskLayers.length === 0) {
+        this.masks = null;
+        this.channels.length = 0;
+        return;
+      }
+      this.masks = {};
+      if (!this.maskPass) {
+        this.maskPass = new MaskPass(gl, {
+          id: "default-mask"
+        });
+        this.maskMap = this.maskPass.maskMap;
+      }
+      const channelMap = this._sortMaskChannels(maskLayers);
+      const viewport = viewports[0];
+      const viewportChanged = !this.lastViewport || !this.lastViewport.equals(viewport);
+      for (const maskId in channelMap) {
+        this._renderChannel(channelMap[maskId], {
+          layerFilter,
+          onViewportActive,
+          views,
+          viewport,
+          viewportChanged
+        });
+      }
+    }
+    _renderChannel(channelInfo, {
+      layerFilter,
+      onViewportActive,
+      views,
+      viewport,
+      viewportChanged
+    }) {
+      const oldChannelInfo = this.channels[channelInfo.index];
+      if (!oldChannelInfo) {
+        return;
+      }
+      const maskChanged = channelInfo === oldChannelInfo || oldChannelInfo.layers.length !== channelInfo.layers.length || channelInfo.layerBounds.some((b2, i3) => b2 !== oldChannelInfo.layerBounds[i3]);
+      channelInfo.bounds = oldChannelInfo.bounds;
+      channelInfo.maskBounds = oldChannelInfo.maskBounds;
+      this.channels[channelInfo.index] = channelInfo;
+      if (maskChanged || viewportChanged) {
+        this.lastViewport = viewport;
+        channelInfo.bounds = getMaskBounds({
+          layers: channelInfo.layers,
+          viewport
+        });
+        if (maskChanged || !equals(channelInfo.bounds, oldChannelInfo.bounds)) {
+          const {
+            maskPass,
+            maskMap
+          } = this;
+          const maskViewport = getMaskViewport({
+            bounds: channelInfo.bounds,
+            viewport,
+            width: maskMap.width,
+            height: maskMap.height
+          });
+          channelInfo.maskBounds = maskViewport ? maskViewport.getBounds() : [0, 0, 1, 1];
+          maskPass.render({
+            pass: "mask",
+            channel: channelInfo.index,
+            layers: channelInfo.layers,
+            layerFilter,
+            viewports: maskViewport ? [maskViewport] : [],
+            onViewportActive,
+            views,
+            moduleParameters: {
+              devicePixelRatio: 1
+            }
+          });
+        }
+      }
+      this.masks[channelInfo.id] = {
+        index: channelInfo.index,
+        bounds: channelInfo.maskBounds,
+        coordinateOrigin: channelInfo.coordinateOrigin,
+        coordinateSystem: channelInfo.coordinateSystem
+      };
+    }
+    _sortMaskChannels(maskLayers) {
+      const channelMap = {};
+      let channelCount = 0;
+      for (const layer of maskLayers) {
+        const {
+          id
+        } = layer.root;
+        let channelInfo = channelMap[id];
+        if (!channelInfo) {
+          if (++channelCount > 4) {
+            log_default.warn("Too many mask layers. The max supported is 4")();
+            continue;
+          }
+          channelInfo = {
+            id,
+            index: this.channels.findIndex((c2) => (c2 === null || c2 === void 0 ? void 0 : c2.id) === id),
+            layers: [],
+            layerBounds: [],
+            coordinateOrigin: layer.root.props.coordinateOrigin,
+            coordinateSystem: layer.root.props.coordinateSystem
+          };
+          channelMap[id] = channelInfo;
+        }
+        channelInfo.layers.push(layer);
+        channelInfo.layerBounds.push(layer.getBounds());
+      }
+      for (let i3 = 0; i3 < 4; i3++) {
+        const channelInfo = this.channels[i3];
+        if (!channelInfo || !(channelInfo.id in channelMap)) {
+          this.channels[i3] = null;
+        }
+      }
+      for (const maskId in channelMap) {
+        const channelInfo = channelMap[maskId];
+        if (channelInfo.index < 0) {
+          channelInfo.index = this.channels.findIndex((c2) => !c2);
+          this.channels[channelInfo.index] = channelInfo;
+        }
+      }
+      return channelMap;
+    }
+    getModuleParameters() {
+      return {
+        maskMap: this.masks ? this.maskMap : this.dummyMaskMap,
+        maskChannels: this.masks
+      };
+    }
+    cleanup() {
+      if (this.dummyMaskMap) {
+        this.dummyMaskMap.delete();
+        this.dummyMaskMap = void 0;
+      }
+      if (this.maskPass) {
+        this.maskPass.delete();
+        this.maskPass = void 0;
+        this.maskMap = void 0;
+      }
+      this.lastViewport = void 0;
+      this.masks = null;
+      this.channels.length = 0;
+    }
+  };
+
   // node_modules/@deck.gl/core/dist/esm/lib/effect-manager.js
   var DEFAULT_LIGHTING_EFFECT = new LightingEffect();
-  function compareEffects(e1, e2) {
-    var _e1$order, _e2$order;
-    const o1 = (_e1$order = e1.order) !== null && _e1$order !== void 0 ? _e1$order : Infinity;
-    const o22 = (_e2$order = e2.order) !== null && _e2$order !== void 0 ? _e2$order : Infinity;
-    return o1 - o22;
-  }
   var EffectManager = class {
     constructor() {
       _defineProperty(this, "effects", void 0);
-      _defineProperty(this, "_resolvedEffects", []);
-      _defineProperty(this, "_defaultEffects", []);
+      _defineProperty(this, "_internalEffects", void 0);
       _defineProperty(this, "_needsRedraw", void 0);
       this.effects = [];
+      this._internalEffects = [];
       this._needsRedraw = "Initial render";
-      this._setEffects([]);
-    }
-    addDefaultEffect(effect) {
-      const defaultEffects = this._defaultEffects;
-      if (!defaultEffects.find((e2) => e2.id === effect.id)) {
-        const index = defaultEffects.findIndex((e2) => compareEffects(e2, effect) > 0);
-        if (index < 0) {
-          defaultEffects.push(effect);
-        } else {
-          defaultEffects.splice(index, 0, effect);
-        }
-        this._setEffects(this.effects);
-      }
+      this.setEffects();
     }
     setProps(props) {
       if ("effects" in props) {
-        if (!deepEqual(props.effects, this.effects, 1)) {
-          this._setEffects(props.effects);
+        if (props.effects.length !== this.effects.length || !deepEqual(props.effects, this.effects)) {
+          this.setEffects(props.effects);
+          this._needsRedraw = "effects changed";
         }
       }
     }
@@ -33603,72 +34290,173 @@
       return redraw;
     }
     getEffects() {
-      return this._resolvedEffects;
-    }
-    _setEffects(effects) {
-      const oldEffectsMap = {};
-      for (const effect of this.effects) {
-        oldEffectsMap[effect.id] = effect;
-      }
-      const nextEffects = [];
-      for (const effect of effects) {
-        const oldEffect = oldEffectsMap[effect.id];
-        if (oldEffect && oldEffect !== effect) {
-          if (oldEffect.setProps) {
-            oldEffect.setProps(effect.props);
-            nextEffects.push(oldEffect);
-          } else {
-            oldEffect.cleanup();
-            nextEffects.push(effect);
-          }
-        } else {
-          nextEffects.push(effect);
-        }
-        delete oldEffectsMap[effect.id];
-      }
-      for (const removedEffectId in oldEffectsMap) {
-        oldEffectsMap[removedEffectId].cleanup();
-      }
-      this.effects = nextEffects;
-      this._resolvedEffects = nextEffects.concat(this._defaultEffects);
-      if (!effects.some((effect) => effect instanceof LightingEffect)) {
-        this._resolvedEffects.push(DEFAULT_LIGHTING_EFFECT);
-      }
-      this._needsRedraw = "effects changed";
+      return this._internalEffects;
     }
     finalize() {
-      for (const effect of this._resolvedEffects) {
+      this.cleanup();
+    }
+    setEffects(effects = []) {
+      this.cleanup();
+      this.effects = effects;
+      this._internalEffects = effects.slice();
+      this._internalEffects.push(new MaskEffect());
+      if (!effects.some((effect) => effect instanceof LightingEffect)) {
+        this._internalEffects.push(DEFAULT_LIGHTING_EFFECT);
+      }
+    }
+    cleanup() {
+      for (const effect of this.effects) {
+        effect.cleanup();
+      }
+      for (const effect of this._internalEffects) {
         effect.cleanup();
       }
       this.effects.length = 0;
-      this._resolvedEffects.length = 0;
-      this._defaultEffects.length = 0;
+      this._internalEffects.length = 0;
     }
   };
 
   // node_modules/@deck.gl/core/dist/esm/passes/draw-layers-pass.js
   var DrawLayersPass = class extends LayersPass {
     shouldDrawLayer(layer) {
-      const {
-        operation
-      } = layer.props;
-      return operation.includes("draw") || operation.includes("terrain");
+      return layer.props.operation === OPERATION.DRAW;
     }
   };
+
+  // node_modules/@deck.gl/core/dist/esm/passes/pick-layers-pass.js
+  var PICKING_PARAMETERS = {
+    blendFunc: [1, 0, 32771, 0],
+    blendEquation: 32774
+  };
+  var PickLayersPass = class extends LayersPass {
+    constructor(...args) {
+      super(...args);
+      _defineProperty(this, "pickZ", void 0);
+      _defineProperty(this, "_colors", null);
+    }
+    render(props) {
+      if (props.pickingFBO) {
+        return this._drawPickingBuffer(props);
+      }
+      return super.render(props);
+    }
+    _drawPickingBuffer({
+      layers,
+      layerFilter,
+      views,
+      viewports,
+      onViewportActive,
+      pickingFBO,
+      deviceRect: {
+        x: x2,
+        y: y2,
+        width,
+        height
+      },
+      cullRect,
+      effects,
+      pass = "picking",
+      pickZ
+    }) {
+      const gl = this.gl;
+      this.pickZ = pickZ;
+      const encodedColors = pickZ ? null : {
+        byLayer: /* @__PURE__ */ new Map(),
+        byAlpha: []
+      };
+      this._colors = encodedColors;
+      const renderStatus = withParameters(gl, {
+        scissorTest: true,
+        scissor: [x2, y2, width, height],
+        clearColor: [0, 0, 0, 0],
+        depthMask: true,
+        depthTest: true,
+        depthRange: [0, 1],
+        colorMask: [true, true, true, true],
+        ...PICKING_PARAMETERS,
+        blend: !pickZ
+      }, () => super.render({
+        target: pickingFBO,
+        layers,
+        layerFilter,
+        views,
+        viewports,
+        onViewportActive,
+        cullRect,
+        effects: effects === null || effects === void 0 ? void 0 : effects.filter((e2) => e2.useInPicking),
+        pass
+      }));
+      this._colors = null;
+      const decodePickingColor = encodedColors && decodeColor.bind(null, encodedColors);
+      return {
+        decodePickingColor,
+        stats: renderStatus
+      };
+    }
+    shouldDrawLayer(layer) {
+      return layer.props.pickable && layer.props.operation === OPERATION.DRAW;
+    }
+    getModuleParameters() {
+      return {
+        pickingActive: 1,
+        pickingAttribute: this.pickZ,
+        lightSources: {}
+      };
+    }
+    getLayerParameters(layer, layerIndex, viewport) {
+      const pickParameters = {
+        ...layer.props.parameters
+      };
+      if (!this._colors) {
+        pickParameters.blend = false;
+      } else {
+        Object.assign(pickParameters, PICKING_PARAMETERS);
+        pickParameters.blend = true;
+        pickParameters.blendColor = encodeColor(this._colors, layer, viewport);
+      }
+      return pickParameters;
+    }
+  };
+  function encodeColor(encoded, layer, viewport) {
+    const {
+      byLayer,
+      byAlpha
+    } = encoded;
+    let a2;
+    let entry = byLayer.get(layer);
+    if (entry) {
+      entry.viewports.push(viewport);
+      a2 = entry.a;
+    } else {
+      a2 = byLayer.size + 1;
+      if (a2 <= 255) {
+        entry = {
+          a: a2,
+          layer,
+          viewports: [viewport]
+        };
+        byLayer.set(layer, entry);
+        byAlpha[a2] = entry;
+      } else {
+        log_default.warn("Too many pickable layers, only picking the first 255")();
+        a2 = 0;
+      }
+    }
+    return [0, 0, 0, a2 / 255];
+  }
+  function decodeColor(encoded, pickedColor) {
+    const entry = encoded.byAlpha[pickedColor[3]];
+    return entry && {
+      pickedLayer: entry.layer,
+      pickedViewports: entry.viewports,
+      pickedObjectIndex: entry.layer.decodePickingColor(pickedColor)
+    };
+  }
 
   // node_modules/@deck.gl/core/dist/esm/lib/deck-renderer.js
   var TRACE_RENDER_LAYERS = "deckRenderer.renderLayers";
   var DeckRenderer = class {
     constructor(gl) {
-      _defineProperty(this, "gl", void 0);
-      _defineProperty(this, "layerFilter", void 0);
-      _defineProperty(this, "drawPickingColors", void 0);
-      _defineProperty(this, "drawLayersPass", void 0);
-      _defineProperty(this, "pickLayersPass", void 0);
-      _defineProperty(this, "renderCount", void 0);
-      _defineProperty(this, "_needsRedraw", void 0);
-      _defineProperty(this, "renderBuffers", void 0);
-      _defineProperty(this, "lastPostProcessEffect", void 0);
       this.gl = gl;
       this.layerFilter = null;
       this.drawPickingColors = false;
@@ -33680,37 +34468,27 @@
       this.lastPostProcessEffect = null;
     }
     setProps(props) {
-      if (this.layerFilter !== props.layerFilter) {
+      if ("layerFilter" in props && this.layerFilter !== props.layerFilter) {
         this.layerFilter = props.layerFilter;
         this._needsRedraw = "layerFilter changed";
       }
-      if (this.drawPickingColors !== props.drawPickingColors) {
+      if ("drawPickingColors" in props && this.drawPickingColors !== props.drawPickingColors) {
         this.drawPickingColors = props.drawPickingColors;
         this._needsRedraw = "drawPickingColors changed";
       }
     }
     renderLayers(opts) {
-      if (!opts.viewports.length) {
-        return;
-      }
       const layerPass = this.drawPickingColors ? this.pickLayersPass : this.drawLayersPass;
-      const renderOpts = {
-        layerFilter: this.layerFilter,
-        isPicking: this.drawPickingColors,
-        ...opts,
-        target: opts.target || Framebuffer.getDefaultFramebuffer(this.gl)
-      };
-      if (renderOpts.effects) {
-        this._preRender(renderOpts.effects, renderOpts);
-      }
-      const outputBuffer = this.lastPostProcessEffect ? this.renderBuffers[0] : renderOpts.target;
+      opts.layerFilter = opts.layerFilter || this.layerFilter;
+      opts.effects = opts.effects || [];
+      opts.target = opts.target || Framebuffer.getDefaultFramebuffer(this.gl);
+      this._preRender(opts.effects, opts);
+      const outputBuffer = this.lastPostProcessEffect ? this.renderBuffers[0] : opts.target;
       const renderStats = layerPass.render({
-        ...renderOpts,
+        ...opts,
         target: outputBuffer
       });
-      if (renderOpts.effects) {
-        this._postRender(renderOpts.effects, renderOpts);
-      }
+      this._postRender(opts.effects, opts);
       this.renderCount++;
       debug(TRACE_RENDER_LAYERS, this, renderStats, opts);
     }
@@ -33733,17 +34511,17 @@
       renderBuffers.length = 0;
     }
     _preRender(effects, opts) {
-      this.lastPostProcessEffect = null;
-      opts.preRenderStats = opts.preRenderStats || {};
+      let lastPostProcessEffect = null;
       for (const effect of effects) {
-        opts.preRenderStats[effect.id] = effect.preRender(this.gl, opts);
+        effect.preRender(this.gl, opts);
         if (effect.postRender) {
-          this.lastPostProcessEffect = effect.id;
+          lastPostProcessEffect = effect;
         }
       }
-      if (this.lastPostProcessEffect) {
+      if (lastPostProcessEffect) {
         this._resizeRenderBuffers();
       }
+      this.lastPostProcessEffect = lastPostProcessEffect;
     }
     _resizeRenderBuffers() {
       const {
@@ -33761,14 +34539,13 @@
         renderBuffers
       } = this;
       const params = {
-        ...opts,
         inputBuffer: renderBuffers[0],
         swapBuffer: renderBuffers[1],
         target: null
       };
       for (const effect of effects) {
         if (effect.postRender) {
-          if (effect.id === this.lastPostProcessEffect) {
+          if (effect === this.lastPostProcessEffect) {
             params.target = opts.target;
             effect.postRender(this.gl, params);
             break;
@@ -34088,7 +34865,7 @@
       if (this._pickable === false) {
         return null;
       }
-      const pickableLayers = layers.filter((layer) => this.pickLayersPass.shouldDrawLayer(layer) && !layer.isComposite);
+      const pickableLayers = layers.filter((layer) => layer.isPickable() && !layer.isComposite);
       return pickableLayers.length ? pickableLayers : null;
     }
     _pickClosestObject({
@@ -34169,9 +34946,7 @@
         }
         let z;
         if (pickInfo.pickedLayer && unproject3D && this.depthFBO) {
-          const {
-            pickedColors: pickedColors2
-          } = this._drawAndSample({
+          const pickedResultPass2 = this._drawAndSample({
             layers: [pickInfo.pickedLayer],
             views,
             viewports,
@@ -34186,9 +34961,7 @@
             effects,
             pass: "picking:".concat(mode, ":z")
           }, true);
-          if (pickedColors2[3]) {
-            z = pickedColors2[0];
-          }
+          z = pickedResultPass2.pickedColors[0];
         }
         if (pickInfo.pickedLayer && i3 + 1 < depth) {
           affectedLayers.add(pickInfo.pickedLayer);
@@ -34272,7 +35045,6 @@
       const uniqueInfos = /* @__PURE__ */ new Map();
       const isMaxObjects = Number.isFinite(maxObjects);
       for (let i3 = 0; i3 < pickInfos.length; i3++) {
-        var _info$object;
         if (isMaxObjects && maxObjects && uniqueInfos.size >= maxObjects) {
           break;
         }
@@ -34291,9 +35063,8 @@
           info,
           mode
         });
-        const pickedObjectKey = (_info$object = info.object) !== null && _info$object !== void 0 ? _info$object : "".concat(info.layer.id, "[").concat(info.index, "]");
-        if (!uniqueInfos.has(pickedObjectKey)) {
-          uniqueInfos.set(pickedObjectKey, info);
+        if (!uniqueInfos.has(info.object)) {
+          uniqueInfos.set(info.object, info);
         }
       }
       return Array.from(uniqueInfos.values());
@@ -34309,7 +35080,9 @@
       pass
     }, pickZ = false) {
       const pickingFBO = pickZ ? this.depthFBO : this.pickingFBO;
-      const opts = {
+      const {
+        decodePickingColor
+      } = this.pickLayersPass.render({
         layers,
         layerFilter: this.layerFilter,
         views,
@@ -34320,17 +35093,8 @@
         cullRect,
         effects,
         pass,
-        pickZ,
-        preRenderStats: {}
-      };
-      for (const effect of effects) {
-        if (effect.useInPicking) {
-          opts.preRenderStats[effect.id] = effect.preRender(this.gl, opts);
-        }
-      }
-      const {
-        decodePickingColor
-      } = this.pickLayersPass.render(opts);
+        pickZ
+      });
       const {
         x: x2,
         y: y2,
@@ -34418,13 +35182,11 @@
         if (displayInfo.className) {
           el.className = displayInfo.className;
         }
+        Object.assign(el.style, displayInfo.style);
       }
       this.isVisible = true;
       el.style.display = "block";
       el.style.transform = "translate(".concat(x2, "px, ").concat(y2, "px)");
-      if (displayInfo && typeof displayInfo === "object" && "style" in displayInfo) {
-        Object.assign(el.style, displayInfo.style);
-      }
     }
     remove() {
       if (this.el) {
@@ -35334,7 +36096,7 @@
     onBeforeRender: noop4,
     onAfterRender: noop4,
     onLoad: noop4,
-    onError: (error2) => log_default.error(error2.message, error2.cause)(),
+    onError: (error2) => log_default.error(error2.message)(),
     onHover: null,
     onClick: null,
     onDragStart: null,
@@ -35488,8 +36250,8 @@
       this.animationLoop.start();
     }
     finalize() {
-      var _this$animationLoop, _this$layerManager, _this$viewManager, _this$effectManager, _this$deckRenderer, _this$deckPicker, _this$eventManager, _this$tooltip;
-      (_this$animationLoop = this.animationLoop) === null || _this$animationLoop === void 0 ? void 0 : _this$animationLoop.stop();
+      var _this$layerManager, _this$viewManager, _this$effectManager, _this$deckRenderer, _this$deckPicker, _this$eventManager, _this$tooltip;
+      this.animationLoop.stop();
       this.animationLoop = null;
       this._lastPointerDownInfo = null;
       (_this$layerManager = this.layerManager) === null || _this$layerManager === void 0 ? void 0 : _this$layerManager.finalize();
@@ -35520,7 +36282,7 @@
       if ("onLayerClick" in props) {
         log_default.removed("onLayerClick", "onClick")();
       }
-      if (props.initialViewState && !deepEqual(this.props.initialViewState, props.initialViewState, 3)) {
+      if (props.initialViewState && !deepEqual(this.props.initialViewState, props.initialViewState)) {
         this.viewState = props.initialViewState;
       }
       Object.assign(this.props, props);
@@ -35592,9 +36354,6 @@
       assert11(this.viewManager);
       return this.viewManager.getViewports(rect);
     }
-    getCanvas() {
-      return this.canvas;
-    }
     pickObject(opts) {
       const infos = this._pick("pickObject", "pickObject Time", opts).result;
       return infos.length ? infos[0] : null;
@@ -35619,9 +36378,6 @@
       for (const id of resourceIds) {
         this.layerManager.resourceManager.remove(id);
       }
-    }
-    _addDefaultEffect(effect) {
-      this.effectManager.addDefaultEffect(effect);
     }
     _pick(method, statKey, opts) {
       assert11(this.deckPicker);
@@ -35676,24 +36432,22 @@
       }
     }
     _updateCanvasSize() {
-      var _canvas$clientWidth, _canvas$clientHeight;
       const {
         canvas
       } = this;
       if (!canvas) {
         return;
       }
-      const newWidth = (_canvas$clientWidth = canvas.clientWidth) !== null && _canvas$clientWidth !== void 0 ? _canvas$clientWidth : canvas.width;
-      const newHeight = (_canvas$clientHeight = canvas.clientHeight) !== null && _canvas$clientHeight !== void 0 ? _canvas$clientHeight : canvas.height;
+      const newWidth = canvas.clientWidth || canvas.width;
+      const newHeight = canvas.clientHeight || canvas.height;
       if (newWidth !== this.width || newHeight !== this.height) {
-        var _this$viewManager2, _this$layerManager2;
+        var _this$viewManager2;
         this.width = newWidth;
         this.height = newHeight;
         (_this$viewManager2 = this.viewManager) === null || _this$viewManager2 === void 0 ? void 0 : _this$viewManager2.setProps({
           width: newWidth,
           height: newHeight
         });
-        (_this$layerManager2 = this.layerManager) === null || _this$layerManager2 === void 0 ? void 0 : _this$layerManager2.activateViewport(this.getViewports()[0]);
         this.props.onResize({
           width: newWidth,
           height: newHeight
@@ -35716,7 +36470,6 @@
         width,
         height,
         useDevicePixels,
-        autoResizeDrawingBuffer: !gl,
         autoResizeViewport: false,
         gl,
         onCreateContext: (opts) => createGLContext({
@@ -35861,6 +36614,7 @@
         onViewportActive: this.layerManager.activateViewport,
         views: this.viewManager.getViews(),
         pass: "screen",
+        redrawReason,
         effects: this.effectManager.getEffects(),
         ...renderOptions
       });
@@ -35943,7 +36697,7 @@
     }
   };
   _defineProperty(Deck, "defaultProps", defaultProps);
-  _defineProperty(Deck, "VERSION", VERSION5);
+  _defineProperty(Deck, "VERSION", init_default.VERSION);
 
   // node_modules/@deck.gl/core/dist/esm/lib/attribute/shader-attribute.js
   var ShaderAttribute = class {
@@ -36361,10 +37115,7 @@
         return out;
       }
       if (!value) {
-        let i3 = size;
-        while (--i3 >= 0) {
-          out[start + i3] = defaultValue[i3];
-        }
+        out[start] = defaultValue[0];
         return out;
       }
       switch (size) {
@@ -37456,7 +38207,6 @@
       _defineProperty(this, "userData", void 0);
       _defineProperty(this, "stats", void 0);
       _defineProperty(this, "attributeTransitionManager", void 0);
-      _defineProperty(this, "mergeBoundsMemoized", memoize(mergeBounds));
       this.id = id;
       this.gl = gl;
       this.attributes = {};
@@ -37571,13 +38321,6 @@
     }
     getAttributes() {
       return this.attributes;
-    }
-    getBounds(attributeNames) {
-      const bounds = attributeNames.map((attributeName) => {
-        var _this$attributes$attr;
-        return (_this$attributes$attr = this.attributes[attributeName]) === null || _this$attributes$attr === void 0 ? void 0 : _this$attributes$attr.getBounds();
-      });
-      return this.mergeBoundsMemoized(bounds);
     }
     getChangedAttributes(opts = {
       clearChangedFlags: false
@@ -37823,7 +38566,7 @@
 
   // node_modules/@deck.gl/core/dist/esm/lifecycle/props.js
   function validateProps(props) {
-    const propTypes = props[PROP_TYPES_SYMBOL];
+    const propTypes = getPropTypes(props);
     for (const propName in propTypes) {
       const propType = propTypes[propName];
       const {
@@ -37838,7 +38581,7 @@
     const propsChangedReason = compareProps({
       newProps: props,
       oldProps,
-      propTypes: props[PROP_TYPES_SYMBOL],
+      propTypes: getPropTypes(props),
       ignoreProps: {
         data: null,
         updateTriggers: null,
@@ -37864,7 +38607,7 @@
       return false;
     }
     const result = {};
-    const propTypes = props[PROP_TYPES_SYMBOL];
+    const propTypes = getPropTypes(props);
     let changed = false;
     for (const key in props.transitions) {
       const propType = propTypes[key];
@@ -38019,6 +38762,11 @@
     });
     return diffReason;
   }
+  function getPropTypes(props) {
+    const layer = props[COMPONENT_SYMBOL];
+    const LayerType = layer && layer.constructor;
+    return LayerType ? LayerType._propTypes : {};
+  }
 
   // node_modules/@deck.gl/core/dist/esm/utils/count.js
   var ERR_NOT_OBJECT = "count(): argument not an object";
@@ -38096,7 +38844,11 @@
     [10243]: 33071
   };
   var internalTextures = {};
-  function createTexture(owner, gl, image, parameters2) {
+  function createTexture(layer, image) {
+    const gl = layer.context && layer.context.gl;
+    if (!gl || !image) {
+      return null;
+    }
     if (image instanceof Texture2D) {
       return image;
     } else if (image.constructor && image.constructor.name !== "Object") {
@@ -38115,17 +38867,17 @@
       parameters: {
         ...DEFAULT_TEXTURE_PARAMETERS,
         ...specialTextureParameters,
-        ...parameters2
+        ...layer.props.textureParameters
       }
     });
-    internalTextures[texture.id] = owner;
+    internalTextures[texture.id] = true;
     return texture;
   }
-  function destroyTexture(owner, texture) {
+  function destroyTexture(texture) {
     if (!texture || !(texture instanceof Texture2D)) {
       return;
     }
-    if (internalTextures[texture.id] === owner) {
+    if (internalTextures[texture.id]) {
       texture.delete();
       delete internalTextures[texture.id];
     }
@@ -38151,7 +38903,7 @@
         return propType.optional && !value || isArray3(value) && (value.length === 3 || value.length === 4);
       },
       equal(value1, value2, propType) {
-        return deepEqual(value1, value2, 1);
+        return arrayEqual(value1, value2);
       }
     },
     accessor: {
@@ -38163,7 +38915,7 @@
         if (typeof value2 === "function") {
           return true;
         }
-        return deepEqual(value1, value2, 1);
+        return arrayEqual(value1, value2);
       }
     },
     array: {
@@ -38171,23 +38923,12 @@
         return propType.optional && !value || isArray3(value);
       },
       equal(value1, value2, propType) {
-        const {
-          compare
-        } = propType;
-        const depth = Number.isInteger(compare) ? compare : compare ? 1 : 0;
-        return compare ? deepEqual(value1, value2, depth) : value1 === value2;
+        return propType.compare ? arrayEqual(value1, value2) : value1 === value2;
       }
     },
     object: {
       equal(value1, value2, propType) {
-        if (propType.ignore) {
-          return true;
-        }
-        const {
-          compare
-        } = propType;
-        const depth = Number.isInteger(compare) ? compare : compare ? 1 : 0;
-        return compare ? deepEqual(value1, value2, depth) : value1 === value2;
+        return propType.compare ? deepEqual(value1, value2) : value1 === value2;
       }
     },
     function: {
@@ -38195,8 +38936,7 @@
         return propType.optional && !value || typeof value === "function";
       },
       equal(value1, value2, propType) {
-        const shouldIgnore = !propType.compare && propType.ignore !== false;
-        return shouldIgnore || value1 === value2;
+        return !propType.compare || value1 === value2;
       }
     },
     data: {
@@ -38209,20 +38949,31 @@
     },
     image: {
       transform: (value, propType, component) => {
-        const context = component.context;
-        if (!context || !context.gl) {
-          return null;
-        }
-        return createTexture(component.id, context.gl, value, {
-          ...propType.parameters,
-          ...component.props.textureParameters
-        });
+        return createTexture(component, value);
       },
-      release: (value, propType, component) => {
-        destroyTexture(component.id, value);
+      release: (value) => {
+        destroyTexture(value);
       }
     }
   };
+  function arrayEqual(array12, array2) {
+    if (array12 === array2) {
+      return true;
+    }
+    if (!isArray3(array12) || !isArray3(array2)) {
+      return false;
+    }
+    const len2 = array12.length;
+    if (len2 !== array2.length) {
+      return false;
+    }
+    for (let i3 = 0; i3 < len2; i3++) {
+      if (array12[i3] !== array2[i3]) {
+        return false;
+      }
+    }
+    return true;
+  }
   function parsePropTypes2(propDefs) {
     const propTypes = {};
     const defaultProps19 = {};
@@ -38313,14 +39064,7 @@
 
   // node_modules/@deck.gl/core/dist/esm/lifecycle/create-props.js
   function createProps(component, propObjects) {
-    let extensions;
-    for (let i3 = propObjects.length - 1; i3 >= 0; i3--) {
-      const props = propObjects[i3];
-      if ("extensions" in props) {
-        extensions = props.extensions;
-      }
-    }
-    const propsPrototype = getPropsPrototype(component.constructor, extensions);
+    const propsPrototype = getPropsPrototype(component.constructor);
     const propsInstance = Object.create(propsPrototype);
     propsInstance[COMPONENT_SYMBOL] = component;
     propsInstance[ASYNC_ORIGINAL_SYMBOL] = {};
@@ -38334,61 +39078,50 @@
     Object.freeze(propsInstance);
     return propsInstance;
   }
-  var MergedDefaultPropsCacheKey = "_mergedDefaultProps";
-  function getPropsPrototype(componentClass, extensions) {
-    let cacheKey = MergedDefaultPropsCacheKey;
-    if (extensions) {
-      for (const extension of extensions) {
-        const ExtensionClass = extension.constructor;
-        if (ExtensionClass) {
-          cacheKey += ":".concat(ExtensionClass.extensionName || ExtensionClass.name);
-        }
-      }
-    }
-    const defaultProps19 = getOwnProperty(componentClass, cacheKey);
+  function getPropsPrototype(componentClass) {
+    const defaultProps19 = getOwnProperty(componentClass, "_mergedDefaultProps");
     if (!defaultProps19) {
-      return componentClass[cacheKey] = createPropsPrototypeAndTypes(componentClass, extensions || []);
+      createPropsPrototypeAndTypes(componentClass);
+      return componentClass._mergedDefaultProps;
     }
     return defaultProps19;
   }
-  function createPropsPrototypeAndTypes(componentClass, extensions) {
+  function createPropsPrototypeAndTypes(componentClass) {
     const parent = componentClass.prototype;
     if (!parent) {
-      return null;
+      return;
     }
     const parentClass = Object.getPrototypeOf(componentClass);
     const parentDefaultProps = getPropsPrototype(parentClass);
     const componentDefaultProps = getOwnProperty(componentClass, "defaultProps") || {};
     const componentPropDefs = parsePropTypes2(componentDefaultProps);
-    const defaultProps19 = Object.assign(/* @__PURE__ */ Object.create(null), parentDefaultProps, componentPropDefs.defaultProps);
-    const propTypes = Object.assign(/* @__PURE__ */ Object.create(null), parentDefaultProps === null || parentDefaultProps === void 0 ? void 0 : parentDefaultProps[PROP_TYPES_SYMBOL], componentPropDefs.propTypes);
-    const deprecatedProps = Object.assign(/* @__PURE__ */ Object.create(null), parentDefaultProps === null || parentDefaultProps === void 0 ? void 0 : parentDefaultProps[DEPRECATED_PROPS_SYMBOL], componentPropDefs.deprecatedProps);
-    for (const extension of extensions) {
-      const extensionDefaultProps = getPropsPrototype(extension.constructor);
-      if (extensionDefaultProps) {
-        Object.assign(defaultProps19, extensionDefaultProps);
-        Object.assign(propTypes, extensionDefaultProps[PROP_TYPES_SYMBOL]);
-        Object.assign(deprecatedProps, extensionDefaultProps[DEPRECATED_PROPS_SYMBOL]);
-      }
-    }
-    createPropsPrototype(defaultProps19, componentClass);
+    const defaultProps19 = createPropsPrototype(componentPropDefs.defaultProps, parentDefaultProps, componentClass);
+    const propTypes = {
+      ...parentClass._propTypes,
+      ...componentPropDefs.propTypes
+    };
     addAsyncPropsToPropPrototype(defaultProps19, propTypes);
+    const deprecatedProps = {
+      ...parentClass._deprecatedProps,
+      ...componentPropDefs.deprecatedProps
+    };
     addDeprecatedPropsToPropPrototype(defaultProps19, deprecatedProps);
-    defaultProps19[PROP_TYPES_SYMBOL] = propTypes;
-    defaultProps19[DEPRECATED_PROPS_SYMBOL] = deprecatedProps;
-    if (extensions.length === 0 && !hasOwnProperty(componentClass, "_propTypes")) {
-      componentClass._propTypes = propTypes;
-    }
-    return defaultProps19;
+    componentClass._mergedDefaultProps = defaultProps19;
+    componentClass._propTypes = propTypes;
+    componentClass._deprecatedProps = deprecatedProps;
   }
-  function createPropsPrototype(defaultProps19, componentClass) {
+  function createPropsPrototype(props, parentProps, componentClass) {
+    const defaultProps19 = /* @__PURE__ */ Object.create(null);
+    Object.assign(defaultProps19, parentProps, props);
     const id = getComponentName(componentClass);
+    delete props.id;
     Object.defineProperties(defaultProps19, {
       id: {
         writable: true,
         value: id
       }
     });
+    return defaultProps19;
   }
   function addDeprecatedPropsToPropPrototype(defaultProps19, deprecatedProps) {
     for (const propName in deprecatedProps) {
@@ -38458,9 +39191,9 @@
     return hasOwnProperty(object, prop) && object[prop];
   }
   function getComponentName(componentClass) {
-    const componentName = componentClass.componentName;
+    const componentName = getOwnProperty(componentClass, "layerName") || getOwnProperty(componentClass, "componentName");
     if (!componentName) {
-      log_default.warn("".concat(componentClass.name, ".componentName not specified"))();
+      log_default.once(0, "".concat(componentClass.name, ".componentName not specified"))();
     }
     return componentName || componentClass.name;
   }
@@ -38521,16 +39254,13 @@
           asyncProp.type.release(asyncProp.resolvedValue, asyncProp.type, this.component);
         }
       }
-      this.asyncProps = {};
-      this.component = null;
-      this.resetOldProps();
     }
     getOldProps() {
       return this.oldAsyncProps || this.oldProps || EMPTY_PROPS;
     }
     resetOldProps() {
       this.oldAsyncProps = null;
-      this.oldProps = this.component ? this.component.props : null;
+      this.oldProps = this.component.props;
     }
     hasAsyncProp(propName) {
       return propName in this.asyncProps;
@@ -38555,7 +39285,6 @@
       this._watchPromise(propName, Promise.resolve(value));
     }
     setAsyncProps(props) {
-      this.component = props[COMPONENT_SYMBOL] || this.component;
       const resolvedValues = props[ASYNC_RESOLVED_SYMBOL] || {};
       const originalValues = props[ASYNC_ORIGINAL_SYMBOL] || props;
       const defaultValues = props[ASYNC_DEFAULTS_SYMBOL] || {};
@@ -38639,9 +39368,6 @@
         asyncProp.pendingLoadCount++;
         const loadCount = asyncProp.pendingLoadCount;
         promise.then((data) => {
-          if (!this.component) {
-            return;
-          }
           data = this._postProcessValue(asyncProp, data);
           this._setAsyncPropValue(propName, data, loadCount);
           this._onResolve(propName, data);
@@ -38664,9 +39390,6 @@
       let data = [];
       let count2 = 0;
       for await (const chunk of iterable) {
-        if (!this.component) {
-          return;
-        }
         const {
           dataTransform
         } = this.component.props;
@@ -38689,7 +39412,7 @@
     }
     _postProcessValue(asyncProp, value) {
       const propType = asyncProp.type;
-      if (propType && this.component) {
+      if (propType) {
         if (propType.release) {
           propType.release(asyncProp.resolvedValue, propType, this.component);
         }
@@ -38702,7 +39425,7 @@
     _createAsyncPropData(propName, defaultValue) {
       const asyncProp = this.asyncProps[propName];
       if (!asyncProp) {
-        const propTypes = this.component && this.component.props[PROP_TYPES_SYMBOL];
+        const propTypes = this.component && this.component.constructor._propTypes;
         this.asyncProps[propName] = {
           type: propTypes && propTypes[propName],
           lastValue: null,
@@ -38726,7 +39449,6 @@
       _defineProperty(this, "needsUpdate", void 0);
       _defineProperty(this, "subLayers", void 0);
       _defineProperty(this, "usesPickingColorCache", void 0);
-      _defineProperty(this, "hasPickingBuffer", void 0);
       _defineProperty(this, "changeFlags", void 0);
       _defineProperty(this, "viewport", void 0);
       _defineProperty(this, "uniformTransitions", void 0);
@@ -38740,34 +39462,30 @@
     get layer() {
       return this.component;
     }
+    set layer(layer) {
+      this.component = layer;
+    }
     _fetch(propName, url) {
-      const layer = this.layer;
-      const fetch2 = layer === null || layer === void 0 ? void 0 : layer.props.fetch;
+      const fetch2 = this.component.props.fetch;
       if (fetch2) {
         return fetch2(url, {
           propName,
-          layer
+          layer: this.layer
         });
       }
       return super._fetch(propName, url);
     }
     _onResolve(propName, value) {
-      const layer = this.layer;
-      if (layer) {
-        const onDataLoad = layer.props.onDataLoad;
-        if (propName === "data" && onDataLoad) {
-          onDataLoad(value, {
-            propName,
-            layer
-          });
-        }
+      const onDataLoad = this.component.props.onDataLoad;
+      if (propName === "data" && onDataLoad) {
+        onDataLoad(value, {
+          propName,
+          layer: this.layer
+        });
       }
     }
     _onError(propName, error2) {
-      const layer = this.layer;
-      if (layer) {
-        layer.raiseError(error2, "loading ".concat(propName, " of ").concat(this.layer));
-      }
+      this.layer.raiseError(error2, "loading ".concat(propName, " of ").concat(this.layer));
     }
   };
 
@@ -38795,26 +39513,31 @@
     dataComparator: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     _dataDiff: {
       type: "function",
       value: (data) => data && data.__diff,
+      compare: false,
       optional: true
     },
     dataTransform: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     onDataLoad: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     onError: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     fetch: {
@@ -38862,7 +39585,8 @@
           });
         }
         return load(url, loaders, loadOptions);
-      }
+      },
+      compare: false
     },
     updateTriggers: {},
     visible: true,
@@ -38873,30 +39597,35 @@
       max: 1,
       value: 1
     },
-    operation: "draw",
+    operation: OPERATION.DRAW,
     onHover: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     onClick: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     onDragStart: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     onDrag: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     onDragEnd: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
     },
     coordinateSystem: COORDINATE_SYSTEM.DEFAULT,
@@ -38918,13 +39647,7 @@
       type: "object",
       value: {},
       optional: true,
-      compare: 2
-    },
-    loadOptions: {
-      type: "object",
-      value: null,
-      optional: true,
-      ignore: true
+      compare: true
     },
     transitions: null,
     extensions: [],
@@ -38932,13 +39655,14 @@
       type: "array",
       value: [],
       optional: true,
-      ignore: true
+      compare: true
     },
     getPolygonOffset: {
       type: "function",
       value: ({
         layerIndex
-      }) => [0, -layerIndex * 100]
+      }) => [0, -layerIndex * 100],
+      compare: false
     },
     highlightedObjectIndex: null,
     autoHighlight: false,
@@ -38955,9 +39679,6 @@
       _defineProperty(this, "context", void 0);
       _defineProperty(this, "state", void 0);
       _defineProperty(this, "parent", null);
-    }
-    static get componentName() {
-      return Object.prototype.hasOwnProperty.call(this, "layerName") ? this.layerName : "";
     }
     get root() {
       let layer = this;
@@ -39097,8 +39818,15 @@
       return null;
     }
     getBounds() {
-      var _this$getAttributeMan;
-      return (_this$getAttributeMan = this.getAttributeManager()) === null || _this$getAttributeMan === void 0 ? void 0 : _this$getAttributeMan.getBounds(["positions", "instancePositions"]);
+      var _ref;
+      const attributeManager = this.getAttributeManager();
+      if (!attributeManager)
+        return null;
+      const {
+        positions,
+        instancePositions
+      } = attributeManager.attributes;
+      return (_ref = positions || instancePositions) === null || _ref === void 0 ? void 0 : _ref.getBounds();
     }
     getShaders(shaders) {
       for (const extension of this.props.extensions) {
@@ -39123,28 +39851,26 @@
           attributeManager.invalidateAll();
         }
       }
-      if (attributeManager) {
+      const {
+        props,
+        oldProps
+      } = params;
+      const neededPickingBuffer = Number.isInteger(oldProps.highlightedObjectIndex) || oldProps.pickable;
+      const needPickingBuffer = Number.isInteger(props.highlightedObjectIndex) || props.pickable;
+      if (neededPickingBuffer !== needPickingBuffer && attributeManager) {
         const {
-          props
-        } = params;
-        const hasPickingBuffer = this.internalState.hasPickingBuffer;
-        const needsPickingBuffer = Number.isInteger(props.highlightedObjectIndex) || props.pickable || props.extensions.some((extension) => extension.getNeedsPickingBuffer.call(this, extension));
-        if (hasPickingBuffer !== needsPickingBuffer) {
-          this.internalState.hasPickingBuffer = needsPickingBuffer;
-          const {
-            pickingColors,
-            instancePickingColors
-          } = attributeManager.attributes;
-          const pickingColorsAttribute = pickingColors || instancePickingColors;
-          if (pickingColorsAttribute) {
-            if (needsPickingBuffer && pickingColorsAttribute.constant) {
-              pickingColorsAttribute.constant = false;
-              attributeManager.invalidate(pickingColorsAttribute.id);
-            }
-            if (!pickingColorsAttribute.value && !needsPickingBuffer) {
-              pickingColorsAttribute.constant = true;
-              pickingColorsAttribute.value = [0, 0, 0];
-            }
+          pickingColors,
+          instancePickingColors
+        } = attributeManager.attributes;
+        const pickingColorsAttribute = pickingColors || instancePickingColors;
+        if (pickingColorsAttribute) {
+          if (needPickingBuffer && pickingColorsAttribute.constant) {
+            pickingColorsAttribute.constant = false;
+            attributeManager.invalidate(pickingColorsAttribute.id);
+          }
+          if (!pickingColorsAttribute.value && !needPickingBuffer) {
+            pickingColorsAttribute.constant = true;
+            pickingColorsAttribute.value = [0, 0, 0];
           }
         }
       }
@@ -39190,9 +39916,7 @@
     raiseError(error2, message) {
       var _this$props$onError, _this$props;
       if (message) {
-        error2 = new Error("".concat(message, ": ").concat(error2.message), {
-          cause: error2
-        });
+        error2.message = "".concat(message, ": ").concat(error2.message);
       }
       if (!((_this$props$onError = (_this$props = this.props).onError) !== null && _this$props$onError !== void 0 && _this$props$onError.call(_this$props, error2))) {
         var _this$context, _this$context$onError;
@@ -39331,29 +40055,7 @@
       model.setAttributes(shaderAttributes);
     }
     disablePickingIndex(objectIndex) {
-      const data = this.props.data;
-      if (!("attributes" in data)) {
-        this._disablePickingIndex(objectIndex);
-        return;
-      }
-      const {
-        pickingColors,
-        instancePickingColors
-      } = this.getAttributeManager().attributes;
-      const colors = pickingColors || instancePickingColors;
-      const externalColorAttribute = colors && data.attributes && data.attributes[colors.id];
-      if (externalColorAttribute && externalColorAttribute.value) {
-        const values = externalColorAttribute.value;
-        const objectColor = this.encodePickingColor(objectIndex);
-        for (let index = 0; index < data.length; index++) {
-          const i3 = colors.getVertexOffset(index);
-          if (values[i3] === objectColor[0] && values[i3 + 1] === objectColor[1] && values[i3 + 2] === objectColor[2]) {
-            this._disablePickingIndex(index);
-          }
-        }
-      } else {
-        this._disablePickingIndex(objectIndex);
-      }
+      this._disablePickingIndex(objectIndex);
     }
     _disablePickingIndex(objectIndex) {
       const {
@@ -39414,6 +40116,7 @@
           return attributeManager;
         }
       });
+      this.internalState.layer = this;
       this.internalState.uniformTransitions = new UniformTransitionManager(this.context.timeline);
       this.internalState.onAsyncPropUpdated = this._onAsyncPropUpdated.bind(this);
       this.internalState.setAsyncProps(this.props);
@@ -39439,6 +40142,7 @@
         return;
       }
       this.internalState = internalState;
+      this.internalState.layer = this;
       this.state = state;
       this.internalState.setAsyncProps(this.props);
       this._diffProps(this.props, this.internalState.getOldProps());
@@ -39485,7 +40189,7 @@
       debug(TRACE_FINALIZE, this);
       this.finalizeState(this.context);
       for (const extension of this.props.extensions) {
-        extension.finalizeState.call(this, this.context, extension);
+        extension.finalizeState.call(this, extension);
       }
     }
     _drawLayer({
@@ -39665,15 +40369,10 @@
       }
       let redraw = false;
       redraw = redraw || this.internalState.needsRedraw && this.id;
+      this.internalState.needsRedraw = this.internalState.needsRedraw && !opts.clearRedrawFlags;
       const attributeManager = this.getAttributeManager();
       const attributeManagerNeedsRedraw = attributeManager ? attributeManager.getNeedsRedraw(opts) : false;
       redraw = redraw || attributeManagerNeedsRedraw;
-      if (redraw) {
-        for (const extension of this.props.extensions) {
-          extension.onNeedsRedraw.call(this, extension);
-        }
-      }
-      this.internalState.needsRedraw = this.internalState.needsRedraw && !opts.clearRedrawFlags;
       return redraw;
     }
     _onAsyncPropUpdated() {
@@ -39798,7 +40497,7 @@
       const overridingSublayerTriggers = overridingSublayerProps && overridingSublayerProps.updateTriggers;
       const sublayerId = sublayerProps.id || "sublayer";
       if (overridingSublayerProps) {
-        const propTypes = this.props[PROP_TYPES_SYMBOL];
+        const propTypes = this.constructor._propTypes;
         const subLayerPropTypes = sublayerProps.type ? sublayerProps.type._propTypes : {};
         for (const key in overridingSublayerProps) {
           const propType = subLayerPropTypes[key] || propTypes[key];
@@ -39849,20 +40548,20 @@
   _defineProperty(CompositeLayer, "layerName", "CompositeLayer");
 
   // node_modules/@deck.gl/core/dist/esm/viewports/globe-viewport.js
-  var DEGREES_TO_RADIANS5 = Math.PI / 180;
+  var DEGREES_TO_RADIANS6 = Math.PI / 180;
   var RADIANS_TO_DEGREES3 = 180 / Math.PI;
   var EARTH_RADIUS = 6370972;
   var GLOBE_RADIUS = 256;
   function getDistanceScales2() {
-    const unitsPerMeter2 = GLOBE_RADIUS / EARTH_RADIUS;
+    const unitsPerMeter3 = GLOBE_RADIUS / EARTH_RADIUS;
     const unitsPerDegree = Math.PI / 180 * GLOBE_RADIUS;
     return {
-      unitsPerMeter: [unitsPerMeter2, unitsPerMeter2, unitsPerMeter2],
+      unitsPerMeter: [unitsPerMeter3, unitsPerMeter3, unitsPerMeter3],
       unitsPerMeter2: [0, 0, 0],
-      metersPerUnit: [1 / unitsPerMeter2, 1 / unitsPerMeter2, 1 / unitsPerMeter2],
-      unitsPerDegree: [unitsPerDegree, unitsPerDegree, unitsPerMeter2],
+      metersPerUnit: [1 / unitsPerMeter3, 1 / unitsPerMeter3, 1 / unitsPerMeter3],
+      unitsPerDegree: [unitsPerDegree, unitsPerDegree, unitsPerMeter3],
       unitsPerDegree2: [0, 0, 0],
-      degreesPerUnit: [1 / unitsPerDegree, 1 / unitsPerDegree, 1 / unitsPerMeter2]
+      degreesPerUnit: [1 / unitsPerDegree, 1 / unitsPerDegree, 1 / unitsPerMeter3]
     };
   }
   var GlobeViewport = class extends Viewport {
@@ -39886,8 +40585,8 @@
         up: [0, 0, 1]
       });
       const scale5 = Math.pow(2, zoom);
-      viewMatrix2.rotateX(latitude * DEGREES_TO_RADIANS5);
-      viewMatrix2.rotateZ(-longitude * DEGREES_TO_RADIANS5);
+      viewMatrix2.rotateX(latitude * DEGREES_TO_RADIANS6);
+      viewMatrix2.rotateZ(-longitude * DEGREES_TO_RADIANS6);
       viewMatrix2.scale(scale5 / height);
       const halfFov = Math.atan(0.5 / altitude);
       const relativeScale = GLOBE_RADIUS * 2 * scale5 / height;
@@ -39965,8 +40664,8 @@
     }
     projectPosition(xyz) {
       const [lng, lat, Z = 0] = xyz;
-      const lambda = lng * DEGREES_TO_RADIANS5;
-      const phi = lat * DEGREES_TO_RADIANS5;
+      const lambda = lng * DEGREES_TO_RADIANS6;
+      const phi = lat * DEGREES_TO_RADIANS6;
       const cosPhi = Math.cos(phi);
       const D2 = (Z / EARTH_RADIUS + 1) * GLOBE_RADIUS;
       return [Math.sin(lambda) * cosPhi * D2, -Math.cos(lambda) * cosPhi * D2, Math.sin(phi) * D2];
@@ -40002,7 +40701,7 @@
   }
 
   // node_modules/@deck.gl/core/dist/esm/viewports/orbit-viewport.js
-  var DEGREES_TO_RADIANS6 = Math.PI / 180;
+  var DEGREES_TO_RADIANS7 = Math.PI / 180;
   function getViewMatrix2({
     height,
     focalDistance,
@@ -40017,11 +40716,11 @@
       eye,
       up
     });
-    viewMatrix2.rotateX(rotationX * DEGREES_TO_RADIANS6);
+    viewMatrix2.rotateX(rotationX * DEGREES_TO_RADIANS7);
     if (orbitAxis === "Z") {
-      viewMatrix2.rotateZ(rotationOrbit * DEGREES_TO_RADIANS6);
+      viewMatrix2.rotateZ(rotationOrbit * DEGREES_TO_RADIANS7);
     } else {
-      viewMatrix2.rotateY(rotationOrbit * DEGREES_TO_RADIANS6);
+      viewMatrix2.rotateY(rotationOrbit * DEGREES_TO_RADIANS7);
     }
     const projectionScale = Math.pow(2, zoom) / height;
     viewMatrix2.scale(projectionScale);
@@ -40076,398 +40775,6 @@
     }
   };
 
-  // node_modules/@deck.gl/core/dist/esm/viewports/orthographic-viewport.js
-  var viewMatrix = new Matrix4().lookAt({
-    eye: [0, 0, 1]
-  });
-  function getProjectionMatrix2({
-    width,
-    height,
-    near,
-    far,
-    padding
-  }) {
-    let left = -width / 2;
-    let right = width / 2;
-    let bottom = -height / 2;
-    let top = height / 2;
-    if (padding) {
-      const {
-        left: l2 = 0,
-        right: r2 = 0,
-        top: t2 = 0,
-        bottom: b2 = 0
-      } = padding;
-      const offsetX = clamp((l2 + width - r2) / 2, 0, width) - width / 2;
-      const offsetY = clamp((t2 + height - b2) / 2, 0, height) - height / 2;
-      left -= offsetX;
-      right -= offsetX;
-      bottom += offsetY;
-      top += offsetY;
-    }
-    return new Matrix4().ortho({
-      left,
-      right,
-      bottom,
-      top,
-      near,
-      far
-    });
-  }
-  var OrthographicViewport = class extends Viewport {
-    constructor(props) {
-      const {
-        width,
-        height,
-        near = 0.1,
-        far = 1e3,
-        zoom = 0,
-        target = [0, 0, 0],
-        padding = null,
-        flipY = true
-      } = props;
-      const zoomX = Array.isArray(zoom) ? zoom[0] : zoom;
-      const zoomY = Array.isArray(zoom) ? zoom[1] : zoom;
-      const zoom_ = Math.min(zoomX, zoomY);
-      const scale5 = Math.pow(2, zoom_);
-      let distanceScales;
-      if (zoomX !== zoomY) {
-        const scaleX2 = Math.pow(2, zoomX);
-        const scaleY2 = Math.pow(2, zoomY);
-        distanceScales = {
-          unitsPerMeter: [scaleX2 / scale5, scaleY2 / scale5, 1],
-          metersPerUnit: [scale5 / scaleX2, scale5 / scaleY2, 1]
-        };
-      }
-      super({
-        ...props,
-        longitude: void 0,
-        position: target,
-        viewMatrix: viewMatrix.clone().scale([scale5, scale5 * (flipY ? -1 : 1), scale5]),
-        projectionMatrix: getProjectionMatrix2({
-          width: width || 1,
-          height: height || 1,
-          padding,
-          near,
-          far
-        }),
-        zoom: zoom_,
-        distanceScales
-      });
-    }
-    projectFlat([X, Y]) {
-      const {
-        unitsPerMeter: unitsPerMeter2
-      } = this.distanceScales;
-      return [X * unitsPerMeter2[0], Y * unitsPerMeter2[1]];
-    }
-    unprojectFlat([x2, y2]) {
-      const {
-        metersPerUnit
-      } = this.distanceScales;
-      return [x2 * metersPerUnit[0], y2 * metersPerUnit[1]];
-    }
-    panByPosition(coords, pixel) {
-      const fromLocation = pixelsToWorld(pixel, this.pixelUnprojectionMatrix);
-      const toLocation = this.projectFlat(coords);
-      const translate3 = add([], toLocation, negate([], fromLocation));
-      const newCenter = add([], this.center, translate3);
-      return {
-        target: this.unprojectFlat(newCenter)
-      };
-    }
-  };
-
-  // node_modules/@deck.gl/core/dist/esm/controllers/orbit-controller.js
-  var OrbitState = class extends ViewState {
-    constructor(options) {
-      const {
-        width,
-        height,
-        rotationX = 0,
-        rotationOrbit = 0,
-        target = [0, 0, 0],
-        zoom = 0,
-        minRotationX = -90,
-        maxRotationX = 90,
-        minZoom = -Infinity,
-        maxZoom = Infinity,
-        startPanPosition,
-        startRotatePos,
-        startRotationX,
-        startRotationOrbit,
-        startZoomPosition,
-        startZoom
-      } = options;
-      super({
-        width,
-        height,
-        rotationX,
-        rotationOrbit,
-        target,
-        zoom,
-        minRotationX,
-        maxRotationX,
-        minZoom,
-        maxZoom
-      }, {
-        startPanPosition,
-        startRotatePos,
-        startRotationX,
-        startRotationOrbit,
-        startZoomPosition,
-        startZoom
-      });
-      _defineProperty(this, "makeViewport", void 0);
-      this.makeViewport = options.makeViewport;
-    }
-    panStart({
-      pos
-    }) {
-      return this._getUpdatedState({
-        startPanPosition: this._unproject(pos)
-      });
-    }
-    pan({
-      pos,
-      startPosition
-    }) {
-      const startPanPosition = this.getState().startPanPosition || startPosition;
-      if (!startPanPosition) {
-        return this;
-      }
-      const viewport = this.makeViewport(this.getViewportProps());
-      const newProps = viewport.panByPosition(startPanPosition, pos);
-      return this._getUpdatedState(newProps);
-    }
-    panEnd() {
-      return this._getUpdatedState({
-        startPanPosition: null
-      });
-    }
-    rotateStart({
-      pos
-    }) {
-      return this._getUpdatedState({
-        startRotatePos: pos,
-        startRotationX: this.getViewportProps().rotationX,
-        startRotationOrbit: this.getViewportProps().rotationOrbit
-      });
-    }
-    rotate({
-      pos,
-      deltaAngleX = 0,
-      deltaAngleY = 0
-    }) {
-      const {
-        startRotatePos,
-        startRotationX,
-        startRotationOrbit
-      } = this.getState();
-      const {
-        width,
-        height
-      } = this.getViewportProps();
-      if (!startRotatePos || startRotationX === void 0 || startRotationOrbit === void 0) {
-        return this;
-      }
-      let newRotation;
-      if (pos) {
-        let deltaScaleX = (pos[0] - startRotatePos[0]) / width;
-        const deltaScaleY = (pos[1] - startRotatePos[1]) / height;
-        if (startRotationX < -90 || startRotationX > 90) {
-          deltaScaleX *= -1;
-        }
-        newRotation = {
-          rotationX: startRotationX + deltaScaleY * 180,
-          rotationOrbit: startRotationOrbit + deltaScaleX * 180
-        };
-      } else {
-        newRotation = {
-          rotationX: startRotationX + deltaAngleY,
-          rotationOrbit: startRotationOrbit + deltaAngleX
-        };
-      }
-      return this._getUpdatedState(newRotation);
-    }
-    rotateEnd() {
-      return this._getUpdatedState({
-        startRotationX: null,
-        startRotationOrbit: null
-      });
-    }
-    shortestPathFrom(viewState) {
-      const fromProps = viewState.getViewportProps();
-      const props = {
-        ...this.getViewportProps()
-      };
-      const {
-        rotationOrbit
-      } = props;
-      if (Math.abs(rotationOrbit - fromProps.rotationOrbit) > 180) {
-        props.rotationOrbit = rotationOrbit < 0 ? rotationOrbit + 360 : rotationOrbit - 360;
-      }
-      return props;
-    }
-    zoomStart({
-      pos
-    }) {
-      return this._getUpdatedState({
-        startZoomPosition: this._unproject(pos),
-        startZoom: this.getViewportProps().zoom
-      });
-    }
-    zoom({
-      pos,
-      startPos,
-      scale: scale5
-    }) {
-      let {
-        startZoom,
-        startZoomPosition
-      } = this.getState();
-      if (!startZoomPosition) {
-        startZoom = this.getViewportProps().zoom;
-        startZoomPosition = this._unproject(startPos) || this._unproject(pos);
-      }
-      if (!startZoomPosition) {
-        return this;
-      }
-      const newZoom = this._calculateNewZoom({
-        scale: scale5,
-        startZoom
-      });
-      const zoomedViewport = this.makeViewport({
-        ...this.getViewportProps(),
-        zoom: newZoom
-      });
-      return this._getUpdatedState({
-        zoom: newZoom,
-        ...zoomedViewport.panByPosition(startZoomPosition, pos)
-      });
-    }
-    zoomEnd() {
-      return this._getUpdatedState({
-        startZoomPosition: null,
-        startZoom: null
-      });
-    }
-    zoomIn(speed = 2) {
-      return this._getUpdatedState({
-        zoom: this._calculateNewZoom({
-          scale: speed
-        })
-      });
-    }
-    zoomOut(speed = 2) {
-      return this._getUpdatedState({
-        zoom: this._calculateNewZoom({
-          scale: 1 / speed
-        })
-      });
-    }
-    moveLeft(speed = 50) {
-      return this._panFromCenter([-speed, 0]);
-    }
-    moveRight(speed = 50) {
-      return this._panFromCenter([speed, 0]);
-    }
-    moveUp(speed = 50) {
-      return this._panFromCenter([0, -speed]);
-    }
-    moveDown(speed = 50) {
-      return this._panFromCenter([0, speed]);
-    }
-    rotateLeft(speed = 15) {
-      return this._getUpdatedState({
-        rotationOrbit: this.getViewportProps().rotationOrbit - speed
-      });
-    }
-    rotateRight(speed = 15) {
-      return this._getUpdatedState({
-        rotationOrbit: this.getViewportProps().rotationOrbit + speed
-      });
-    }
-    rotateUp(speed = 10) {
-      return this._getUpdatedState({
-        rotationX: this.getViewportProps().rotationX - speed
-      });
-    }
-    rotateDown(speed = 10) {
-      return this._getUpdatedState({
-        rotationX: this.getViewportProps().rotationX + speed
-      });
-    }
-    _unproject(pos) {
-      const viewport = this.makeViewport(this.getViewportProps());
-      return pos && viewport.unproject(pos);
-    }
-    _calculateNewZoom({
-      scale: scale5,
-      startZoom
-    }) {
-      const {
-        maxZoom,
-        minZoom
-      } = this.getViewportProps();
-      if (startZoom === void 0) {
-        startZoom = this.getViewportProps().zoom;
-      }
-      const zoom = startZoom + Math.log2(scale5);
-      return clamp(zoom, minZoom, maxZoom);
-    }
-    _panFromCenter(offset) {
-      const {
-        width,
-        height,
-        target
-      } = this.getViewportProps();
-      return this.pan({
-        startPosition: target,
-        pos: [width / 2 + offset[0], height / 2 + offset[1]]
-      });
-    }
-    _getUpdatedState(newProps) {
-      return new this.constructor({
-        makeViewport: this.makeViewport,
-        ...this.getViewportProps(),
-        ...this.getState(),
-        ...newProps
-      });
-    }
-    applyConstraints(props) {
-      const {
-        maxZoom,
-        minZoom,
-        zoom,
-        maxRotationX,
-        minRotationX,
-        rotationOrbit
-      } = props;
-      props.zoom = Array.isArray(zoom) ? [clamp(zoom[0], minZoom, maxZoom), clamp(zoom[1], minZoom, maxZoom)] : clamp(zoom, minZoom, maxZoom);
-      props.rotationX = clamp(props.rotationX, minRotationX, maxRotationX);
-      if (rotationOrbit < -180 || rotationOrbit > 180) {
-        props.rotationOrbit = mod2(rotationOrbit + 180, 360) - 180;
-      }
-      return props;
-    }
-  };
-  var OrbitController = class extends Controller {
-    constructor(...args) {
-      super(...args);
-      _defineProperty(this, "ControllerState", OrbitState);
-      _defineProperty(this, "transition", {
-        transitionDuration: 300,
-        transitionInterpolator: new LinearInterpolator({
-          transitionProps: {
-            compare: ["target", "zoom", "rotationX", "rotationOrbit"],
-            required: ["target", "zoom"]
-          }
-        })
-      });
-    }
-  };
-
   // node_modules/@deck.gl/core/dist/esm/views/orbit-view.js
   var OrbitView = class extends View {
     constructor(props = {}) {
@@ -40483,82 +40790,8 @@
   };
   _defineProperty(OrbitView, "displayName", "OrbitView");
 
-  // node_modules/@deck.gl/core/dist/esm/controllers/orthographic-controller.js
-  var OrthographicState = class extends OrbitState {
-    constructor(props) {
-      super(props);
-      _defineProperty(this, "zoomAxis", void 0);
-      this.zoomAxis = props.zoomAxis || "all";
-    }
-    _calculateNewZoom({
-      scale: scale5,
-      startZoom
-    }) {
-      const {
-        maxZoom,
-        minZoom
-      } = this.getViewportProps();
-      if (startZoom === void 0) {
-        startZoom = this.getViewportProps().zoom;
-      }
-      let deltaZoom = Math.log2(scale5);
-      if (Array.isArray(startZoom)) {
-        let [newZoomX, newZoomY] = startZoom;
-        switch (this.zoomAxis) {
-          case "X":
-            newZoomX = clamp(newZoomX + deltaZoom, minZoom, maxZoom);
-            break;
-          case "Y":
-            newZoomY = clamp(newZoomY + deltaZoom, minZoom, maxZoom);
-            break;
-          default:
-            let z = Math.min(newZoomX + deltaZoom, newZoomY + deltaZoom);
-            if (z < minZoom) {
-              deltaZoom += minZoom - z;
-            }
-            z = Math.max(newZoomX + deltaZoom, newZoomY + deltaZoom);
-            if (z > maxZoom) {
-              deltaZoom += maxZoom - z;
-            }
-            newZoomX += deltaZoom;
-            newZoomY += deltaZoom;
-        }
-        return [newZoomX, newZoomY];
-      }
-      return clamp(startZoom + deltaZoom, minZoom, maxZoom);
-    }
-  };
-  var OrthographicController = class extends Controller {
-    constructor(...args) {
-      super(...args);
-      _defineProperty(this, "ControllerState", OrthographicState);
-      _defineProperty(this, "transition", {
-        transitionDuration: 300,
-        transitionInterpolator: new LinearInterpolator(["target", "zoom"])
-      });
-      _defineProperty(this, "dragMode", "pan");
-    }
-    _onPanRotate() {
-      return false;
-    }
-  };
-
-  // node_modules/@deck.gl/core/dist/esm/views/orthographic-view.js
-  var OrthographicView = class extends View {
-    get ViewportType() {
-      return OrthographicViewport;
-    }
-    get ControllerType() {
-      return OrthographicController;
-    }
-  };
-  _defineProperty(OrthographicView, "displayName", "OrthographicView");
-
   // node_modules/@deck.gl/core/dist/esm/lib/layer-extension.js
   var LayerExtension = class {
-    static get componentName() {
-      return Object.prototype.hasOwnProperty.call(this, "extensionName") ? this.extensionName : "";
-    }
     constructor(opts) {
       _defineProperty(this, "opts", void 0);
       if (opts) {
@@ -40569,7 +40802,7 @@
       if (this === extension) {
         return true;
       }
-      return this.constructor === extension.constructor && deepEqual(this.opts, extension.opts, 1);
+      return this.constructor === extension.constructor && deepEqual(this.opts, extension.opts);
     }
     getShaders(extension) {
       return null;
@@ -40600,18 +40833,12 @@
     }
     updateState(params, extension) {
     }
-    onNeedsRedraw(extension) {
-    }
-    getNeedsPickingBuffer(extension) {
-      return false;
-    }
     draw(params, extension) {
     }
     finalizeState(context, extension) {
     }
   };
   _defineProperty(LayerExtension, "defaultProps", {});
-  _defineProperty(LayerExtension, "extensionName", "LayerExtension");
 
   // node_modules/@deck.gl/core/dist/esm/utils/tesselator.js
   var Tesselator = class {
@@ -40857,7 +41084,7 @@
 
   // node_modules/@deck.gl/layers/dist/esm/bitmap-layer/bitmap-layer-fragment.js
   var packUVsIntoRGB = "\nvec3 packUVsIntoRGB(vec2 uv) {\n  // Extract the top 8 bits. We want values to be truncated down so we can add a fraction\n  vec2 uv8bit = floor(uv * 256.);\n\n  // Calculate the normalized remainders of u and v parts that do not fit into 8 bits\n  // Scale and clamp to 0-1 range\n  vec2 uvFraction = fract(uv * 256.);\n  vec2 uvFraction4bit = floor(uvFraction * 16.);\n\n  // Remainder can be encoded in blue channel, encode as 4 bits for pixel coordinates\n  float fractions = uvFraction4bit.x + uvFraction4bit.y * 16.;\n\n  return vec3(uv8bit, fractions) / 255.;\n}\n";
-  var bitmap_layer_fragment_default = "\n#define SHADER_NAME bitmap-layer-fragment-shader\n\n#ifdef GL_ES\nprecision highp float;\n#endif\n\nuniform sampler2D bitmapTexture;\n\nvarying vec2 vTexCoord;\nvarying vec2 vTexPos;\n\nuniform float desaturate;\nuniform vec4 transparentColor;\nuniform vec3 tintColor;\nuniform float opacity;\n\nuniform float coordinateConversion;\nuniform vec4 bounds;\n\n/* projection utils */\nconst float TILE_SIZE = 512.0;\nconst float PI = 3.1415926536;\nconst float WORLD_SCALE = TILE_SIZE / PI / 2.0;\n\n// from degrees to Web Mercator\nvec2 lnglat_to_mercator(vec2 lnglat) {\n  float x = lnglat.x;\n  float y = clamp(lnglat.y, -89.9, 89.9);\n  return vec2(\n    radians(x) + PI,\n    PI + log(tan(PI * 0.25 + radians(y) * 0.5))\n  ) * WORLD_SCALE;\n}\n\n// from Web Mercator to degrees\nvec2 mercator_to_lnglat(vec2 xy) {\n  xy /= WORLD_SCALE;\n  return degrees(vec2(\n    xy.x - PI,\n    atan(exp(xy.y - PI)) * 2.0 - PI * 0.5\n  ));\n}\n/* End projection utils */\n\n// apply desaturation\nvec3 color_desaturate(vec3 color) {\n  float luminance = (color.r + color.g + color.b) * 0.333333333;\n  return mix(color, vec3(luminance), desaturate);\n}\n\n// apply tint\nvec3 color_tint(vec3 color) {\n  return color * tintColor;\n}\n\n// blend with background color\nvec4 apply_opacity(vec3 color, float alpha) {\n  if (transparentColor.a == 0.0) {\n    return vec4(color, alpha);\n  }\n  float blendedAlpha = alpha + transparentColor.a * (1.0 - alpha);\n  float highLightRatio = alpha / blendedAlpha;\n  vec3 blendedRGB = mix(transparentColor.rgb, color, highLightRatio);\n  return vec4(blendedRGB, blendedAlpha);\n}\n\nvec2 getUV(vec2 pos) {\n  return vec2(\n    (pos.x - bounds[0]) / (bounds[2] - bounds[0]),\n    (pos.y - bounds[3]) / (bounds[1] - bounds[3])\n  );\n}\n\n".concat(packUVsIntoRGB, "\n\nvoid main(void) {\n  vec2 uv = vTexCoord;\n  if (coordinateConversion < -0.5) {\n    vec2 lnglat = mercator_to_lnglat(vTexPos);\n    uv = getUV(lnglat);\n  } else if (coordinateConversion > 0.5) {\n    vec2 commonPos = lnglat_to_mercator(vTexPos);\n    uv = getUV(commonPos);\n  }\n  vec4 bitmapColor = texture2D(bitmapTexture, uv);\n\n  gl_FragColor = apply_opacity(color_tint(color_desaturate(bitmapColor.rgb)), bitmapColor.a * opacity);\n\n  geometry.uv = uv;\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n\n  if (picking_uActive && !picking_uAttribute) {\n    // Since instance information is not used, we can use picking color for pixel index\n    gl_FragColor.rgb = packUVsIntoRGB(uv);\n  }\n}\n");
+  var bitmap_layer_fragment_default = "\n#define SHADER_NAME bitmap-layer-fragment-shader\n\n#ifdef GL_ES\nprecision highp float;\n#endif\n\nuniform sampler2D bitmapTexture;\n\nvarying vec2 vTexCoord;\nvarying vec2 vTexPos;\n\nuniform float desaturate;\nuniform vec4 transparentColor;\nuniform vec3 tintColor;\nuniform float opacity;\n\nuniform float coordinateConversion;\nuniform vec4 bounds;\n\n/* projection utils */\nconst float TILE_SIZE = 512.0;\nconst float PI = 3.1415926536;\nconst float WORLD_SCALE = TILE_SIZE / PI / 2.0;\n\n// from degrees to Web Mercator\nvec2 lnglat_to_mercator(vec2 lnglat) {\n  float x = lnglat.x;\n  float y = clamp(lnglat.y, -89.9, 89.9);\n  return vec2(\n    radians(x) + PI,\n    PI + log(tan(PI * 0.25 + radians(y) * 0.5))\n  ) * WORLD_SCALE;\n}\n\n// from Web Mercator to degrees\nvec2 mercator_to_lnglat(vec2 xy) {\n  xy /= WORLD_SCALE;\n  return degrees(vec2(\n    xy.x - PI,\n    atan(exp(xy.y - PI)) * 2.0 - PI * 0.5\n  ));\n}\n/* End projection utils */\n\n// apply desaturation\nvec3 color_desaturate(vec3 color) {\n  float luminance = (color.r + color.g + color.b) * 0.333333333;\n  return mix(color, vec3(luminance), desaturate);\n}\n\n// apply tint\nvec3 color_tint(vec3 color) {\n  return color * tintColor;\n}\n\n// blend with background color\nvec4 apply_opacity(vec3 color, float alpha) {\n  return mix(transparentColor, vec4(color, 1.0), alpha);\n}\n\nvec2 getUV(vec2 pos) {\n  return vec2(\n    (pos.x - bounds[0]) / (bounds[2] - bounds[0]),\n    (pos.y - bounds[3]) / (bounds[1] - bounds[3])\n  );\n}\n\n".concat(packUVsIntoRGB, "\n\nvoid main(void) {\n  vec2 uv = vTexCoord;\n  if (coordinateConversion < -0.5) {\n    vec2 lnglat = mercator_to_lnglat(vTexPos);\n    uv = getUV(lnglat);\n  } else if (coordinateConversion > 0.5) {\n    vec2 commonPos = lnglat_to_mercator(vTexPos);\n    uv = getUV(commonPos);\n  }\n  vec4 bitmapColor = texture2D(bitmapTexture, uv);\n\n  gl_FragColor = apply_opacity(color_tint(color_desaturate(bitmapColor.rgb)), bitmapColor.a * opacity);\n\n  geometry.uv = uv;\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n\n  if (picking_uActive && !picking_uAttribute) {\n    // Since instance information is not used, we can use picking color for pixel index\n    gl_FragColor.rgb = packUVsIntoRGB(uv);\n  }\n}\n");
 
   // node_modules/@deck.gl/layers/dist/esm/bitmap-layer/bitmap-layer.js
   var defaultProps3 = {
@@ -40885,10 +41112,6 @@
     tintColor: {
       type: "color",
       value: [255, 255, 255]
-    },
-    textureParameters: {
-      type: "object",
-      ignore: true
     }
   };
   var BitmapLayer = class extends Layer {
@@ -41109,10 +41332,10 @@
   }
 
   // node_modules/@deck.gl/layers/dist/esm/icon-layer/icon-layer-vertex.glsl.js
-  var icon_layer_vertex_glsl_default = "#define SHADER_NAME icon-layer-vertex-shader\n\nattribute vec2 positions;\n\nattribute vec3 instancePositions;\nattribute vec3 instancePositions64Low;\nattribute float instanceSizes;\nattribute float instanceAngles;\nattribute vec4 instanceColors;\nattribute vec3 instancePickingColors;\nattribute vec4 instanceIconFrames;\nattribute float instanceColorModes;\nattribute vec2 instanceOffsets;\nattribute vec2 instancePixelOffset;\n\nuniform float sizeScale;\nuniform vec2 iconsTextureDim;\nuniform float sizeMinPixels;\nuniform float sizeMaxPixels;\nuniform bool billboard;\nuniform int sizeUnits;\n\nvarying float vColorMode;\nvarying vec4 vColor;\nvarying vec2 vTextureCoords;\nvarying vec2 uv;\n\nvec2 rotate_by_angle(vec2 vertex, float angle) {\n  float angle_radian = angle * PI / 180.0;\n  float cos_angle = cos(angle_radian);\n  float sin_angle = sin(angle_radian);\n  mat2 rotationMatrix = mat2(cos_angle, -sin_angle, sin_angle, cos_angle);\n  return rotationMatrix * vertex;\n}\n\nvoid main(void) {\n  geometry.worldPosition = instancePositions;\n  geometry.uv = positions;\n  geometry.pickingColor = instancePickingColors;\n  uv = positions;\n\n  vec2 iconSize = instanceIconFrames.zw;\n  float sizePixels = clamp(\n    project_size_to_pixel(instanceSizes * sizeScale, sizeUnits), \n    sizeMinPixels, sizeMaxPixels\n  );\n  float instanceScale = iconSize.y == 0.0 ? 0.0 : sizePixels / iconSize.y;\n  vec2 pixelOffset = positions / 2.0 * iconSize + instanceOffsets;\n  pixelOffset = rotate_by_angle(pixelOffset, instanceAngles) * instanceScale;\n  pixelOffset += instancePixelOffset;\n  pixelOffset.y *= -1.0;\n\n  if (billboard)  {\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, vec3(0.0), geometry.position);\n    DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n    vec3 offset = vec3(pixelOffset, 0.0);\n    DECKGL_FILTER_SIZE(offset, geometry);\n    gl_Position.xy += project_pixel_size_to_clipspace(offset.xy);\n\n  } else {\n    vec3 offset_common = vec3(project_pixel_size(pixelOffset), 0.0);\n    DECKGL_FILTER_SIZE(offset_common, geometry);\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset_common, geometry.position); \n    DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n  }\n\n  vTextureCoords = mix(\n    instanceIconFrames.xy,\n    instanceIconFrames.xy + iconSize,\n    (positions.xy + 1.0) / 2.0\n  ) / iconsTextureDim;\n\n  vColor = instanceColors;\n  DECKGL_FILTER_COLOR(vColor, geometry);\n\n  vColorMode = instanceColorModes;\n}\n";
+  var icon_layer_vertex_glsl_default = '#define SHADER_NAME icon-layer-vertex-shader\n\nattribute vec2 positions;\n\nattribute vec3 instancePositions;\nattribute vec3 instancePositions64Low;\nattribute float instanceSizes;\nattribute float instanceAngles;\nattribute vec4 instanceColors;\nattribute vec3 instancePickingColors;\nattribute vec4 instanceIconFrames;\nattribute float instanceColorModes;\nattribute vec2 instanceOffsets;\nattribute vec2 instancePixelOffset;\n\nuniform float sizeScale;\nuniform vec2 iconsTextureDim;\nuniform float sizeMinPixels;\nuniform float sizeMaxPixels;\nuniform bool billboard;\nuniform int sizeUnits;\n\nvarying float vColorMode;\nvarying vec4 vColor;\nvarying vec2 vTextureCoords;\nvarying vec2 uv;\n\nvec2 rotate_by_angle(vec2 vertex, float angle) {\n  float angle_radian = angle * PI / 180.0;\n  float cos_angle = cos(angle_radian);\n  float sin_angle = sin(angle_radian);\n  mat2 rotationMatrix = mat2(cos_angle, -sin_angle, sin_angle, cos_angle);\n  return rotationMatrix * vertex;\n}\n\nvoid main(void) {\n  geometry.worldPosition = instancePositions;\n  geometry.uv = positions;\n  geometry.pickingColor = instancePickingColors;\n  uv = positions;\n\n  vec2 iconSize = instanceIconFrames.zw;\n  // convert size in meters to pixels, then scaled and clamp\n \n  // project meters to pixels and clamp to limits \n  float sizePixels = clamp(\n    project_size_to_pixel(instanceSizes * sizeScale, sizeUnits), \n    sizeMinPixels, sizeMaxPixels\n  );\n\n  // scale icon height to match instanceSize\n  float instanceScale = iconSize.y == 0.0 ? 0.0 : sizePixels / iconSize.y;\n\n  // scale and rotate vertex in "pixel" value and convert back to fraction in clipspace\n  vec2 pixelOffset = positions / 2.0 * iconSize + instanceOffsets;\n  pixelOffset = rotate_by_angle(pixelOffset, instanceAngles) * instanceScale;\n  pixelOffset += instancePixelOffset;\n  pixelOffset.y *= -1.0;\n\n  if (billboard)  {\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, vec3(0.0), geometry.position);\n    vec3 offset = vec3(pixelOffset, 0.0);\n    DECKGL_FILTER_SIZE(offset, geometry);\n    gl_Position.xy += project_pixel_size_to_clipspace(offset.xy);\n\n  } else {\n    vec3 offset_common = vec3(project_pixel_size(pixelOffset), 0.0);\n    DECKGL_FILTER_SIZE(offset_common, geometry);\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset_common, geometry.position); \n  }\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n\n  vTextureCoords = mix(\n    instanceIconFrames.xy,\n    instanceIconFrames.xy + iconSize,\n    (positions.xy + 1.0) / 2.0\n  ) / iconsTextureDim;\n\n  vColor = instanceColors;\n  DECKGL_FILTER_COLOR(vColor, geometry);\n\n  vColorMode = instanceColorModes;\n}\n';
 
   // node_modules/@deck.gl/layers/dist/esm/icon-layer/icon-layer-fragment.glsl.js
-  var icon_layer_fragment_glsl_default = "#define SHADER_NAME icon-layer-fragment-shader\n\nprecision highp float;\n\nuniform float opacity;\nuniform sampler2D iconsTexture;\nuniform float alphaCutoff;\n\nvarying float vColorMode;\nvarying vec4 vColor;\nvarying vec2 vTextureCoords;\nvarying vec2 uv;\n\nvoid main(void) {\n  geometry.uv = uv;\n\n  vec4 texColor = texture2D(iconsTexture, vTextureCoords);\n  vec3 color = mix(texColor.rgb, vColor.rgb, vColorMode);\n  float a = texColor.a * opacity * vColor.a;\n\n  if (a < alphaCutoff) {\n    discard;\n  }\n\n  gl_FragColor = vec4(color, a);\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
+  var icon_layer_fragment_glsl_default = "#define SHADER_NAME icon-layer-fragment-shader\n\nprecision highp float;\n\nuniform float opacity;\nuniform sampler2D iconsTexture;\nuniform float alphaCutoff;\n\nvarying float vColorMode;\nvarying vec4 vColor;\nvarying vec2 vTextureCoords;\nvarying vec2 uv;\n\nvoid main(void) {\n  geometry.uv = uv;\n\n  vec4 texColor = texture2D(iconsTexture, vTextureCoords);\n\n  // if colorMode == 0, use pixel color from the texture\n  // if colorMode == 1 or rendering picking buffer, use texture as transparency mask\n  vec3 color = mix(texColor.rgb, vColor.rgb, vColorMode);\n  // Take the global opacity and the alpha from vColor into account for the alpha component\n  float a = texColor.a * opacity * vColor.a;\n\n  if (a < alphaCutoff) {\n    discard;\n  }\n\n  gl_FragColor = vec4(color, a);\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/icon-layer/icon-manager.js
   var DEFAULT_CANVAS_WIDTH = 1024;
@@ -41128,26 +41351,15 @@
   function nextPowOfTwo(number) {
     return Math.pow(2, Math.ceil(Math.log2(number)));
   }
-  function resizeImage(ctx, imageData, maxWidth, maxHeight) {
-    const resizeRatio = Math.min(maxWidth / imageData.width, maxHeight / imageData.height);
-    const width = Math.floor(imageData.width * resizeRatio);
-    const height = Math.floor(imageData.height * resizeRatio);
-    if (resizeRatio === 1) {
-      return {
-        data: imageData,
-        width,
-        height
-      };
+  function resizeImage(ctx, imageData, width, height) {
+    if (width === imageData.width && height === imageData.height) {
+      return imageData;
     }
     ctx.canvas.height = height;
     ctx.canvas.width = width;
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.drawImage(imageData, 0, 0, imageData.width, imageData.height, 0, 0, width, height);
-    return {
-      data: ctx.canvas,
-      width,
-      height
-    };
+    return ctx.canvas;
   }
   function getIconId(icon) {
     return icon && (icon.id || icon.url);
@@ -41365,34 +41577,25 @@
       }
     }
     _loadIcons(icons) {
-      const ctx = this._canvas.getContext("2d", {
-        willReadFrequently: true
-      });
+      const ctx = this._canvas.getContext("2d");
       for (const icon of icons) {
         this._pendingCount++;
-        load(icon.url, this._loadOptions).then((imageData) => {
+        load(icon.url, ImageLoader, this._loadOptions).then((imageData) => {
           const id = getIconId(icon);
-          const iconDef = this._mapping[id];
           const {
             x: x2,
             y: y2,
-            width: maxWidth,
-            height: maxHeight
-          } = iconDef;
-          const {
-            data,
             width,
             height
-          } = resizeImage(ctx, imageData, maxWidth, maxHeight);
+          } = this._mapping[id];
+          const data = resizeImage(ctx, imageData, width, height);
           this._texture.setSubImageData({
             data,
-            x: x2 + (maxWidth - width) / 2,
-            y: y2 + (maxHeight - height) / 2,
+            x: x2,
+            y: y2,
             width,
             height
           });
-          iconDef.width = width;
-          iconDef.height = height;
           this._texture.generateMipmap();
           this.onUpdate();
         }).catch((error2) => {
@@ -41473,11 +41676,8 @@
     onIconError: {
       type: "function",
       value: null,
+      compare: false,
       optional: true
-    },
-    textureParameters: {
-      type: "object",
-      ignore: true
     }
   };
   var IconLayer = class extends Layer {
@@ -41684,7 +41884,7 @@
   _defineProperty(IconLayer, "layerName", "IconLayer");
 
   // node_modules/@deck.gl/layers/dist/esm/line-layer/line-layer-vertex.glsl.js
-  var line_layer_vertex_glsl_default = "#define SHADER_NAME line-layer-vertex-shader\n\nattribute vec3 positions;\nattribute vec3 instanceSourcePositions;\nattribute vec3 instanceTargetPositions;\nattribute vec3 instanceSourcePositions64Low;\nattribute vec3 instanceTargetPositions64Low;\nattribute vec4 instanceColors;\nattribute vec3 instancePickingColors;\nattribute float instanceWidths;\n\nuniform float opacity;\nuniform float widthScale;\nuniform float widthMinPixels;\nuniform float widthMaxPixels;\nuniform float useShortestPath;\nuniform int widthUnits;\n\nvarying vec4 vColor;\nvarying vec2 uv;\nvec2 getExtrusionOffset(vec2 line_clipspace, float offset_direction, float width) {\n  vec2 dir_screenspace = normalize(line_clipspace * project_uViewportSize);\n  dir_screenspace = vec2(-dir_screenspace.y, dir_screenspace.x);\n\n  return dir_screenspace * offset_direction * width / 2.0;\n}\n\nvec3 splitLine(vec3 a, vec3 b, float x) {\n  float t = (x - a.x) / (b.x - a.x);\n  return vec3(x, mix(a.yz, b.yz, t));\n}\n\nvoid main(void) {\n  geometry.worldPosition = instanceSourcePositions;\n  geometry.worldPositionAlt = instanceTargetPositions;\n\n  vec3 source_world = instanceSourcePositions;\n  vec3 target_world = instanceTargetPositions;\n  vec3 source_world_64low = instanceSourcePositions64Low;\n  vec3 target_world_64low = instanceTargetPositions64Low;\n\n  if (useShortestPath > 0.5 || useShortestPath < -0.5) {\n    source_world.x = mod(source_world.x + 180., 360.0) - 180.;\n    target_world.x = mod(target_world.x + 180., 360.0) - 180.;\n    float deltaLng = target_world.x - source_world.x;\n\n    if (deltaLng * useShortestPath > 180.) {\n      source_world.x += 360. * useShortestPath;\n      source_world = splitLine(source_world, target_world, 180. * useShortestPath);\n      source_world_64low = vec3(0.0);\n    } else if (deltaLng * useShortestPath < -180.) {\n      target_world.x += 360. * useShortestPath;\n      target_world = splitLine(source_world, target_world, 180. * useShortestPath);\n      target_world_64low = vec3(0.0);\n    } else if (useShortestPath < 0.) {\n      gl_Position = vec4(0.);\n      return;\n    }\n  }\n  vec4 source_commonspace;\n  vec4 target_commonspace;\n  vec4 source = project_position_to_clipspace(source_world, source_world_64low, vec3(0.), source_commonspace);\n  vec4 target = project_position_to_clipspace(target_world, target_world_64low, vec3(0.), target_commonspace);\n  float segmentIndex = positions.x;\n  vec4 p = mix(source, target, segmentIndex);\n  geometry.position = mix(source_commonspace, target_commonspace, segmentIndex);\n  uv = positions.xy;\n  geometry.uv = uv;\n  geometry.pickingColor = instancePickingColors;\n  float widthPixels = clamp(\n    project_size_to_pixel(instanceWidths * widthScale, widthUnits),\n    widthMinPixels, widthMaxPixels\n  );\n  vec3 offset = vec3(\n    getExtrusionOffset(target.xy - source.xy, positions.y, widthPixels),\n    0.0);\n  DECKGL_FILTER_SIZE(offset, geometry);\n  DECKGL_FILTER_GL_POSITION(p, geometry);\n  gl_Position = p + vec4(project_pixel_size_to_clipspace(offset.xy), 0.0, 0.0);\n  vColor = vec4(instanceColors.rgb, instanceColors.a * opacity);\n  DECKGL_FILTER_COLOR(vColor, geometry);\n}\n";
+  var line_layer_vertex_glsl_default = "#define SHADER_NAME line-layer-vertex-shader\n\nattribute vec3 positions;\nattribute vec3 instanceSourcePositions;\nattribute vec3 instanceTargetPositions;\nattribute vec3 instanceSourcePositions64Low;\nattribute vec3 instanceTargetPositions64Low;\nattribute vec4 instanceColors;\nattribute vec3 instancePickingColors;\nattribute float instanceWidths;\n\nuniform float opacity;\nuniform float widthScale;\nuniform float widthMinPixels;\nuniform float widthMaxPixels;\nuniform float useShortestPath;\nuniform int widthUnits;\n\nvarying vec4 vColor;\nvarying vec2 uv;\n\n// offset vector by strokeWidth pixels\n// offset_direction is -1 (left) or 1 (right)\nvec2 getExtrusionOffset(vec2 line_clipspace, float offset_direction, float width) {\n  // normalized direction of the line\n  vec2 dir_screenspace = normalize(line_clipspace * project_uViewportSize);\n  // rotate by 90 degrees\n  dir_screenspace = vec2(-dir_screenspace.y, dir_screenspace.x);\n\n  return dir_screenspace * offset_direction * width / 2.0;\n}\n\nvec3 splitLine(vec3 a, vec3 b, float x) {\n  float t = (x - a.x) / (b.x - a.x);\n  return vec3(x, mix(a.yz, b.yz, t));\n}\n\nvoid main(void) {\n  geometry.worldPosition = instanceSourcePositions;\n  geometry.worldPositionAlt = instanceTargetPositions;\n\n  vec3 source_world = instanceSourcePositions;\n  vec3 target_world = instanceTargetPositions;\n  vec3 source_world_64low = instanceSourcePositions64Low;\n  vec3 target_world_64low = instanceTargetPositions64Low;\n\n  if (useShortestPath > 0.5 || useShortestPath < -0.5) {\n    source_world.x = mod(source_world.x + 180., 360.0) - 180.;\n    target_world.x = mod(target_world.x + 180., 360.0) - 180.;\n    float deltaLng = target_world.x - source_world.x;\n\n    if (deltaLng * useShortestPath > 180.) {\n      source_world.x += 360. * useShortestPath;\n      source_world = splitLine(source_world, target_world, 180. * useShortestPath);\n      source_world_64low = vec3(0.0);\n    } else if (deltaLng * useShortestPath < -180.) {\n      target_world.x += 360. * useShortestPath;\n      target_world = splitLine(source_world, target_world, 180. * useShortestPath);\n      target_world_64low = vec3(0.0);\n    } else if (useShortestPath < 0.) {\n      // Line is not split, abort\n      gl_Position = vec4(0.);\n      return;\n    }\n  }\n\n  // Position\n  vec4 source_commonspace;\n  vec4 target_commonspace;\n  vec4 source = project_position_to_clipspace(source_world, source_world_64low, vec3(0.), source_commonspace);\n  vec4 target = project_position_to_clipspace(target_world, target_world_64low, vec3(0.), target_commonspace);\n  \n  // linear interpolation of source & target to pick right coord\n  float segmentIndex = positions.x;\n  vec4 p = mix(source, target, segmentIndex);\n  geometry.position = mix(source_commonspace, target_commonspace, segmentIndex);\n  uv = positions.xy;\n  geometry.uv = uv;\n  geometry.pickingColor = instancePickingColors;\n\n  // Multiply out width and clamp to limits\n  float widthPixels = clamp(\n    project_size_to_pixel(instanceWidths * widthScale, widthUnits),\n    widthMinPixels, widthMaxPixels\n  );\n\n  // extrude\n  vec3 offset = vec3(\n    getExtrusionOffset(target.xy - source.xy, positions.y, widthPixels),\n    0.0);\n  DECKGL_FILTER_SIZE(offset, geometry);\n  gl_Position = p + vec4(project_pixel_size_to_clipspace(offset.xy), 0.0, 0.0);\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n\n  // Color\n  vColor = vec4(instanceColors.rgb, instanceColors.a * opacity);\n  DECKGL_FILTER_COLOR(vColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/line-layer/line-layer-fragment.glsl.js
   var line_layer_fragment_glsl_default = "#define SHADER_NAME line-layer-fragment-shader\n\nprecision highp float;\n\nvarying vec4 vColor;\nvarying vec2 uv;\n\nvoid main(void) {\n  geometry.uv = uv;\n\n  gl_FragColor = vColor;\n\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
@@ -41726,10 +41926,6 @@
     }
   };
   var LineLayer = class extends Layer {
-    getBounds() {
-      var _this$getAttributeMan;
-      return (_this$getAttributeMan = this.getAttributeManager()) === null || _this$getAttributeMan === void 0 ? void 0 : _this$getAttributeMan.getBounds(["instanceSourcePositions", "instanceTargetPositions"]);
-    }
     getShaders() {
       return super.getShaders({
         vs: line_layer_vertex_glsl_default,
@@ -41827,7 +42023,7 @@
   _defineProperty(LineLayer, "defaultProps", defaultProps5);
 
   // node_modules/@deck.gl/layers/dist/esm/point-cloud-layer/point-cloud-layer-vertex.glsl.js
-  var point_cloud_layer_vertex_glsl_default = "#define SHADER_NAME point-cloud-layer-vertex-shader\n\nattribute vec3 positions;\nattribute vec3 instanceNormals;\nattribute vec4 instanceColors;\nattribute vec3 instancePositions;\nattribute vec3 instancePositions64Low;\nattribute vec3 instancePickingColors;\n\nuniform float opacity;\nuniform float radiusPixels;\nuniform int sizeUnits;\n\nvarying vec4 vColor;\nvarying vec2 unitPosition;\n\nvoid main(void) {\n  geometry.worldPosition = instancePositions;\n  geometry.normal = project_normal(instanceNormals);\n  unitPosition = positions.xy;\n  geometry.uv = unitPosition;\n  geometry.pickingColor = instancePickingColors;\n  vec3 offset = vec3(positions.xy * project_size_to_pixel(radiusPixels, sizeUnits), 0.0);\n  DECKGL_FILTER_SIZE(offset, geometry);\n\n  gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, vec3(0.), geometry.position);\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n  gl_Position.xy += project_pixel_size_to_clipspace(offset.xy);\n  vec3 lightColor = lighting_getLightColor(instanceColors.rgb, project_uCameraPosition, geometry.position.xyz, geometry.normal);\n  vColor = vec4(lightColor, instanceColors.a * opacity);\n  DECKGL_FILTER_COLOR(vColor, geometry);\n}\n";
+  var point_cloud_layer_vertex_glsl_default = "#define SHADER_NAME point-cloud-layer-vertex-shader\n\nattribute vec3 positions;\nattribute vec3 instanceNormals;\nattribute vec4 instanceColors;\nattribute vec3 instancePositions;\nattribute vec3 instancePositions64Low;\nattribute vec3 instancePickingColors;\n\nuniform float opacity;\nuniform float radiusPixels;\nuniform int sizeUnits;\n\nvarying vec4 vColor;\nvarying vec2 unitPosition;\n\nvoid main(void) {\n  geometry.worldPosition = instancePositions;\n  geometry.normal = project_normal(instanceNormals);\n\n  // position on the containing square in [-1, 1] space\n  unitPosition = positions.xy;\n  geometry.uv = unitPosition;\n  geometry.pickingColor = instancePickingColors;\n\n  // Find the center of the point and add the current vertex\n  vec3 offset = vec3(positions.xy * project_size_to_pixel(radiusPixels, sizeUnits), 0.0);\n  DECKGL_FILTER_SIZE(offset, geometry);\n\n  gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, vec3(0.), geometry.position);\n  gl_Position.xy += project_pixel_size_to_clipspace(offset.xy);\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n\n  // Apply lighting\n  vec3 lightColor = lighting_getLightColor(instanceColors.rgb, project_uCameraPosition, geometry.position.xyz, geometry.normal);\n\n  // Apply opacity to instance color, or return instance picking color\n  vColor = vec4(lightColor, instanceColors.a * opacity);\n  DECKGL_FILTER_COLOR(vColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/point-cloud-layer/point-cloud-layer-fragment.glsl.js
   var point_cloud_layer_fragment_glsl_default = "#define SHADER_NAME point-cloud-layer-fragment-shader\n\nprecision highp float;\n\nvarying vec4 vColor;\nvarying vec2 unitPosition;\n\nvoid main(void) {\n  geometry.uv = unitPosition;\n\n  float distToCenter = length(unitPosition);\n\n  if (distToCenter > 1.0) {\n    discard;\n  }\n\n  gl_FragColor = vColor;\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
@@ -41965,10 +42161,10 @@
   _defineProperty(PointCloudLayer, "defaultProps", defaultProps6);
 
   // node_modules/@deck.gl/layers/dist/esm/scatterplot-layer/scatterplot-layer-vertex.glsl.js
-  var scatterplot_layer_vertex_glsl_default = "#define SHADER_NAME scatterplot-layer-vertex-shader\n\nattribute vec3 positions;\n\nattribute vec3 instancePositions;\nattribute vec3 instancePositions64Low;\nattribute float instanceRadius;\nattribute float instanceLineWidths;\nattribute vec4 instanceFillColors;\nattribute vec4 instanceLineColors;\nattribute vec3 instancePickingColors;\n\nuniform float opacity;\nuniform float radiusScale;\nuniform float radiusMinPixels;\nuniform float radiusMaxPixels;\nuniform float lineWidthScale;\nuniform float lineWidthMinPixels;\nuniform float lineWidthMaxPixels;\nuniform float stroked;\nuniform bool filled;\nuniform bool antialiasing;\nuniform bool billboard;\nuniform int radiusUnits;\nuniform int lineWidthUnits;\n\nvarying vec4 vFillColor;\nvarying vec4 vLineColor;\nvarying vec2 unitPosition;\nvarying float innerUnitRadius;\nvarying float outerRadiusPixels;\n\n\nvoid main(void) {\n  geometry.worldPosition = instancePositions;\n  outerRadiusPixels = clamp(\n    project_size_to_pixel(radiusScale * instanceRadius, radiusUnits),\n    radiusMinPixels, radiusMaxPixels\n  );\n  float lineWidthPixels = clamp(\n    project_size_to_pixel(lineWidthScale * instanceLineWidths, lineWidthUnits),\n    lineWidthMinPixels, lineWidthMaxPixels\n  );\n  outerRadiusPixels += stroked * lineWidthPixels / 2.0;\n  float edgePadding = antialiasing ? (outerRadiusPixels + SMOOTH_EDGE_RADIUS) / outerRadiusPixels : 1.0;\n  unitPosition = edgePadding * positions.xy;\n  geometry.uv = unitPosition;\n  geometry.pickingColor = instancePickingColors;\n\n  innerUnitRadius = 1.0 - stroked * lineWidthPixels / outerRadiusPixels;\n  \n  if (billboard) {\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, vec3(0.0), geometry.position);\n    DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n    vec3 offset = edgePadding * positions * outerRadiusPixels;\n    DECKGL_FILTER_SIZE(offset, geometry);\n    gl_Position.xy += project_pixel_size_to_clipspace(offset.xy);\n  } else {\n    vec3 offset = edgePadding * positions * project_pixel_size(outerRadiusPixels);\n    DECKGL_FILTER_SIZE(offset, geometry);\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset, geometry.position);\n    DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n  }\n  vFillColor = vec4(instanceFillColors.rgb, instanceFillColors.a * opacity);\n  DECKGL_FILTER_COLOR(vFillColor, geometry);\n  vLineColor = vec4(instanceLineColors.rgb, instanceLineColors.a * opacity);\n  DECKGL_FILTER_COLOR(vLineColor, geometry);\n}\n";
+  var scatterplot_layer_vertex_glsl_default = "#define SHADER_NAME scatterplot-layer-vertex-shader\n\nattribute vec3 positions;\n\nattribute vec3 instancePositions;\nattribute vec3 instancePositions64Low;\nattribute float instanceRadius;\nattribute float instanceLineWidths;\nattribute vec4 instanceFillColors;\nattribute vec4 instanceLineColors;\nattribute vec3 instancePickingColors;\n\nuniform float opacity;\nuniform float radiusScale;\nuniform float radiusMinPixels;\nuniform float radiusMaxPixels;\nuniform float lineWidthScale;\nuniform float lineWidthMinPixels;\nuniform float lineWidthMaxPixels;\nuniform float stroked;\nuniform bool filled;\nuniform bool antialiasing;\nuniform bool billboard;\nuniform int radiusUnits;\nuniform int lineWidthUnits;\n\nvarying vec4 vFillColor;\nvarying vec4 vLineColor;\nvarying vec2 unitPosition;\nvarying float innerUnitRadius;\nvarying float outerRadiusPixels;\n\n\nvoid main(void) {\n  geometry.worldPosition = instancePositions;\n\n  // Multiply out radius and clamp to limits\n  outerRadiusPixels = clamp(\n    project_size_to_pixel(radiusScale * instanceRadius, radiusUnits),\n    radiusMinPixels, radiusMaxPixels\n  );\n  \n  // Multiply out line width and clamp to limits\n  float lineWidthPixels = clamp(\n    project_size_to_pixel(lineWidthScale * instanceLineWidths, lineWidthUnits),\n    lineWidthMinPixels, lineWidthMaxPixels\n  );\n\n  // outer radius needs to offset by half stroke width\n  outerRadiusPixels += stroked * lineWidthPixels / 2.0;\n\n  // Expand geometry to accomodate edge smoothing\n  float edgePadding = antialiasing ? (outerRadiusPixels + SMOOTH_EDGE_RADIUS) / outerRadiusPixels : 1.0;\n\n  // position on the containing square in [-1, 1] space\n  unitPosition = edgePadding * positions.xy;\n  geometry.uv = unitPosition;\n  geometry.pickingColor = instancePickingColors;\n\n  innerUnitRadius = 1.0 - stroked * lineWidthPixels / outerRadiusPixels;\n  \n  if (billboard) {\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, vec3(0.0), geometry.position);\n    vec3 offset = edgePadding * positions * outerRadiusPixels;\n    DECKGL_FILTER_SIZE(offset, geometry);\n    gl_Position.xy += project_pixel_size_to_clipspace(offset.xy);\n  } else {\n    vec3 offset = edgePadding * positions * project_pixel_size(outerRadiusPixels);\n    DECKGL_FILTER_SIZE(offset, geometry);\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset, geometry.position);\n  }\n\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n\n  // Apply opacity to instance color, or return instance picking color\n  vFillColor = vec4(instanceFillColors.rgb, instanceFillColors.a * opacity);\n  DECKGL_FILTER_COLOR(vFillColor, geometry);\n  vLineColor = vec4(instanceLineColors.rgb, instanceLineColors.a * opacity);\n  DECKGL_FILTER_COLOR(vLineColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/scatterplot-layer/scatterplot-layer-fragment.glsl.js
-  var scatterplot_layer_fragment_glsl_default = "#define SHADER_NAME scatterplot-layer-fragment-shader\n\nprecision highp float;\n\nuniform bool filled;\nuniform float stroked;\nuniform bool antialiasing;\n\nvarying vec4 vFillColor;\nvarying vec4 vLineColor;\nvarying vec2 unitPosition;\nvarying float innerUnitRadius;\nvarying float outerRadiusPixels;\n\nvoid main(void) {\n  geometry.uv = unitPosition;\n\n  float distToCenter = length(unitPosition) * outerRadiusPixels;\n  float inCircle = antialiasing ? \n    smoothedge(distToCenter, outerRadiusPixels) : \n    step(distToCenter, outerRadiusPixels);\n\n  if (inCircle == 0.0) {\n    discard;\n  }\n\n  if (stroked > 0.5) {\n    float isLine = antialiasing ? \n      smoothedge(innerUnitRadius * outerRadiusPixels, distToCenter) :\n      step(innerUnitRadius * outerRadiusPixels, distToCenter);\n\n    if (filled) {\n      gl_FragColor = mix(vFillColor, vLineColor, isLine);\n    } else {\n      if (isLine == 0.0) {\n        discard;\n      }\n      gl_FragColor = vec4(vLineColor.rgb, vLineColor.a * isLine);\n    }\n  } else if (!filled) {\n    discard;\n  } else {\n    gl_FragColor = vFillColor;\n  }\n\n  gl_FragColor.a *= inCircle;\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
+  var scatterplot_layer_fragment_glsl_default = "#define SHADER_NAME scatterplot-layer-fragment-shader\n\nprecision highp float;\n\nuniform bool filled;\nuniform float stroked;\nuniform bool antialiasing;\n\nvarying vec4 vFillColor;\nvarying vec4 vLineColor;\nvarying vec2 unitPosition;\nvarying float innerUnitRadius;\nvarying float outerRadiusPixels;\n\nvoid main(void) {\n  geometry.uv = unitPosition;\n\n  float distToCenter = length(unitPosition) * outerRadiusPixels;\n  float inCircle = antialiasing ? \n    smoothedge(distToCenter, outerRadiusPixels) : \n    step(distToCenter, outerRadiusPixels);\n\n  if (inCircle == 0.0) {\n    discard;\n  }\n\n  if (stroked > 0.5) {\n    float isLine = antialiasing ? \n      smoothedge(innerUnitRadius * outerRadiusPixels, distToCenter) :\n      step(innerUnitRadius * outerRadiusPixels, distToCenter);\n\n    if (filled) {\n      gl_FragColor = mix(vFillColor, vLineColor, isLine);\n    } else {\n      if (isLine == 0.0) {\n        discard;\n      }\n      gl_FragColor = vec4(vLineColor.rgb, vLineColor.a * isLine);\n    }\n  } else if (filled) {\n    gl_FragColor = vFillColor;\n  } else {\n    discard;\n  }\n\n  gl_FragColor.a *= inCircle;\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/scatterplot-layer/scatterplot-layer.js
   var DEFAULT_COLOR4 = [0, 0, 0, 255];
@@ -42773,10 +42969,10 @@
   }
 
   // node_modules/@deck.gl/layers/dist/esm/path-layer/path-layer-vertex.glsl.js
-  var path_layer_vertex_glsl_default = "#define SHADER_NAME path-layer-vertex-shader\n\nattribute vec2 positions;\n\nattribute float instanceTypes;\nattribute vec3 instanceStartPositions;\nattribute vec3 instanceEndPositions;\nattribute vec3 instanceLeftPositions;\nattribute vec3 instanceRightPositions;\nattribute vec3 instanceLeftPositions64Low;\nattribute vec3 instanceStartPositions64Low;\nattribute vec3 instanceEndPositions64Low;\nattribute vec3 instanceRightPositions64Low;\nattribute float instanceStrokeWidths;\nattribute vec4 instanceColors;\nattribute vec3 instancePickingColors;\n\nuniform float widthScale;\nuniform float widthMinPixels;\nuniform float widthMaxPixels;\nuniform float jointType;\nuniform float capType;\nuniform float miterLimit;\nuniform bool billboard;\nuniform int widthUnits;\n\nuniform float opacity;\n\nvarying vec4 vColor;\nvarying vec2 vCornerOffset;\nvarying float vMiterLength;\nvarying vec2 vPathPosition;\nvarying float vPathLength;\nvarying float vJointType;\n\nconst float EPSILON = 0.001;\nconst vec3 ZERO_OFFSET = vec3(0.0);\n\nfloat flipIfTrue(bool flag) {\n  return -(float(flag) * 2. - 1.);\n}\nvec3 getLineJoinOffset(\n  vec3 prevPoint, vec3 currPoint, vec3 nextPoint,\n  vec2 width\n) {\n  bool isEnd = positions.x > 0.0;\n  float sideOfPath = positions.y;\n  float isJoint = float(sideOfPath == 0.0);\n\n  vec3 deltaA3 = (currPoint - prevPoint);\n  vec3 deltaB3 = (nextPoint - currPoint);\n\n  mat3 rotationMatrix;\n  bool needsRotation = !billboard && project_needs_rotation(currPoint, rotationMatrix);\n  if (needsRotation) {\n    deltaA3 = deltaA3 * rotationMatrix;\n    deltaB3 = deltaB3 * rotationMatrix;\n  }\n  vec2 deltaA = deltaA3.xy / width;\n  vec2 deltaB = deltaB3.xy / width;\n\n  float lenA = length(deltaA);\n  float lenB = length(deltaB);\n\n  vec2 dirA = lenA > 0. ? normalize(deltaA) : vec2(0.0, 0.0);\n  vec2 dirB = lenB > 0. ? normalize(deltaB) : vec2(0.0, 0.0);\n\n  vec2 perpA = vec2(-dirA.y, dirA.x);\n  vec2 perpB = vec2(-dirB.y, dirB.x);\n  vec2 tangent = dirA + dirB;\n  tangent = length(tangent) > 0. ? normalize(tangent) : perpA;\n  vec2 miterVec = vec2(-tangent.y, tangent.x);\n  vec2 dir = isEnd ? dirA : dirB;\n  vec2 perp = isEnd ? perpA : perpB;\n  float L = isEnd ? lenA : lenB;\n  float sinHalfA = abs(dot(miterVec, perp));\n  float cosHalfA = abs(dot(dirA, miterVec));\n  float turnDirection = flipIfTrue(dirA.x * dirB.y >= dirA.y * dirB.x);\n  float cornerPosition = sideOfPath * turnDirection;\n\n  float miterSize = 1.0 / max(sinHalfA, EPSILON);\n  miterSize = mix(\n    min(miterSize, max(lenA, lenB) / max(cosHalfA, EPSILON)),\n    miterSize,\n    step(0.0, cornerPosition)\n  );\n\n  vec2 offsetVec = mix(miterVec * miterSize, perp, step(0.5, cornerPosition))\n    * (sideOfPath + isJoint * turnDirection);\n  bool isStartCap = lenA == 0.0 || (!isEnd && (instanceTypes == 1.0 || instanceTypes == 3.0));\n  bool isEndCap = lenB == 0.0 || (isEnd && (instanceTypes == 2.0 || instanceTypes == 3.0));\n  bool isCap = isStartCap || isEndCap;\n  if (isCap) {\n    offsetVec = mix(perp * sideOfPath, dir * capType * 4.0 * flipIfTrue(isStartCap), isJoint);\n    vJointType = capType;\n  } else {\n    vJointType = jointType;\n  }\n  vPathLength = L;\n  vCornerOffset = offsetVec;\n  vMiterLength = dot(vCornerOffset, miterVec * turnDirection);\n  vMiterLength = isCap ? isJoint : vMiterLength;\n\n  vec2 offsetFromStartOfPath = vCornerOffset + deltaA * float(isEnd);\n  vPathPosition = vec2(\n    dot(offsetFromStartOfPath, perp),\n    dot(offsetFromStartOfPath, dir)\n  );\n  geometry.uv = vPathPosition;\n\n  float isValid = step(instanceTypes, 3.5);\n  vec3 offset = vec3(offsetVec * width * isValid, 0.0);\n\n  if (needsRotation) {\n    offset = rotationMatrix * offset;\n  }\n  return offset;\n}\nvoid clipLine(inout vec4 position, vec4 refPosition) {\n  if (position.w < EPSILON) {\n    float r = (EPSILON - refPosition.w) / (position.w - refPosition.w);\n    position = refPosition + (position - refPosition) * r;\n  }\n}\n\nvoid main() {\n  geometry.pickingColor = instancePickingColors;\n\n  vColor = vec4(instanceColors.rgb, instanceColors.a * opacity);\n\n  float isEnd = positions.x;\n\n  vec3 prevPosition = mix(instanceLeftPositions, instanceStartPositions, isEnd);\n  vec3 prevPosition64Low = mix(instanceLeftPositions64Low, instanceStartPositions64Low, isEnd);\n\n  vec3 currPosition = mix(instanceStartPositions, instanceEndPositions, isEnd);\n  vec3 currPosition64Low = mix(instanceStartPositions64Low, instanceEndPositions64Low, isEnd);\n\n  vec3 nextPosition = mix(instanceEndPositions, instanceRightPositions, isEnd);\n  vec3 nextPosition64Low = mix(instanceEndPositions64Low, instanceRightPositions64Low, isEnd);\n\n  geometry.worldPosition = currPosition;\n  vec2 widthPixels = vec2(clamp(\n    project_size_to_pixel(instanceStrokeWidths * widthScale, widthUnits),\n    widthMinPixels, widthMaxPixels) / 2.0);\n  vec3 width;\n\n  if (billboard) {\n    vec4 prevPositionScreen = project_position_to_clipspace(prevPosition, prevPosition64Low, ZERO_OFFSET);\n    vec4 currPositionScreen = project_position_to_clipspace(currPosition, currPosition64Low, ZERO_OFFSET, geometry.position);\n    vec4 nextPositionScreen = project_position_to_clipspace(nextPosition, nextPosition64Low, ZERO_OFFSET);\n\n    clipLine(prevPositionScreen, currPositionScreen);\n    clipLine(nextPositionScreen, currPositionScreen);\n    clipLine(currPositionScreen, mix(nextPositionScreen, prevPositionScreen, isEnd));\n\n    width = vec3(widthPixels, 0.0);\n    DECKGL_FILTER_SIZE(width, geometry);\n\n    vec3 offset = getLineJoinOffset(\n      prevPositionScreen.xyz / prevPositionScreen.w,\n      currPositionScreen.xyz / currPositionScreen.w,\n      nextPositionScreen.xyz / nextPositionScreen.w,\n      project_pixel_size_to_clipspace(width.xy)\n    );\n\n    DECKGL_FILTER_GL_POSITION(currPositionScreen, geometry);\n    gl_Position = vec4(currPositionScreen.xyz + offset * currPositionScreen.w, currPositionScreen.w);\n  } else {\n    prevPosition = project_position(prevPosition, prevPosition64Low);\n    currPosition = project_position(currPosition, currPosition64Low);\n    nextPosition = project_position(nextPosition, nextPosition64Low);\n\n    width = vec3(project_pixel_size(widthPixels), 0.0);\n    DECKGL_FILTER_SIZE(width, geometry);\n\n    vec3 offset = getLineJoinOffset(prevPosition, currPosition, nextPosition, width.xy);\n    geometry.position = vec4(currPosition + offset, 1.0);\n    gl_Position = project_common_position_to_clipspace(geometry.position);\n    DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n  }\n  DECKGL_FILTER_COLOR(vColor, geometry);\n}\n";
+  var path_layer_vertex_glsl_default = "#define SHADER_NAME path-layer-vertex-shader\n\nattribute vec2 positions;\n\nattribute float instanceTypes;\nattribute vec3 instanceStartPositions;\nattribute vec3 instanceEndPositions;\nattribute vec3 instanceLeftPositions;\nattribute vec3 instanceRightPositions;\nattribute vec3 instanceLeftPositions64Low;\nattribute vec3 instanceStartPositions64Low;\nattribute vec3 instanceEndPositions64Low;\nattribute vec3 instanceRightPositions64Low;\nattribute float instanceStrokeWidths;\nattribute vec4 instanceColors;\nattribute vec3 instancePickingColors;\n\nuniform float widthScale;\nuniform float widthMinPixels;\nuniform float widthMaxPixels;\nuniform float jointType;\nuniform float capType;\nuniform float miterLimit;\nuniform bool billboard;\nuniform int widthUnits;\n\nuniform float opacity;\n\nvarying vec4 vColor;\nvarying vec2 vCornerOffset;\nvarying float vMiterLength;\nvarying vec2 vPathPosition;\nvarying float vPathLength;\nvarying float vJointType;\n\nconst float EPSILON = 0.001;\nconst vec3 ZERO_OFFSET = vec3(0.0);\n\nfloat flipIfTrue(bool flag) {\n  return -(float(flag) * 2. - 1.);\n}\n\n// calculate line join positions\nvec3 lineJoin(\n  vec3 prevPoint, vec3 currPoint, vec3 nextPoint,\n  vec2 width\n) {\n  bool isEnd = positions.x > 0.0;\n  // side of the segment - -1: left, 0: center, 1: right\n  float sideOfPath = positions.y;\n  float isJoint = float(sideOfPath == 0.0);\n\n  vec3 deltaA3 = (currPoint - prevPoint);\n  vec3 deltaB3 = (nextPoint - currPoint);\n\n  mat3 rotationMatrix;\n  bool needsRotation = !billboard && project_needs_rotation(currPoint, rotationMatrix);\n  if (needsRotation) {\n    deltaA3 = deltaA3 * rotationMatrix;\n    deltaB3 = deltaB3 * rotationMatrix;\n  }\n  vec2 deltaA = deltaA3.xy / width;\n  vec2 deltaB = deltaB3.xy / width;\n\n  float lenA = length(deltaA);\n  float lenB = length(deltaB);\n\n  vec2 dirA = lenA > 0. ? normalize(deltaA) : vec2(0.0, 0.0);\n  vec2 dirB = lenB > 0. ? normalize(deltaB) : vec2(0.0, 0.0);\n\n  vec2 perpA = vec2(-dirA.y, dirA.x);\n  vec2 perpB = vec2(-dirB.y, dirB.x);\n\n  // tangent of the corner\n  vec2 tangent = dirA + dirB;\n  tangent = length(tangent) > 0. ? normalize(tangent) : perpA;\n  // direction of the corner\n  vec2 miterVec = vec2(-tangent.y, tangent.x);\n  // direction of the segment\n  vec2 dir = isEnd ? dirA : dirB;\n  // direction of the extrusion\n  vec2 perp = isEnd ? perpA : perpB;\n  // length of the segment\n  float L = isEnd ? lenA : lenB;\n\n  // A = angle of the corner\n  float sinHalfA = abs(dot(miterVec, perp));\n  float cosHalfA = abs(dot(dirA, miterVec));\n\n  // -1: right, 1: left\n  float turnDirection = flipIfTrue(dirA.x * dirB.y >= dirA.y * dirB.x);\n\n  // relative position to the corner:\n  // -1: inside (smaller side of the angle)\n  // 0: center\n  // 1: outside (bigger side of the angle)\n  float cornerPosition = sideOfPath * turnDirection;\n\n  float miterSize = 1.0 / max(sinHalfA, EPSILON);\n  // trim if inside corner extends further than the line segment\n  miterSize = mix(\n    min(miterSize, max(lenA, lenB) / max(cosHalfA, EPSILON)),\n    miterSize,\n    step(0.0, cornerPosition)\n  );\n\n  vec2 offsetVec = mix(miterVec * miterSize, perp, step(0.5, cornerPosition))\n    * (sideOfPath + isJoint * turnDirection);\n\n  // special treatment for start cap and end cap\n  bool isStartCap = lenA == 0.0 || (!isEnd && (instanceTypes == 1.0 || instanceTypes == 3.0));\n  bool isEndCap = lenB == 0.0 || (isEnd && (instanceTypes == 2.0 || instanceTypes == 3.0));\n  bool isCap = isStartCap || isEndCap;\n\n  // extend out a triangle to envelope the round cap\n  if (isCap) {\n    offsetVec = mix(perp * sideOfPath, dir * capType * 4.0 * flipIfTrue(isStartCap), isJoint);\n    vJointType = capType;\n  } else {\n    vJointType = jointType;\n  }\n\n  // Generate variables for fragment shader\n  vPathLength = L;\n  vCornerOffset = offsetVec;\n  vMiterLength = dot(vCornerOffset, miterVec * turnDirection);\n  vMiterLength = isCap ? isJoint : vMiterLength;\n\n  vec2 offsetFromStartOfPath = vCornerOffset + deltaA * float(isEnd);\n  vPathPosition = vec2(\n    dot(offsetFromStartOfPath, perp),\n    dot(offsetFromStartOfPath, dir)\n  );\n  geometry.uv = vPathPosition;\n\n  float isValid = step(instanceTypes, 3.5);\n  vec3 offset = vec3(offsetVec * width * isValid, 0.0);\n\n  if (needsRotation) {\n    offset = rotationMatrix * offset;\n  }\n  return currPoint + offset;\n}\n\n// In clipspace extrusion, if a line extends behind the camera, clip it to avoid visual artifacts\nvoid clipLine(inout vec4 position, vec4 refPosition) {\n  if (position.w < EPSILON) {\n    float r = (EPSILON - refPosition.w) / (position.w - refPosition.w);\n    position = refPosition + (position - refPosition) * r;\n  }\n}\n\nvoid main() {\n  geometry.pickingColor = instancePickingColors;\n\n  vColor = vec4(instanceColors.rgb, instanceColors.a * opacity);\n\n  float isEnd = positions.x;\n\n  vec3 prevPosition = mix(instanceLeftPositions, instanceStartPositions, isEnd);\n  vec3 prevPosition64Low = mix(instanceLeftPositions64Low, instanceStartPositions64Low, isEnd);\n\n  vec3 currPosition = mix(instanceStartPositions, instanceEndPositions, isEnd);\n  vec3 currPosition64Low = mix(instanceStartPositions64Low, instanceEndPositions64Low, isEnd);\n\n  vec3 nextPosition = mix(instanceEndPositions, instanceRightPositions, isEnd);\n  vec3 nextPosition64Low = mix(instanceEndPositions64Low, instanceRightPositions64Low, isEnd);\n\n  geometry.worldPosition = currPosition;\n  vec2 widthPixels = vec2(clamp(\n    project_size_to_pixel(instanceStrokeWidths * widthScale, widthUnits),\n    widthMinPixels, widthMaxPixels) / 2.0);\n  vec3 width;\n\n  if (billboard) {\n    // Extrude in clipspace\n    vec4 prevPositionScreen = project_position_to_clipspace(prevPosition, prevPosition64Low, ZERO_OFFSET);\n    vec4 currPositionScreen = project_position_to_clipspace(currPosition, currPosition64Low, ZERO_OFFSET, geometry.position);\n    vec4 nextPositionScreen = project_position_to_clipspace(nextPosition, nextPosition64Low, ZERO_OFFSET);\n\n    clipLine(prevPositionScreen, currPositionScreen);\n    clipLine(nextPositionScreen, currPositionScreen);\n    clipLine(currPositionScreen, mix(nextPositionScreen, prevPositionScreen, isEnd));\n\n    width = vec3(widthPixels, 0.0);\n    DECKGL_FILTER_SIZE(width, geometry);\n\n    vec3 pos = lineJoin(\n      prevPositionScreen.xyz / prevPositionScreen.w,\n      currPositionScreen.xyz / currPositionScreen.w,\n      nextPositionScreen.xyz / nextPositionScreen.w,\n      project_pixel_size_to_clipspace(width.xy)\n    );\n\n    gl_Position = vec4(pos * currPositionScreen.w, currPositionScreen.w);\n  } else {\n    // Extrude in commonspace\n    prevPosition = project_position(prevPosition, prevPosition64Low);\n    currPosition = project_position(currPosition, currPosition64Low);\n    nextPosition = project_position(nextPosition, nextPosition64Low);\n\n    width = vec3(project_pixel_size(widthPixels), 0.0);\n    DECKGL_FILTER_SIZE(width, geometry);\n\n    vec4 pos = vec4(\n      lineJoin(prevPosition, currPosition, nextPosition, width.xy),\n      1.0);\n    geometry.position = pos;\n    gl_Position = project_common_position_to_clipspace(pos);\n  }\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n  DECKGL_FILTER_COLOR(vColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/path-layer/path-layer-fragment.glsl.js
-  var path_layer_fragment_glsl_default = "#define SHADER_NAME path-layer-fragment-shader\n\nprecision highp float;\n\nuniform float miterLimit;\n\nvarying vec4 vColor;\nvarying vec2 vCornerOffset;\nvarying float vMiterLength;\nvarying vec2 vPathPosition;\nvarying float vPathLength;\nvarying float vJointType;\n\nvoid main(void) {\n  geometry.uv = vPathPosition;\n\n  if (vPathPosition.y < 0.0 || vPathPosition.y > vPathLength) {\n    if (vJointType > 0.5 && length(vCornerOffset) > 1.0) {\n      discard;\n    }\n    if (vJointType < 0.5 && vMiterLength > miterLimit + 1.0) {\n      discard;\n    }\n  }\n  gl_FragColor = vColor;\n\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
+  var path_layer_fragment_glsl_default = "#define SHADER_NAME path-layer-fragment-shader\n\nprecision highp float;\n\nuniform float miterLimit;\n\nvarying vec4 vColor;\nvarying vec2 vCornerOffset;\nvarying float vMiterLength;\n/*\n * vPathPosition represents the relative coordinates of the current fragment on the path segment.\n * vPathPosition.x - position along the width of the path, between [-1, 1]. 0 is the center line.\n * vPathPosition.y - position along the length of the path, between [0, L / width].\n */\nvarying vec2 vPathPosition;\nvarying float vPathLength;\nvarying float vJointType;\n\nvoid main(void) {\n  geometry.uv = vPathPosition;\n\n  if (vPathPosition.y < 0.0 || vPathPosition.y > vPathLength) {\n    // if joint is rounded, test distance from the corner\n    if (vJointType > 0.5 && length(vCornerOffset) > 1.0) {\n      discard;\n    }\n    // trim miter\n    if (vJointType < 0.5 && vMiterLength > miterLimit + 1.0) {\n      discard;\n    }\n  }\n  gl_FragColor = vColor;\n\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/path-layer/path-layer.js
   var DEFAULT_COLOR5 = [0, 0, 0, 255];
@@ -42972,7 +43168,7 @@
           }
         }
       } else {
-        super.disablePickingIndex(objectIndex);
+        this._disablePickingIndex(objectIndex);
       }
     }
     draw({
@@ -43156,35 +43352,12 @@
     copyNestedRing(positions, 0, polygon, positionSize, OUTER_POLYGON_WINDING);
     return positions;
   }
-  function getPlaneArea(positions, xIndex, yIndex) {
-    const numVerts = positions.length / 3;
-    let area = 0;
-    for (let i3 = 0; i3 < numVerts; i3++) {
-      const j = (i3 + 1) % numVerts;
-      area += positions[i3 * 3 + xIndex] * positions[j * 3 + yIndex];
-      area -= positions[j * 3 + xIndex] * positions[i3 * 3 + yIndex];
-    }
-    return Math.abs(area / 2);
-  }
-  function permutePositions(positions, xIndex, yIndex, zIndex) {
-    const numVerts = positions.length / 3;
-    for (let i3 = 0; i3 < numVerts; i3++) {
-      const o3 = i3 * 3;
-      const x2 = positions[o3 + 0];
-      const y2 = positions[o3 + 1];
-      const z = positions[o3 + 2];
-      positions[o3 + xIndex] = x2;
-      positions[o3 + yIndex] = y2;
-      positions[o3 + zIndex] = z;
-    }
-  }
-  function getSurfaceIndices(polygon, positionSize, preproject, full3d) {
+  function getSurfaceIndices(polygon, positionSize, preproject) {
     let holeIndices = getHoleIndices(polygon);
     if (holeIndices) {
       holeIndices = holeIndices.map((positionIndex) => positionIndex / positionSize);
     }
     let positions = getPositions(polygon);
-    const is3d = full3d && positionSize === 3;
     if (preproject) {
       const n2 = positions.length;
       positions = positions.slice();
@@ -43192,35 +43365,9 @@
       for (let i3 = 0; i3 < n2; i3 += positionSize) {
         p2[0] = positions[i3];
         p2[1] = positions[i3 + 1];
-        if (is3d) {
-          p2[2] = positions[i3 + 2];
-        }
         const xy = preproject(p2);
         positions[i3] = xy[0];
         positions[i3 + 1] = xy[1];
-        if (is3d) {
-          positions[i3 + 2] = xy[2];
-        }
-      }
-    }
-    if (is3d) {
-      const xyArea = getPlaneArea(positions, 0, 1);
-      const xzArea = getPlaneArea(positions, 0, 2);
-      const yzArea = getPlaneArea(positions, 1, 2);
-      if (!xyArea && !xzArea && !yzArea) {
-        return [];
-      }
-      if (xyArea > xzArea && xyArea > yzArea) {
-      } else if (xzArea > yzArea) {
-        if (!preproject) {
-          positions = positions.slice();
-        }
-        permutePositions(positions, 0, 2, 1);
-      } else {
-        if (!preproject) {
-          positions = positions.slice();
-        }
-        permutePositions(positions, 2, 0, 1);
       }
     }
     return (0, import_earcut2.default)(positions, holeIndices, positionSize);
@@ -43336,7 +43483,7 @@
         return;
       }
       let i3 = indexStart;
-      const indices = getSurfaceIndices(polygon, this.positionSize, this.opts.preproject, this.opts.full3d);
+      const indices = getSurfaceIndices(polygon, this.positionSize, this.opts.preproject);
       target = typedArrayManager.allocate(target, indexStart + indices.length, {
         copy: true
       });
@@ -43396,7 +43543,7 @@
   }
 
   // node_modules/@deck.gl/layers/dist/esm/solid-polygon-layer/solid-polygon-layer-vertex-main.glsl.js
-  var solid_polygon_layer_vertex_main_glsl_default = "\nattribute vec2 vertexPositions;\nattribute float vertexValid;\n\nuniform bool extruded;\nuniform bool isWireframe;\nuniform float elevationScale;\nuniform float opacity;\n\nvarying vec4 vColor;\n\nstruct PolygonProps {\n  vec4 fillColors;\n  vec4 lineColors;\n  vec3 positions;\n  vec3 nextPositions;\n  vec3 pickingColors;\n  vec3 positions64Low;\n  vec3 nextPositions64Low;\n  float elevations;\n};\n\nvec3 project_offset_normal(vec3 vector) {\n  if (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT ||\n    project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT_OFFSETS) {\n    return normalize(vector * project_uCommonUnitsPerWorldUnit);\n  }\n  return project_normal(vector);\n}\n\nvoid calculatePosition(PolygonProps props) {\n#ifdef IS_SIDE_VERTEX\n  if(vertexValid < 0.5){\n    gl_Position = vec4(0.);\n    return;\n  }\n#endif\n\n  vec3 pos;\n  vec3 pos64Low;\n  vec3 normal;\n  vec4 colors = isWireframe ? props.lineColors : props.fillColors;\n\n  geometry.worldPosition = props.positions;\n  geometry.worldPositionAlt = props.nextPositions;\n  geometry.pickingColor = props.pickingColors;\n\n#ifdef IS_SIDE_VERTEX\n  pos = mix(props.positions, props.nextPositions, vertexPositions.x);\n  pos64Low = mix(props.positions64Low, props.nextPositions64Low, vertexPositions.x);\n#else\n  pos = props.positions;\n  pos64Low = props.positions64Low;\n#endif\n\n  if (extruded) {\n    pos.z += props.elevations * vertexPositions.y * elevationScale;\n  }\n  gl_Position = project_position_to_clipspace(pos, pos64Low, vec3(0.), geometry.position);\n\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n\n  if (extruded) {\n  #ifdef IS_SIDE_VERTEX\n    normal = vec3(\n      props.positions.y - props.nextPositions.y + (props.positions64Low.y - props.nextPositions64Low.y),\n      props.nextPositions.x - props.positions.x + (props.nextPositions64Low.x - props.positions64Low.x),\n      0.0);\n    normal = project_offset_normal(normal);\n  #else\n    normal = project_normal(vec3(0.0, 0.0, 1.0));\n  #endif\n    geometry.normal = normal;\n    vec3 lightColor = lighting_getLightColor(colors.rgb, project_uCameraPosition, geometry.position.xyz, normal);\n    vColor = vec4(lightColor, colors.a * opacity);\n  } else {\n    vColor = vec4(colors.rgb, colors.a * opacity);\n  }\n  DECKGL_FILTER_COLOR(vColor, geometry);\n}\n";
+  var solid_polygon_layer_vertex_main_glsl_default = "\nattribute vec2 vertexPositions;\nattribute float vertexValid;\n\nuniform bool extruded;\nuniform bool isWireframe;\nuniform float elevationScale;\nuniform float opacity;\n\nvarying vec4 vColor;\n\nstruct PolygonProps {\n  vec4 fillColors;\n  vec4 lineColors;\n  vec3 positions;\n  vec3 nextPositions;\n  vec3 pickingColors;\n  vec3 positions64Low;\n  vec3 nextPositions64Low;\n  float elevations;\n};\n\nvec3 project_offset_normal(vec3 vector) {\n  if (project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT ||\n    project_uCoordinateSystem == COORDINATE_SYSTEM_LNGLAT_OFFSETS) {\n    // normals generated by the polygon tesselator are in lnglat offsets instead of meters\n    return normalize(vector * project_uCommonUnitsPerWorldUnit);\n  }\n  return project_normal(vector);\n}\n\nvoid calculatePosition(PolygonProps props) {\n#ifdef IS_SIDE_VERTEX\n  if(vertexValid < 0.5){\n    gl_Position = vec4(0.);\n    return;\n  }\n#endif\n\n  vec3 pos;\n  vec3 pos64Low;\n  vec3 normal;\n  vec4 colors = isWireframe ? props.lineColors : props.fillColors;\n\n  geometry.worldPosition = props.positions;\n  geometry.worldPositionAlt = props.nextPositions;\n  geometry.pickingColor = props.pickingColors;\n\n#ifdef IS_SIDE_VERTEX\n  pos = mix(props.positions, props.nextPositions, vertexPositions.x);\n  pos64Low = mix(props.positions64Low, props.nextPositions64Low, vertexPositions.x);\n#else\n  pos = props.positions;\n  pos64Low = props.positions64Low;\n#endif\n\n  if (extruded) {\n    pos.z += props.elevations * vertexPositions.y * elevationScale;\n  }\n  gl_Position = project_position_to_clipspace(pos, pos64Low, vec3(0.), geometry.position);\n\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n\n  if (extruded) {\n  #ifdef IS_SIDE_VERTEX\n    normal = vec3(\n      props.positions.y - props.nextPositions.y + (props.positions64Low.y - props.nextPositions64Low.y),\n      props.nextPositions.x - props.positions.x + (props.nextPositions64Low.x - props.positions64Low.x),\n      0.0);\n    normal = project_offset_normal(normal);\n  #else\n    normal = project_normal(vec3(0.0, 0.0, 1.0));\n  #endif\n    geometry.normal = normal;\n    vec3 lightColor = lighting_getLightColor(colors.rgb, project_uCameraPosition, geometry.position.xyz, normal);\n    vColor = vec4(lightColor, colors.a * opacity);\n  } else {\n    vColor = vec4(colors.rgb, colors.a * opacity);\n  }\n  DECKGL_FILTER_COLOR(vColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/solid-polygon-layer/solid-polygon-layer-vertex-top.glsl.js
   var solid_polygon_layer_vertex_top_glsl_default = "#define SHADER_NAME solid-polygon-layer-vertex-shader\n\nattribute vec3 positions;\nattribute vec3 positions64Low;\nattribute float elevations;\nattribute vec4 fillColors;\nattribute vec4 lineColors;\nattribute vec3 pickingColors;\n\n".concat(solid_polygon_layer_vertex_main_glsl_default, "\n\nvoid main(void) {\n  PolygonProps props;\n\n  props.positions = positions;\n  props.positions64Low = positions64Low;\n  props.elevations = elevations;\n  props.fillColors = fillColors;\n  props.lineColors = lineColors;\n  props.pickingColors = pickingColors;\n\n  calculatePosition(props);\n}\n");
@@ -43415,7 +43562,6 @@
     wireframe: false,
     _normalize: true,
     _windingOrder: "CW",
-    _full3d: false,
     elevationScale: {
       type: "number",
       min: 0,
@@ -43470,24 +43616,13 @@
       let {
         coordinateSystem
       } = this.props;
-      const {
-        _full3d
-      } = this.props;
       if (viewport.isGeospatial && coordinateSystem === COORDINATE_SYSTEM.DEFAULT) {
         coordinateSystem = COORDINATE_SYSTEM.LNGLAT;
-      }
-      let preproject;
-      if (coordinateSystem === COORDINATE_SYSTEM.LNGLAT) {
-        if (_full3d) {
-          preproject = viewport.projectPosition.bind(viewport);
-        } else {
-          preproject = viewport.projectFlat.bind(viewport);
-        }
       }
       this.setState({
         numInstances: 0,
         polygonTesselator: new PolygonTesselator({
-          preproject,
+          preproject: coordinateSystem === COORDINATE_SYSTEM.LNGLAT && viewport.projectFlat.bind(viewport),
           fp64: this.use64bitPositions(),
           IndexType: !gl || hasFeatures(gl, FEATURES.ELEMENT_INDEX_UINT32) ? Uint32Array : Uint16Array
         })
@@ -43619,7 +43754,7 @@
           }
         }
       } else {
-        super.disablePickingIndex(objectIndex);
+        this._disablePickingIndex(objectIndex);
       }
     }
     draw({
@@ -43700,8 +43835,7 @@
           wrapLongitude: props.wrapLongitude,
           resolution: this.context.viewport.resolution,
           fp64: this.use64bitPositions(),
-          dataChanged: changeFlags.dataChanged,
-          full3d: props._full3d
+          dataChanged: changeFlags.dataChanged
         });
         this.setState({
           numInstances: polygonTesselator.instanceCount,
@@ -44087,7 +44221,7 @@
   }
 
   // node_modules/@deck.gl/layers/dist/esm/text-layer/multi-icon-layer/multi-icon-layer-fragment.glsl.js
-  var multi_icon_layer_fragment_glsl_default = "#define SHADER_NAME multi-icon-layer-fragment-shader\n\nprecision highp float;\n\nuniform float opacity;\nuniform sampler2D iconsTexture;\nuniform float gamma;\nuniform bool sdf;\nuniform float alphaCutoff;\nuniform float sdfBuffer;\nuniform float outlineBuffer;\nuniform vec4 outlineColor;\n\nvarying vec4 vColor;\nvarying vec2 vTextureCoords;\nvarying vec2 uv;\n\nvoid main(void) {\n  geometry.uv = uv;\n\n  if (!picking_uActive) {\n    float alpha = texture2D(iconsTexture, vTextureCoords).a;\n    vec4 color = vColor;\n    if (sdf) {\n      float distance = alpha;\n      alpha = smoothstep(sdfBuffer - gamma, sdfBuffer + gamma, distance);\n\n      if (outlineBuffer > 0.0) {\n        float inFill = alpha;\n        float inBorder = smoothstep(outlineBuffer - gamma, outlineBuffer + gamma, distance);\n        color = mix(outlineColor, vColor, inFill);\n        alpha = inBorder;\n      }\n    }\n    float a = alpha * color.a;\n    \n    if (a < alphaCutoff) {\n      discard;\n    }\n\n    gl_FragColor = vec4(color.rgb, a * opacity);\n  }\n\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
+  var multi_icon_layer_fragment_glsl_default = "#define SHADER_NAME multi-icon-layer-fragment-shader\n\nprecision highp float;\n\nuniform float opacity;\nuniform sampler2D iconsTexture;\nuniform float gamma;\nuniform bool sdf;\nuniform float alphaCutoff;\nuniform float buffer;\nuniform float outlineBuffer;\nuniform vec4 outlineColor;\n\nvarying vec4 vColor;\nvarying vec2 vTextureCoords;\nvarying vec2 uv;\n\nvoid main(void) {\n  geometry.uv = uv;\n\n  if (!picking_uActive) {\n    float alpha = texture2D(iconsTexture, vTextureCoords).a;\n    vec4 color = vColor;\n\n    // if enable sdf (signed distance fields)\n    if (sdf) {\n      float distance = alpha;\n      alpha = smoothstep(buffer - gamma, buffer + gamma, distance);\n\n      if (outlineBuffer > 0.0) {\n        float inFill = alpha;\n        float inBorder = smoothstep(outlineBuffer - gamma, outlineBuffer + gamma, distance);\n        color = mix(outlineColor, vColor, inFill);\n        alpha = inBorder;\n      }\n    }\n\n    // Take the global opacity and the alpha from color into account for the alpha component\n    float a = alpha * color.a;\n    \n    if (a < alphaCutoff) {\n      discard;\n    }\n\n    gl_FragColor = vec4(color.rgb, a * opacity);\n  }\n\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/text-layer/multi-icon-layer/multi-icon-layer.js
   var DEFAULT_BUFFER2 = 192 / 256;
@@ -44163,29 +44297,15 @@
       const {
         outlineColor
       } = this.state;
-      const outlineBuffer = outlineWidth ? Math.max(smoothing, DEFAULT_BUFFER2 * (1 - outlineWidth)) : -1;
       params.uniforms = {
         ...params.uniforms,
-        sdfBuffer: DEFAULT_BUFFER2,
-        outlineBuffer,
+        buffer: DEFAULT_BUFFER2,
+        outlineBuffer: outlineWidth ? Math.max(smoothing, DEFAULT_BUFFER2 * (1 - outlineWidth)) : -1,
         gamma: smoothing,
         sdf: Boolean(sdf),
         outlineColor
       };
       super.draw(params);
-      if (sdf && outlineWidth) {
-        const {
-          iconManager
-        } = this.state;
-        const iconsTexture = iconManager.getTexture();
-        if (iconsTexture) {
-          this.state.model.draw({
-            uniforms: {
-              outlineBuffer: DEFAULT_BUFFER2
-            }
-          });
-        }
-      }
     }
     getInstanceOffset(icons) {
       return icons ? Array.from(icons).flatMap((icon) => super.getInstanceOffset(icon)) : EMPTY_ARRAY3;
@@ -44200,120 +44320,8 @@
   _defineProperty(MultiIconLayer, "defaultProps", defaultProps11);
   _defineProperty(MultiIconLayer, "layerName", "MultiIconLayer");
 
-  // node_modules/@mapbox/tiny-sdf/index.js
-  var INF = 1e20;
-  var TinySDF = class {
-    constructor({
-      fontSize = 24,
-      buffer = 3,
-      radius = 8,
-      cutoff = 0.25,
-      fontFamily = "sans-serif",
-      fontWeight = "normal",
-      fontStyle = "normal"
-    } = {}) {
-      this.buffer = buffer;
-      this.cutoff = cutoff;
-      this.radius = radius;
-      const size = this.size = fontSize + buffer * 4;
-      const canvas = this._createCanvas(size);
-      const ctx = this.ctx = canvas.getContext("2d", { willReadFrequently: true });
-      ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
-      ctx.textBaseline = "alphabetic";
-      ctx.textAlign = "left";
-      ctx.fillStyle = "black";
-      this.gridOuter = new Float64Array(size * size);
-      this.gridInner = new Float64Array(size * size);
-      this.f = new Float64Array(size);
-      this.z = new Float64Array(size + 1);
-      this.v = new Uint16Array(size);
-    }
-    _createCanvas(size) {
-      const canvas = document.createElement("canvas");
-      canvas.width = canvas.height = size;
-      return canvas;
-    }
-    draw(char) {
-      const {
-        width: glyphAdvance,
-        actualBoundingBoxAscent,
-        actualBoundingBoxDescent,
-        actualBoundingBoxLeft,
-        actualBoundingBoxRight
-      } = this.ctx.measureText(char);
-      const glyphTop = Math.ceil(actualBoundingBoxAscent);
-      const glyphLeft = 0;
-      const glyphWidth = Math.max(0, Math.min(this.size - this.buffer, Math.ceil(actualBoundingBoxRight - actualBoundingBoxLeft)));
-      const glyphHeight = Math.min(this.size - this.buffer, glyphTop + Math.ceil(actualBoundingBoxDescent));
-      const width = glyphWidth + 2 * this.buffer;
-      const height = glyphHeight + 2 * this.buffer;
-      const len2 = Math.max(width * height, 0);
-      const data = new Uint8ClampedArray(len2);
-      const glyph = { data, width, height, glyphWidth, glyphHeight, glyphTop, glyphLeft, glyphAdvance };
-      if (glyphWidth === 0 || glyphHeight === 0)
-        return glyph;
-      const { ctx, buffer, gridInner, gridOuter } = this;
-      ctx.clearRect(buffer, buffer, glyphWidth, glyphHeight);
-      ctx.fillText(char, buffer, buffer + glyphTop);
-      const imgData = ctx.getImageData(buffer, buffer, glyphWidth, glyphHeight);
-      gridOuter.fill(INF, 0, len2);
-      gridInner.fill(0, 0, len2);
-      for (let y2 = 0; y2 < glyphHeight; y2++) {
-        for (let x2 = 0; x2 < glyphWidth; x2++) {
-          const a2 = imgData.data[4 * (y2 * glyphWidth + x2) + 3] / 255;
-          if (a2 === 0)
-            continue;
-          const j = (y2 + buffer) * width + x2 + buffer;
-          if (a2 === 1) {
-            gridOuter[j] = 0;
-            gridInner[j] = INF;
-          } else {
-            const d2 = 0.5 - a2;
-            gridOuter[j] = d2 > 0 ? d2 * d2 : 0;
-            gridInner[j] = d2 < 0 ? d2 * d2 : 0;
-          }
-        }
-      }
-      edt(gridOuter, 0, 0, width, height, width, this.f, this.v, this.z);
-      edt(gridInner, buffer, buffer, glyphWidth, glyphHeight, width, this.f, this.v, this.z);
-      for (let i3 = 0; i3 < len2; i3++) {
-        const d2 = Math.sqrt(gridOuter[i3]) - Math.sqrt(gridInner[i3]);
-        data[i3] = Math.round(255 - 255 * (d2 / this.radius + this.cutoff));
-      }
-      return glyph;
-    }
-  };
-  function edt(data, x0, y0, width, height, gridSize, f2, v2, z) {
-    for (let x2 = x0; x2 < x0 + width; x2++)
-      edt1d(data, y0 * gridSize + x2, gridSize, height, f2, v2, z);
-    for (let y2 = y0; y2 < y0 + height; y2++)
-      edt1d(data, y2 * gridSize + x0, 1, width, f2, v2, z);
-  }
-  function edt1d(grid, offset, stride, length4, f2, v2, z) {
-    v2[0] = 0;
-    z[0] = -INF;
-    z[1] = INF;
-    f2[0] = grid[offset];
-    for (let q = 1, k = 0, s = 0; q < length4; q++) {
-      f2[q] = grid[offset + q * stride];
-      const q2 = q * q;
-      do {
-        const r2 = v2[k];
-        s = (f2[q] - f2[r2] + q2 - r2 * r2) / (q - r2) / 2;
-      } while (s <= z[k] && --k > -1);
-      k++;
-      v2[k] = q;
-      z[k] = s;
-      z[k + 1] = INF;
-    }
-    for (let q = 0, k = 0; q < length4; q++) {
-      while (z[k + 1] < q)
-        k++;
-      const r2 = v2[k];
-      const qr = q - r2;
-      grid[offset + q * stride] = f2[r2] + qr * qr;
-    }
-  }
+  // node_modules/@deck.gl/layers/dist/esm/text-layer/font-atlas-manager.js
+  var import_tiny_sdf = __toESM(require_tiny_sdf());
 
   // node_modules/@deck.gl/layers/dist/esm/text-layer/utils.js
   var MISSING_CHAR_WIDTH = 32;
@@ -44333,7 +44341,6 @@
   }) {
     let row = 0;
     let x2 = xOffset;
-    const rowHeight = fontHeight + buffer * 2;
     for (const char of characterSet) {
       if (!mapping[char]) {
         const width = getFontWidth(char);
@@ -44343,15 +44350,14 @@
         }
         mapping[char] = {
           x: x2 + buffer,
-          y: yOffset + row * rowHeight + buffer,
+          y: yOffset + row * (fontHeight + buffer * 2) + buffer,
           width,
-          height: rowHeight,
-          layoutWidth: width,
-          layoutHeight: fontHeight
+          height: fontHeight
         };
         x2 += width + buffer * 2;
       }
     }
+    const rowHeight = fontHeight + buffer * 2;
     return {
       mapping,
       xOffset: x2,
@@ -44364,7 +44370,7 @@
     for (let i3 = startIndex; i3 < endIndex; i3++) {
       var _mapping$character;
       const character = text[i3];
-      width += ((_mapping$character = mapping[character]) === null || _mapping$character === void 0 ? void 0 : _mapping$character.layoutWidth) || 0;
+      width += ((_mapping$character = mapping[character]) === null || _mapping$character === void 0 ? void 0 : _mapping$character.width) || 0;
     }
     return width;
   }
@@ -44434,10 +44440,10 @@
       const frame = iconMapping[character];
       if (frame) {
         if (!rowHeight) {
-          rowHeight = frame.layoutHeight;
+          rowHeight = frame.height;
         }
-        leftOffsets[i3] = x2 + frame.layoutWidth / 2;
-        x2 += frame.layoutWidth;
+        leftOffsets[i3] = x2 + frame.width / 2;
+        x2 += frame.width;
       } else {
         log_default.warn("Missing character: ".concat(character, " (").concat(character.codePointAt(0), ")"))();
         leftOffsets[i3] = x2;
@@ -44471,10 +44477,7 @@
           const rowEnd = rowIndex < rows.length ? rows[rowIndex] : lineEndIndex;
           transformRow(characters, rowStart, rowEnd, iconMapping, x2, rowSize);
           for (let j = rowStart; j < rowEnd; j++) {
-            var _iconMapping$char;
-            const char2 = characters[j];
-            const layoutOffsetY = ((_iconMapping$char = iconMapping[char2]) === null || _iconMapping$char === void 0 ? void 0 : _iconMapping$char.layoutOffsetY) || 0;
-            y2[j] = rowOffsetTop + rowSize[1] / 2 + layoutOffsetY;
+            y2[j] = rowOffsetTop + rowSize[1] / 2;
             rowWidth[j] = rowSize[0];
           }
           rowOffsetTop = rowOffsetTop + rowSize[1] * lineHeight;
@@ -44658,28 +44661,25 @@
       return this._atlas && this._atlas.mapping;
     }
     get scale() {
-      const {
-        fontSize,
-        buffer
-      } = this.props;
-      return (fontSize * HEIGHT_SCALE + buffer * 2) / fontSize;
+      return HEIGHT_SCALE;
     }
     setProps(props = {}) {
       Object.assign(this.props, props);
+      const oldKey = this._key;
       this._key = this._getKey();
       const charSet = getNewChars(this._key, this.props.characterSet);
       const cachedFontAtlas = cache3.get(this._key);
       if (cachedFontAtlas && charSet.size === 0) {
-        if (this._atlas !== cachedFontAtlas) {
+        if (this._key !== oldKey) {
           this._atlas = cachedFontAtlas;
         }
         return;
       }
-      const fontAtlas = this._generateFontAtlas(charSet, cachedFontAtlas);
+      const fontAtlas = this._generateFontAtlas(this._key, charSet, cachedFontAtlas);
       this._atlas = fontAtlas;
       cache3.set(this._key, fontAtlas);
     }
-    _generateFontAtlas(characterSet, cachedFontAtlas) {
+    _generateFontAtlas(key, characterSet, cachedFontAtlas) {
       const {
         fontFamily,
         fontWeight,
@@ -44694,9 +44694,7 @@
         canvas = document.createElement("canvas");
         canvas.width = MAX_CANVAS_WIDTH;
       }
-      const ctx = canvas.getContext("2d", {
-        willReadFrequently: true
-      });
+      const ctx = canvas.getContext("2d");
       setTextStyle(ctx, fontFamily, fontSize, fontWeight);
       const {
         mapping,
@@ -44722,30 +44720,15 @@
       }
       setTextStyle(ctx, fontFamily, fontSize, fontWeight);
       if (sdf) {
-        const tinySDF = new TinySDF({
-          fontSize,
-          buffer,
-          radius,
-          cutoff,
-          fontFamily,
-          fontWeight: "".concat(fontWeight)
-        });
+        const tinySDF = new import_tiny_sdf.default(fontSize, buffer, radius, cutoff, fontFamily, fontWeight);
+        const imageData = ctx.getImageData(0, 0, tinySDF.size, tinySDF.size);
         for (const char of characterSet) {
-          const {
-            data,
-            width,
-            height,
-            glyphTop
-          } = tinySDF.draw(char);
-          mapping[char].width = width;
-          mapping[char].layoutOffsetY = fontSize * BASELINE_SCALE - glyphTop;
-          const imageData = ctx.createImageData(width, height);
-          populateAlphaChannel(data, imageData);
-          ctx.putImageData(imageData, mapping[char].x, mapping[char].y);
+          populateAlphaChannel(tinySDF.draw(char), imageData);
+          ctx.putImageData(imageData, mapping[char].x - buffer, mapping[char].y + buffer);
         }
       } else {
         for (const char of characterSet) {
-          ctx.fillText(char, mapping[char].x, mapping[char].y + buffer + fontSize * BASELINE_SCALE);
+          ctx.fillText(char, mapping[char].x, mapping[char].y + fontSize * BASELINE_SCALE);
         }
       }
       return {
@@ -44775,7 +44758,7 @@
   };
 
   // node_modules/@deck.gl/layers/dist/esm/text-layer/text-background-layer/text-background-layer-vertex.glsl.js
-  var text_background_layer_vertex_glsl_default = "#define SHADER_NAME text-background-layer-vertex-shader\n\nattribute vec2 positions;\n\nattribute vec3 instancePositions;\nattribute vec3 instancePositions64Low;\nattribute vec4 instanceRects;\nattribute float instanceSizes;\nattribute float instanceAngles;\nattribute vec2 instancePixelOffsets;\nattribute float instanceLineWidths;\nattribute vec4 instanceFillColors;\nattribute vec4 instanceLineColors;\nattribute vec3 instancePickingColors;\n\nuniform bool billboard;\nuniform float opacity;\nuniform float sizeScale;\nuniform float sizeMinPixels;\nuniform float sizeMaxPixels;\nuniform vec4 padding;\nuniform int sizeUnits;\n\nvarying vec4 vFillColor;\nvarying vec4 vLineColor;\nvarying float vLineWidth;\nvarying vec2 uv;\nvarying vec2 dimensions;\n\nvec2 rotate_by_angle(vec2 vertex, float angle) {\n  float angle_radian = radians(angle);\n  float cos_angle = cos(angle_radian);\n  float sin_angle = sin(angle_radian);\n  mat2 rotationMatrix = mat2(cos_angle, -sin_angle, sin_angle, cos_angle);\n  return rotationMatrix * vertex;\n}\n\nvoid main(void) {\n  geometry.worldPosition = instancePositions;\n  geometry.uv = positions;\n  geometry.pickingColor = instancePickingColors;\n  uv = positions;\n  vLineWidth = instanceLineWidths;\n  float sizePixels = clamp(\n    project_size_to_pixel(instanceSizes * sizeScale, sizeUnits),\n    sizeMinPixels, sizeMaxPixels\n  );\n\n  dimensions = instanceRects.zw * sizePixels + padding.xy + padding.zw;\n\n  vec2 pixelOffset = (positions * instanceRects.zw + instanceRects.xy) * sizePixels + mix(-padding.xy, padding.zw, positions);\n  pixelOffset = rotate_by_angle(pixelOffset, instanceAngles);\n  pixelOffset += instancePixelOffsets;\n  pixelOffset.y *= -1.0;\n\n  if (billboard)  {\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, vec3(0.0), geometry.position);\n    DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n    vec3 offset = vec3(pixelOffset, 0.0);\n    DECKGL_FILTER_SIZE(offset, geometry);\n    gl_Position.xy += project_pixel_size_to_clipspace(offset.xy);\n  } else {\n    vec3 offset_common = vec3(project_pixel_size(pixelOffset), 0.0);\n    DECKGL_FILTER_SIZE(offset_common, geometry);\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset_common, geometry.position);\n    DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n  }\n  vFillColor = vec4(instanceFillColors.rgb, instanceFillColors.a * opacity);\n  DECKGL_FILTER_COLOR(vFillColor, geometry);\n  vLineColor = vec4(instanceLineColors.rgb, instanceLineColors.a * opacity);\n  DECKGL_FILTER_COLOR(vLineColor, geometry);\n}\n";
+  var text_background_layer_vertex_glsl_default = "#define SHADER_NAME text-background-layer-vertex-shader\n\nattribute vec2 positions;\n\nattribute vec3 instancePositions;\nattribute vec3 instancePositions64Low;\nattribute vec4 instanceRects;\nattribute float instanceSizes;\nattribute float instanceAngles;\nattribute vec2 instancePixelOffsets;\nattribute float instanceLineWidths;\nattribute vec4 instanceFillColors;\nattribute vec4 instanceLineColors;\nattribute vec3 instancePickingColors;\n\nuniform bool billboard;\nuniform float opacity;\nuniform float sizeScale;\nuniform float sizeMinPixels;\nuniform float sizeMaxPixels;\nuniform vec4 padding;\nuniform int sizeUnits;\n\nvarying vec4 vFillColor;\nvarying vec4 vLineColor;\nvarying float vLineWidth;\nvarying vec2 uv;\nvarying vec2 dimensions;\n\nvec2 rotate_by_angle(vec2 vertex, float angle) {\n  float angle_radian = radians(angle);\n  float cos_angle = cos(angle_radian);\n  float sin_angle = sin(angle_radian);\n  mat2 rotationMatrix = mat2(cos_angle, -sin_angle, sin_angle, cos_angle);\n  return rotationMatrix * vertex;\n}\n\nvoid main(void) {\n  geometry.worldPosition = instancePositions;\n  geometry.uv = positions;\n  geometry.pickingColor = instancePickingColors;\n  uv = positions;\n  vLineWidth = instanceLineWidths;\n\n  // convert size in meters to pixels, then scaled and clamp\n\n  // project meters to pixels and clamp to limits\n  float sizePixels = clamp(\n    project_size_to_pixel(instanceSizes * sizeScale, sizeUnits),\n    sizeMinPixels, sizeMaxPixels\n  );\n\n  dimensions = instanceRects.zw * sizePixels + padding.xy + padding.zw;\n\n  vec2 pixelOffset = (positions * instanceRects.zw + instanceRects.xy) * sizePixels + mix(-padding.xy, padding.zw, positions);\n  pixelOffset = rotate_by_angle(pixelOffset, instanceAngles);\n  pixelOffset += instancePixelOffsets;\n  pixelOffset.y *= -1.0;\n\n  if (billboard)  {\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, vec3(0.0), geometry.position);\n    vec3 offset = vec3(pixelOffset, 0.0);\n    DECKGL_FILTER_SIZE(offset, geometry);\n    gl_Position.xy += project_pixel_size_to_clipspace(offset.xy);\n  } else {\n    vec3 offset_common = vec3(project_pixel_size(pixelOffset), 0.0);\n    DECKGL_FILTER_SIZE(offset_common, geometry);\n    gl_Position = project_position_to_clipspace(instancePositions, instancePositions64Low, offset_common, geometry.position);\n  }\n  DECKGL_FILTER_GL_POSITION(gl_Position, geometry);\n\n  // Apply opacity to instance color, or return instance picking color\n  vFillColor = vec4(instanceFillColors.rgb, instanceFillColors.a * opacity);\n  DECKGL_FILTER_COLOR(vFillColor, geometry);\n  vLineColor = vec4(instanceLineColors.rgb, instanceLineColors.a * opacity);\n  DECKGL_FILTER_COLOR(vLineColor, geometry);\n}\n";
 
   // node_modules/@deck.gl/layers/dist/esm/text-layer/text-background-layer/text-background-layer-fragment.glsl.js
   var text_background_layer_fragment_glsl_default = "#define SHADER_NAME text-background-layer-fragment-shader\n\nprecision highp float;\n\nuniform bool stroked;\n\nvarying vec4 vFillColor;\nvarying vec4 vLineColor;\nvarying float vLineWidth;\nvarying vec2 uv;\nvarying vec2 dimensions;\n\nvoid main(void) {\n  geometry.uv = uv;\n\n  vec2 pixelPosition = uv * dimensions;\n  if (stroked) {\n    float distToEdge = min(\n      min(pixelPosition.x, dimensions.x - pixelPosition.x),\n      min(pixelPosition.y, dimensions.y - pixelPosition.y)\n    );\n    float isBorder = smoothedge(distToEdge, vLineWidth);\n    gl_FragColor = mix(vFillColor, vLineColor, isBorder);\n  } else {\n    gl_FragColor = vFillColor;\n  }\n\n  DECKGL_FILTER_COLOR(gl_FragColor, geometry);\n}\n";
@@ -45005,11 +44988,7 @@
       type: "color",
       value: DEFAULT_COLOR7
     },
-    fontSettings: {
-      type: "object",
-      value: {},
-      compare: 1
-    },
+    fontSettings: {},
     wordBreak: "break-word",
     maxWidth: {
       type: "number",
@@ -45056,33 +45035,40 @@
       super(...args);
       _defineProperty(this, "state", void 0);
       _defineProperty(this, "getBoundingRect", (object, objectInfo) => {
-        let {
-          size: [width, height]
-        } = this.transformParagraph(object, objectInfo);
+        const iconMapping = this.state.fontAtlasManager.mapping;
+        const getText = this.state.getText;
         const {
-          fontSize
-        } = this.state.fontAtlasManager.props;
-        width /= fontSize;
-        height /= fontSize;
-        const {
+          wordBreak,
+          maxWidth,
+          lineHeight,
           getTextAnchor,
           getAlignmentBaseline
         } = this.props;
+        const paragraph = getText(object, objectInfo) || "";
+        const {
+          size: [width, height]
+        } = transformParagraph(paragraph, lineHeight, wordBreak, maxWidth, iconMapping);
         const anchorX = TEXT_ANCHOR[typeof getTextAnchor === "function" ? getTextAnchor(object, objectInfo) : getTextAnchor];
         const anchorY = ALIGNMENT_BASELINE[typeof getAlignmentBaseline === "function" ? getAlignmentBaseline(object, objectInfo) : getAlignmentBaseline];
         return [(anchorX - 1) * width / 2, (anchorY - 1) * height / 2, width, height];
       });
       _defineProperty(this, "getIconOffsets", (object, objectInfo) => {
+        const iconMapping = this.state.fontAtlasManager.mapping;
+        const getText = this.state.getText;
         const {
+          wordBreak,
+          maxWidth,
+          lineHeight,
           getTextAnchor,
           getAlignmentBaseline
         } = this.props;
+        const paragraph = getText(object, objectInfo) || "";
         const {
           x: x2,
           y: y2,
           rowWidth,
           size: [width, height]
-        } = this.transformParagraph(object, objectInfo);
+        } = transformParagraph(paragraph, lineHeight, wordBreak, maxWidth, iconMapping);
         const anchorX = TEXT_ANCHOR[typeof getTextAnchor === "function" ? getTextAnchor(object, objectInfo) : getTextAnchor];
         const anchorY = ALIGNMENT_BASELINE[typeof getAlignmentBaseline === "function" ? getAlignmentBaseline(object, objectInfo) : getAlignmentBaseline];
         const numCharacters = x2.length;
@@ -45101,9 +45087,6 @@
         styleVersion: 0,
         fontAtlasManager: new FontAtlasManager()
       };
-      if (this.props.maxWidth > 0) {
-        log_default.warn("v8.9 breaking change: TextLayer maxWidth is now relative to text size")();
-      }
     }
     updateState(params) {
       const {
@@ -45210,20 +45193,6 @@
         characterSet: autoCharacterSet || characterSet
       });
     }
-    transformParagraph(object, objectInfo) {
-      const {
-        fontAtlasManager
-      } = this.state;
-      const iconMapping = fontAtlasManager.mapping;
-      const getText = this.state.getText;
-      const {
-        wordBreak,
-        lineHeight,
-        maxWidth
-      } = this.props;
-      const paragraph = getText(object, objectInfo) || "";
-      return transformParagraph(paragraph, lineHeight, wordBreak, maxWidth * fontAtlasManager.props.fontSize, iconMapping);
-    }
     renderLayers() {
       const {
         startIndices,
@@ -45272,7 +45241,7 @@
         getAngle,
         getPixelOffset,
         billboard,
-        sizeScale,
+        sizeScale: sizeScale / this.state.fontAtlasManager.props.fontSize,
         sizeUnits,
         sizeMinPixels,
         sizeMaxPixels,
@@ -45313,7 +45282,7 @@
       }), new CharactersLayerClass({
         sdf: fontSettings.sdf,
         smoothing: Number.isFinite(fontSettings.smoothing) ? fontSettings.smoothing : DEFAULT_FONT_SETTINGS.smoothing,
-        outlineWidth: outlineWidth / (fontSettings.radius || DEFAULT_FONT_SETTINGS.radius),
+        outlineWidth,
         outlineColor,
         iconAtlas: texture,
         iconMapping: mapping,
@@ -45337,13 +45306,14 @@
       }, this.getSubLayerProps({
         id: "characters",
         updateTriggers: {
-          all: updateTriggers.getText,
+          getIcon: updateTriggers.getText,
           getPosition: updateTriggers.getPosition,
           getAngle: updateTriggers.getAngle,
           getColor: updateTriggers.getColor,
           getSize: updateTriggers.getSize,
           getPixelOffset: updateTriggers.getPixelOffset,
           getIconOffsets: {
+            getText: updateTriggers.getText,
             getTextAnchor: updateTriggers.getTextAnchor,
             getAlignmentBaseline: updateTriggers.getAlignmentBaseline,
             styleVersion
@@ -45461,7 +45431,6 @@
       wireframe: "wireframe",
       elevationScale: "elevationScale",
       material: "material",
-      _full3d: "_full3d",
       getElevation: "getElevation",
       getFillColor: "getFillColor",
       getLineColor: "getLineColor"
@@ -45774,7 +45743,6 @@
     filled: true,
     extruded: false,
     wireframe: false,
-    _full3d: false,
     iconAtlas: {
       type: "object",
       value: null
@@ -46829,7 +46797,7 @@
   }
 
   // node_modules/@deck.gl/geo-layers/dist/esm/tile-layer/tile-2d-traversal.js
-  var TILE_SIZE3 = 512;
+  var TILE_SIZE4 = 512;
   var MAX_MAPS = 3;
   var REF_POINTS_5 = [[0.5, 0.5], [0, 0], [0, 1], [1, 0], [1, 1]];
   var REF_POINTS_9 = REF_POINTS_5.concat([[0, 0.5], [0.5, 0], [1, 0.5], [0.5, 1]]);
@@ -46907,7 +46875,7 @@
     }
     insideBounds([minX, minY, maxX, maxY]) {
       const scale5 = Math.pow(2, this.z);
-      const extent = TILE_SIZE3 / scale5;
+      const extent = TILE_SIZE4 / scale5;
       return this.x * extent < maxX && this.y * extent < maxY && (this.x + 1) * extent > minX && (this.y + 1) * extent > minY;
     }
     getBoundingVolume(zRange, worldOffset, project2) {
@@ -46926,9 +46894,9 @@
         return makeOrientedBoundingBoxFromPoints(refPointPositions);
       }
       const scale5 = Math.pow(2, this.z);
-      const extent = TILE_SIZE3 / scale5;
-      const originX = this.x * extent + worldOffset * TILE_SIZE3;
-      const originY = TILE_SIZE3 - (this.y + 1) * extent;
+      const extent = TILE_SIZE4 / scale5;
+      const originX = this.x * extent + worldOffset * TILE_SIZE4;
+      const originY = TILE_SIZE4 - (this.y + 1) * extent;
       return new AxisAlignedBoundingBox([originX, originY, zRange[0]], [originX + extent, originY + extent, zRange[1]]);
     }
   };
@@ -46939,15 +46907,15 @@
       distance: distance2
     }) => new Plane(normal.clone().negate(), distance2));
     const cullingVolume = new CullingVolume(planes);
-    const unitsPerMeter2 = viewport.distanceScales.unitsPerMeter[2];
-    const elevationMin = zRange && zRange[0] * unitsPerMeter2 || 0;
-    const elevationMax = zRange && zRange[1] * unitsPerMeter2 || 0;
+    const unitsPerMeter3 = viewport.distanceScales.unitsPerMeter[2];
+    const elevationMin = zRange && zRange[0] * unitsPerMeter3 || 0;
+    const elevationMax = zRange && zRange[1] * unitsPerMeter3 || 0;
     const minZ = viewport instanceof WebMercatorViewport2 && viewport.pitch <= 60 ? maxZ : 0;
     if (bounds) {
       const [minLng, minLat, maxLng, maxLat] = bounds;
       const topLeft = lngLatToWorld([minLng, maxLat]);
       const bottomRight = lngLatToWorld([maxLng, minLat]);
-      bounds = [topLeft[0], TILE_SIZE3 - topLeft[1], bottomRight[0], TILE_SIZE3 - bottomRight[1]];
+      bounds = [topLeft[0], TILE_SIZE4 - topLeft[1], bottomRight[0], TILE_SIZE4 - bottomRight[1]];
     }
     const root = new OSMNode(0, 0, 0);
     const traversalParams = {
@@ -46979,7 +46947,7 @@
   }
 
   // node_modules/@deck.gl/geo-layers/dist/esm/tile-layer/utils.js
-  var TILE_SIZE4 = 512;
+  var TILE_SIZE5 = 512;
   var DEFAULT_EXTENT = [-Infinity, -Infinity, Infinity, Infinity];
   var urlType = {
     type: "url",
@@ -47084,16 +47052,16 @@
   }
   function getIndexingCoords(bbox, scale5, modelMatrixInverse) {
     if (modelMatrixInverse) {
-      const transformedTileIndex = transformBox(bbox, modelMatrixInverse).map((i3) => i3 * scale5 / TILE_SIZE4);
+      const transformedTileIndex = transformBox(bbox, modelMatrixInverse).map((i3) => i3 * scale5 / TILE_SIZE5);
       return transformedTileIndex;
     }
-    return bbox.map((i3) => i3 * scale5 / TILE_SIZE4);
+    return bbox.map((i3) => i3 * scale5 / TILE_SIZE5);
   }
   function getScale(z, tileSize) {
-    return Math.pow(2, z) * TILE_SIZE4 / tileSize;
+    return Math.pow(2, z) * TILE_SIZE5 / tileSize;
   }
   function osmTile2lngLat(x2, y2, z) {
-    const scale5 = getScale(z, TILE_SIZE4);
+    const scale5 = getScale(z, TILE_SIZE5);
     const lng = x2 / scale5 * 360 - 180;
     const n2 = Math.PI - 2 * Math.PI * y2 / scale5;
     const lat = 180 / Math.PI * Math.atan(0.5 * (Math.exp(n2) - Math.exp(-n2)));
@@ -47101,9 +47069,9 @@
   }
   function tile2XY(x2, y2, z, tileSize) {
     const scale5 = getScale(z, tileSize);
-    return [x2 / scale5 * TILE_SIZE4, y2 / scale5 * TILE_SIZE4];
+    return [x2 / scale5 * TILE_SIZE5, y2 / scale5 * TILE_SIZE5];
   }
-  function tileToBoundingBox(viewport, x2, y2, z, tileSize = TILE_SIZE4) {
+  function tileToBoundingBox(viewport, x2, y2, z, tileSize = TILE_SIZE5) {
     if (viewport.isGeospatial) {
       const [west, north] = osmTile2lngLat(x2, y2, z);
       const [east, south] = osmTile2lngLat(x2 + 1, y2 + 1, z);
@@ -47145,12 +47113,12 @@
     minZoom,
     zRange,
     extent,
-    tileSize = TILE_SIZE4,
+    tileSize = TILE_SIZE5,
     modelMatrix,
     modelMatrixInverse,
     zoomOffset = 0
   }) {
-    let z = viewport.isGeospatial ? Math.round(viewport.zoom + Math.log2(TILE_SIZE4 / tileSize)) + zoomOffset : Math.ceil(viewport.zoom) + zoomOffset;
+    let z = viewport.isGeospatial ? Math.round(viewport.zoom + Math.log2(TILE_SIZE5 / tileSize)) + zoomOffset : Math.ceil(viewport.zoom) + zoomOffset;
     if (typeof minZoom === "number" && Number.isFinite(minZoom) && z < minZoom) {
       if (!extent) {
         return [];
@@ -47954,7 +47922,7 @@
     depthTest: false
   };
 
-  // node_modules/@deck.gl/extensions/dist/esm/data-filter/data-filter-extension.js
+  // node_modules/@deck.gl/extensions/dist/esm/data-filter/data-filter.js
   var defaultProps16 = {
     getFilterValue: {
       type: "accessor",
@@ -47963,7 +47931,7 @@
     onFilteredItemsChange: {
       type: "function",
       value: null,
-      optional: true
+      compare: false
     },
     filterEnabled: true,
     filterRange: [-1, 1],
@@ -50078,11 +50046,11 @@
       }
     }
   };
-  function isValidIP(ip, version) {
-    if ((version === "v4" || !version) && ipv4Regex.test(ip)) {
+  function isValidIP(ip, version2) {
+    if ((version2 === "v4" || !version2) && ipv4Regex.test(ip)) {
       return true;
     }
-    if ((version === "v6" || !version) && ipv6Regex.test(ip)) {
+    if ((version2 === "v6" || !version2) && ipv6Regex.test(ip)) {
       return true;
     }
     return false;
@@ -62364,7 +62332,7 @@ void main(void) {
         } catch {
         }
       } else if (trimmed.startsWith("#")) {
-        const length4 = Math.min(4, trimmed.length / 2) - 1;
+        const length4 = Math.min(3, (trimmed.length - 1) / 2);
         const color = [];
         for (let index = 0; index < length4; index++) {
           const offset = 1 + 2 * index;
@@ -62487,7 +62455,7 @@ void main(void) {
     edges = a([]);
     edges$ = p(async () => {
       const nodes = this.nodes.value;
-      const version = this.edgesVersion += 1;
+      const version2 = this.edgesVersion += 1;
       if (nodes.length === 0) {
         return void 0;
       } else if (this.edgesData.value) {
@@ -62495,7 +62463,7 @@ void main(void) {
       }
       const url = this.edgesUrl.value;
       await delay(100);
-      if (version !== this.edgesVersion) {
+      if (version2 !== this.edgesVersion) {
         return void 0;
       }
       let edges = [];
@@ -62509,7 +62477,7 @@ void main(void) {
         edges = await distanceEdges(nodes, nodeKey, nodeValue, maxDist);
         console.log("end", /* @__PURE__ */ new Date());
       }
-      return version === this.edgesVersion ? edges : void 0;
+      return version2 === this.edgesVersion ? edges : void 0;
     });
     colorCoding = a();
     colorCoding$ = p(async () => {
