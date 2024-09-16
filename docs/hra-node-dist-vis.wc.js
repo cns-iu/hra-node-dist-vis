@@ -62353,6 +62353,28 @@ void main(void) {
     }
     return value;
   }
+  function parseColor(value) {
+    if (Array.isArray(value) && value.length >= 3 && value.length <= 4) {
+      return value;
+    } else if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (trimmed.startsWith("[")) {
+        try {
+          return parseColor(JSON.parse(trimmed));
+        } catch {
+        }
+      } else if (trimmed.startsWith("#")) {
+        const length4 = Math.min(4, trimmed.length / 2) - 1;
+        const color = [];
+        for (let index = 0; index < length4; index++) {
+          const offset = 1 + 2 * index;
+          color.push(Number.parseInt(trimmed.slice(offset, offset + 2), 16));
+        }
+        return parseColor(color);
+      }
+    }
+    return [255, 255, 255];
+  }
   var template = document.createElement("template");
   template.innerHTML = `<style>
 #vis {
@@ -62503,14 +62525,7 @@ void main(void) {
       if (data) {
         for (const row of data) {
           colorDomain.push(row[this.colorMapKey.value]);
-          const color = row[this.colorMapValue.value];
-          if (Array.isArray(color)) {
-            colorRange.push(color);
-          } else if (color?.startsWith("[")) {
-            colorRange.push(JSON.parse(color));
-          } else {
-            colorRange.push([255, 255, 255]);
-          }
+          colorRange.push(parseColor(row[this.colorMapValue.value]));
         }
       } else if (nodes.length > 0) {
         const nodeKey = this.nodeTargetKey.value;
