@@ -76,6 +76,32 @@ function tryParseJson(value) {
   return value;
 }
 
+function parseColor(value) {
+  if (Array.isArray(value) && value.length >= 3 && value.length <= 4) {
+    return value;
+  } else if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed.startsWith('[')) {
+      try {
+        return parseColor(JSON.parse(trimmed));
+      } catch {
+        // Ignore errors
+      }
+    } else if (trimmed.startsWith('#')) {
+      const length = Math.min(3, (trimmed.length - 1) / 2);
+      const color = [];
+      for (let index = 0; index < length; index++) {
+        const offset = 1 + 2 * index;
+        color.push(Number.parseInt(trimmed.slice(offset, offset + 2), 16));
+      }
+
+      return parseColor(color);
+    }
+  }
+
+  return [255, 255, 255];
+}
+
 const template = document.createElement('template');
 template.innerHTML = `<style>
 #vis {
@@ -243,14 +269,7 @@ class HraNodeDistanceVisualization extends HTMLElement {
     if (data) {
       for (const row of data) {
         colorDomain.push(row[this.colorMapKey.value]);
-        const color = row[this.colorMapValue.value];
-        if (Array.isArray(color)) {
-          colorRange.push(color);
-        } else if (color?.startsWith('[')) {
-          colorRange.push(JSON.parse(color));
-        } else {
-          colorRange.push([255, 255, 255]);
-        }
+        colorRange.push(parseColor(row[this.colorMapValue.value]));
       }
     } else if (nodes.length > 0) {
       const nodeKey = this.nodeTargetKey.value;
