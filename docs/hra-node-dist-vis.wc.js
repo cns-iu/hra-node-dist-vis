@@ -62713,7 +62713,9 @@ void main(void) {
       return this.$canvas.toDataURL(type, quality);
     }
   };
-  window.customElements.define("hra-node-dist-vis", HraNodeDistanceVisualization);
+  if (window.customElements.get("hra-node-dist-vis") === void 0) {
+    window.customElements.define("hra-node-dist-vis", HraNodeDistanceVisualization);
+  }
 })();
 /*! Bundled license information:
 

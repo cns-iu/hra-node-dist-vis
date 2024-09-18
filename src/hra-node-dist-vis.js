@@ -514,4 +514,6 @@ class HraNodeDistanceVisualization extends HTMLElement {
   }
 }
 
-window.customElements.define('hra-node-dist-vis', HraNodeDistanceVisualization);
+if (window.customElements.get('hra-node-dist-vis') === undefined) {
+  window.customElements.define('hra-node-dist-vis', HraNodeDistanceVisualization);
+}
