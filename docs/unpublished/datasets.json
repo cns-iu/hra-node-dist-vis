@@ -232,23 +232,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "lung-codex-urmc / D115-RLL-10A3-40 (613,680 cells)",
-    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lung-codex-urmc/D115-RLL-10A3-40-nodes.csv",
-    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lung-codex-urmc/D115-RLL-10A3-40-edges.csv",
-    "node-target-key": "Cell Type",
-    "node-target-value": "Endothelial",
-    "max-edge-distance": "1000"
-  },
-  {
-    "label": "lung-codex-urmc / D265-LLL-7A7-12 (622,784 cells)",
-    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lung-codex-urmc/D265-LLL-7A7-12-nodes.csv",
-    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lung-codex-urmc/D265-LLL-7A7-12-edges.csv",
-    "node-target-key": "Cell Type",
-    "node-target-value": "Endothelial",
-    "max-edge-distance": "1000"
-  },
-  {
-    "label": "lymphnode-codex-yale / LN00560 (1,828,310 cells)",
+    "label": "lymphnode-codex-yale / LN00560 (1,826,800 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN00560-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN00560-edges.csv",
     "node-target-key": "Cell Type",
@@ -256,7 +240,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "lymphnode-codex-yale / LN00837 (369,918 cells)",
+    "label": "lymphnode-codex-yale / LN00837 (369,642 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN00837-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN00837-edges.csv",
     "node-target-key": "Cell Type",
@@ -264,7 +248,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "lymphnode-codex-yale / LN22921 (3,162,829 cells)",
+    "label": "lymphnode-codex-yale / LN22921 (3,158,210 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN22921-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN22921-edges.csv",
     "node-target-key": "Cell Type",
@@ -272,7 +256,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "lymphnode-codex-yale / LN24336 (2,552,215 cells)",
+    "label": "lymphnode-codex-yale / LN24336 (2,548,396 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN24336-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN24336-edges.csv",
     "node-target-key": "Cell Type",
@@ -280,7 +264,7 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "lymphnode-codex-yale / LN27766 (1,023,806 cells)",
+    "label": "lymphnode-codex-yale / LN27766 (1,015,797 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN27766-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/lymphnode-codex-yale/LN27766-edges.csv",
     "node-target-key": "Cell Type",
@@ -288,17 +272,201 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-confocal-sorgerlab / phenotypes_invasive_margin (43,966 cells)",
-    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/skin-confocal-sorgerlab/phenotypes_invasive_margin-nodes.csv",
-    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/skin-confocal-sorgerlab/phenotypes_invasive_margin-edges.csv",
+    "label": "oralcavity-codex-czi / Buccal_Mucosa_And_Minor_Salivary_Glands_1 (43,760 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Buccal_Mucosa_And_Minor_Salivary_Glands_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Buccal_Mucosa_And_Minor_Salivary_Glands_1-edges.csv",
     "node-target-key": "Cell Type",
     "node-target-value": "Endothelial",
     "max-edge-distance": "1000"
   },
   {
-    "label": "skin-confocal-sorgerlab / phenotypes_melanoma_in_situ (11,289 cells)",
-    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/skin-confocal-sorgerlab/phenotypes_melanoma_in_situ-nodes.csv",
-    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/skin-confocal-sorgerlab/phenotypes_melanoma_in_situ-edges.csv",
+    "label": "oralcavity-codex-czi / Buccal_Mucosa_And_Minor_Salivary_Glands_2 (58,741 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Buccal_Mucosa_And_Minor_Salivary_Glands_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Buccal_Mucosa_And_Minor_Salivary_Glands_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Gingiva_ID1_shiny (65,208 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Gingiva_ID1_shiny-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Gingiva_ID1_shiny-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Gingiva_ID5_shiny (46,585 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Gingiva_ID5_shiny-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Gingiva_ID5_shiny-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Parotid_1 (128,041 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Parotid_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Parotid_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Parotid_2 (154,003 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Parotid_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Parotid_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Parotid_3 (112,086 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Parotid_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Parotid_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Parotid_4 (111,565 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Parotid_4-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Parotid_4-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Submandibular_1 (144,146 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Submandibular_1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Submandibular_1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Submandibular_2 (159,147 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Submandibular_2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Submandibular_2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Tongue_3 (208,730 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Tongue_3-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Tongue_3-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Tongue__1 (55,221 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Tongue__1-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Tongue__1-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "oralcavity-codex-czi / Tongue__2 (124,956 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Tongue__2-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/oralcavity-codex-czi/Tongue__2-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P2-13 (1,198,981 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P2-13-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P2-13-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P2-19 (1,150,539 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P2-19-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P2-19-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P2-4AD (1,285,551 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P2-4AD-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P2-4AD-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P2-7A (1,430,467 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P2-7A-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P2-7A-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P3-13A (1,381,967 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P3-13A-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P3-13A-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P3-3A (893,141 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P3-3A-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P3-3A-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P3-7A (939,724 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P3-7A-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P3-7A-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P3-9A (1,360,312 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P3-9A-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P3-9A-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P4-12A (935,959 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P4-12A-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P4-12A-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P4-22 (1,742,858 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P4-22-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P4-22-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P4-3A (1,378,315 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P4-3A-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P4-3A-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "pancreas-geomx-ufl / P4-6A (1,194,061 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P4-6A-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/unpublished/pancreas-geomx-ufl/P4-6A-edges.csv",
     "node-target-key": "Cell Type",
     "node-target-value": "Endothelial",
     "max-edge-distance": "1000"

@@ -440,14 +440,6 @@
     "max-edge-distance": "1000"
   },
   {
-    "label": "intestine-codex-stanford / B008_Proximaljejunum_extra (34,850 cells)",
-    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Proximaljejunum_extra-nodes.csv",
-    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Proximaljejunum_extra-edges.csv",
-    "node-target-key": "Cell Type",
-    "node-target-value": "Endothelial",
-    "max-edge-distance": "1000"
-  },
-  {
     "label": "intestine-codex-stanford / B008_Right (5,829 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Right-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B008_Right-edges.csv",
@@ -499,14 +491,6 @@
     "label": "intestine-codex-stanford / B009_Midjejunum (88,436 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Midjejunum-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Midjejunum-edges.csv",
-    "node-target-key": "Cell Type",
-    "node-target-value": "Endothelial",
-    "max-edge-distance": "1000"
-  },
-  {
-    "label": "intestine-codex-stanford / B009_Midjejunum_extra (56,182 cells)",
-    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Midjejunum_extra-nodes.csv",
-    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B009_Midjejunum_extra-edges.csv",
     "node-target-key": "Cell Type",
     "node-target-value": "Endothelial",
     "max-edge-distance": "1000"
@@ -731,6 +715,22 @@
     "label": "intestine-codex-stanford / B012_Trans (27,784 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Trans-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/intestine-codex-stanford/B012_Trans-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "lung-codex-urmc / D115-RLL-10A3-40 (613,680 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/lung-codex-urmc/D115-RLL-10A3-40-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/lung-codex-urmc/D115-RLL-10A3-40-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "lung-codex-urmc / D265-LLL-7A7-12 (622,784 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/lung-codex-urmc/D265-LLL-7A7-12-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/lung-codex-urmc/D265-LLL-7A7-12-edges.csv",
     "node-target-key": "Cell Type",
     "node-target-value": "Endothelial",
     "max-edge-distance": "1000"
@@ -2499,6 +2499,22 @@
     "label": "skin-celldive-ge / region_9 (7,645 cells)",
     "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_9-nodes.csv",
     "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-celldive-ge/region_9-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-confocal-sorgerlab / phenotypes_invasive_margin (43,966 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-confocal-sorgerlab/phenotypes_invasive_margin-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-confocal-sorgerlab/phenotypes_invasive_margin-edges.csv",
+    "node-target-key": "Cell Type",
+    "node-target-value": "Endothelial",
+    "max-edge-distance": "1000"
+  },
+  {
+    "label": "skin-confocal-sorgerlab / phenotypes_melanoma_in_situ (11,289 cells)",
+    "nodes": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-confocal-sorgerlab/phenotypes_melanoma_in_situ-nodes.csv",
+    "edges": "https://cdn.humanatlas.io/image-store/vccf-data-cell-nodes/published/skin-confocal-sorgerlab/phenotypes_melanoma_in_situ-edges.csv",
     "node-target-key": "Cell Type",
     "node-target-value": "Endothelial",
     "max-edge-distance": "1000"
