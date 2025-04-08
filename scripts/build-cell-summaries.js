@@ -4,7 +4,7 @@ import Papa from 'papaparse';
 import { dirname, join } from 'path';
 
 const CSV_FILES = 'image-store/vccf-data-cell-nodes/published/*/*-nodes.csv';
-const CELL_SUMMARIES = 'docs/sc-proteomics-cell-summaries.json';
+const CELL_SUMMARIES = 'docs/sc-proteomics-cell-summaries.jsonld';
 const CELL_DATASETS = 'docs/sc-proteomics-dataset-metadata.csv';
 
 /**
