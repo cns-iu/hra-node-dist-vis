@@ -15342,7 +15342,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 49444,
         "percentage": 0.08056967800808239
@@ -15399,7 +15399,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 40385,
         "percentage": 0.06484591768574659
@@ -15420,7 +15420,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:mast-cell",
+        "cell_id": "CL:0000097",
         "cell_label": "Mast Cell",
         "count": 15384,
         "percentage": 0.024701983352173468
@@ -15463,7 +15463,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 1580,
         "percentage": 0.5509065550906556
@@ -15527,7 +15527,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 728,
         "percentage": 0.2927221552070768
@@ -15591,7 +15591,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 2314,
         "percentage": 0.4775072224515064
@@ -15655,7 +15655,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 3721,
         "percentage": 0.6130148270181219
@@ -15719,7 +15719,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 1510,
         "percentage": 0.4663372452130945
@@ -15783,7 +15783,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 3055,
         "percentage": 0.4353092049016814
@@ -15847,7 +15847,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 2391,
         "percentage": 0.3779639582674676
@@ -15911,7 +15911,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 1972,
         "percentage": 0.44374437443744374
@@ -15975,7 +15975,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 2058,
         "percentage": 0.6086956521739131
@@ -16039,7 +16039,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 3098,
         "percentage": 0.4052321778940484
@@ -16357,7 +16357,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 12579,
         "percentage": 0.055564880910311684
@@ -16463,7 +16463,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 7448,
         "percentage": 0.04871285056509
@@ -16555,7 +16555,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 7491,
         "percentage": 0.04213705934963465
@@ -16640,7 +16640,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 7371,
         "percentage": 0.056446425289468846
@@ -16732,7 +16732,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 6201,
         "percentage": 0.04014995532419098
@@ -16810,7 +16810,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:endothelial",
+        "cell_id": "CL:0000115",
         "cell_label": "Endothelial",
         "count": 7109,
         "percentage": 0.0472952744642774
