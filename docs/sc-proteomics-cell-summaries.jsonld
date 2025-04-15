@@ -16103,7 +16103,7 @@
     "summary": [
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:tumor",
+        "cell_id": "CL:0001063",
         "cell_label": "Tumor",
         "count": 22762,
         "percentage": 0.5177182368193605
@@ -16216,7 +16216,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:tumor",
+        "cell_id": "CL:0001063",
         "cell_label": "Tumor",
         "count": 1146,
         "percentage": 0.10151474887058198
@@ -16336,7 +16336,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:b-cells-red-pulp",
+        "cell_id": "CL:0000236",
         "cell_label": "B cells, red pulp",
         "count": 17254,
         "percentage": 0.07621563361368294
@@ -16378,7 +16378,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:podoplanin",
+        "cell_id": "CL:0002138",
         "cell_label": "Podoplanin",
         "count": 2189,
         "percentage": 0.009669411265813839
@@ -16449,7 +16449,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:b-cells-red-pulp",
+        "cell_id": "CL:0000236",
         "cell_label": "B cells, red pulp",
         "count": 9438,
         "percentage": 0.0617282335705316
@@ -16470,7 +16470,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:podoplanin",
+        "cell_id": "CL:0002138",
         "cell_label": "Podoplanin",
         "count": 1914,
         "percentage": 0.0125183131017162
@@ -16534,7 +16534,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:b-cells-red-pulp",
+        "cell_id": "CL:0000236",
         "cell_label": "B cells, red pulp",
         "count": 11966,
         "percentage": 0.06730904447706959
@@ -16562,7 +16562,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:podoplanin",
+        "cell_id": "CL:0002138",
         "cell_label": "Podoplanin",
         "count": 3020,
         "percentage": 0.016987574320637654
@@ -16626,7 +16626,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:b-cells-red-pulp",
+        "cell_id": "CL:0000236",
         "cell_label": "B cells, red pulp",
         "count": 8764,
         "percentage": 0.06711388837836182
@@ -16654,7 +16654,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:podoplanin",
+        "cell_id": "CL:0002138",
         "cell_label": "Podoplanin",
         "count": 1920,
         "percentage": 0.014703179562580408
@@ -16739,14 +16739,14 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:b-cells-red-pulp",
+        "cell_id": "CL:0000236",
         "cell_label": "B cells, red pulp",
         "count": 3322,
         "percentage": 0.021509135879206973
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:podoplanin",
+        "cell_id": "CL:0002138",
         "cell_label": "Podoplanin",
         "count": 738,
         "percentage": 0.0047783691387280995
@@ -16824,7 +16824,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:b-cells-red-pulp",
+        "cell_id": "CL:0000236",
         "cell_label": "B cells, red pulp",
         "count": 5502,
         "percentage": 0.036604107483816886
@@ -16838,7 +16838,7 @@
       },
       {
         "@type": "CellSummaryRow",
-        "cell_id": "ASCTB-TEMP:podoplanin",
+        "cell_id": "CL:0002138",
         "cell_label": "Podoplanin",
         "count": 1288,
         "percentage": 0.008568900479672147

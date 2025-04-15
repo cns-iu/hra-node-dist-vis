@@ -1,16 +1,17 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { globSync } from 'glob';
 import Papa from 'papaparse';
-import { dirname, join } from 'path';
+import { basename, dirname, join } from 'path';
 
 const CSV_FILES = 'image-store/vccf-data-cell-nodes/published/*/*-nodes.csv';
 const CELL_SUMMARIES = 'docs/sc-proteomics-cell-summaries.jsonld';
 const CELL_DATASETS = 'docs/sc-proteomics-dataset-metadata.csv';
+const UNMAPPED_LABELS = 'docs/sc-proteomics-unmapped-labels.csv';
 
 /**
  * Normalize a csv url for downloading
- * 
- * @param {string} url 
+ *
+ * @param {string} url
  * @returns normalized url for downloading a csv
  */
 function normalizeCsvUrl(url) {
@@ -46,9 +47,9 @@ function normalizeCellType(id, label) {
 
 /**
  * Get a cell summary for an array of cells
- * 
- * @param {object[]} rows 
- * @param {object} crosswalk 
+ *
+ * @param {object[]} rows
+ * @param {object} crosswalk
  * @returns cell summaries in json-ld format
  */
 function getSummary(rows, crosswalk) {
@@ -71,8 +72,8 @@ const crosswalkCache = {};
 
 /**
  * Read a crosswalk from a URL and return a label -> term mapping object
- * 
- * @param {string} url 
+ *
+ * @param {string} url
  * @returns object
  */
 async function getCrosswalk(url) {
@@ -88,7 +89,7 @@ async function getCrosswalk(url) {
       const labelIndex = header.indexOf('Cell Type');
       const clIndex = header.indexOf('CL ID');
       const crosswalk = {};
-      for (const row of rows.slice(headerRow+1)) {
+      for (const row of rows.slice(headerRow + 1)) {
         const cellLabel = normalizeCellType(undefined, row[labelIndex]);
         crosswalk[cellLabel] = row[clIndex];
       }
@@ -100,10 +101,13 @@ async function getCrosswalk(url) {
   }
 }
 
+const groupCrosswalkUsed = {};
+const unmapped = {};
 const results = [];
 for (const nodesFile of globSync(CSV_FILES).sort()) {
   const datasetFile = nodesFile.replace('-nodes.csv', '-dataset.json');
   if (existsSync(datasetFile)) {
+    const group = basename(dirname(nodesFile));
     const dataset = JSON.parse(readFileSync(datasetFile));
     const nodes = Papa.parse(readFileSync(nodesFile).toString(), {
       header: true,
@@ -114,19 +118,41 @@ for (const nodesFile of globSync(CSV_FILES).sort()) {
     const crosswalkFile = join(dirname(nodesFile), 'crosswalk.url');
     let crosswalk = {};
     if (existsSync(crosswalkFile)) {
-      const url = normalizeCsvUrl(readFileSync(crosswalkFile, 'utf-8').trim());
+      const crosswalkUrl = readFileSync(crosswalkFile, 'utf-8').trim();
+      groupCrosswalkUsed[group] = crosswalkUrl;
+      const url = normalizeCsvUrl(crosswalkUrl);
       crosswalk = await getCrosswalk(url);
     }
+
+    const summary = getSummary(nodes, crosswalk);
 
     results.push({
       '@type': 'CellSummary',
       cell_source: dataset['@id'],
       annotation_method: 'sc_proteomics',
       modality: 'sc_proteomics',
-      summary: getSummary(nodes, crosswalk),
+      summary,
     });
+
+    const unmappedLabels = (unmapped[group] = unmapped[group] || new Set());
+    for (const row of summary) {
+      if (row.cell_id.startsWith('ASCTB-TEMP:')) {
+        unmappedLabels.add(row.cell_label);
+      }
+    }
   }
 }
+
+const unmappedRows = Object.entries(unmapped)
+  .map(([group, summary]) =>
+    Array.from(summary).map((cell_label) => ({
+      group,
+      cell_label,
+      crosswalk: groupCrosswalkUsed[group],
+    }))
+  )
+  .flat();
+writeFileSync(UNMAPPED_LABELS, Papa.unparse(unmappedRows, { header: true }));
 
 writeFileSync(CELL_SUMMARIES, JSON.stringify(results, null, 2));
 
