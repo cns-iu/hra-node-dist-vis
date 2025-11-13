@@ -23206,7 +23206,7 @@
   },
   {
     "@type": "CellSummary",
-    "cell_source": "https://entity.api.hubmapconsortium.org/entities/bff180755a5da7c036e5250c94f1ebd7#D115-RLL-10A3-40",
+    "cell_source": "https://entity.api.hubmapconsortium.org/entities/19af8341116f48408a70b5dd8e0a816b",
     "annotation_method": "sc_proteomics",
     "modality": "sc_proteomics",
     "summary": [
@@ -23312,7 +23312,7 @@
   },
   {
     "@type": "CellSummary",
-    "cell_source": "https://entity.api.hubmapconsortium.org/entities/0f1ddcb41a484adbda759c0c79097a02#D265-LLL-7A7-12",
+    "cell_source": "https://entity.api.hubmapconsortium.org/entities/8ac6e3bc3fb44efe981818290abd7693",
     "annotation_method": "sc_proteomics",
     "modality": "sc_proteomics",
     "summary": [
@@ -23425,7 +23425,7 @@
   },
   {
     "@type": "CellSummary",
-    "cell_source": "https://data.sennetconsortium.org/dataset?uuid=231a3d0cc7fb7506194109b68caa0b6a",
+    "cell_source": "https://entity.api.sennetconsortium.org/entities/231a3d0cc7fb7506194109b68caa0b6a",
     "annotation_method": "sc_proteomics",
     "modality": "sc_proteomics",
     "summary": [
@@ -23636,7 +23636,7 @@
   },
   {
     "@type": "CellSummary",
-    "cell_source": "https://data.sennetconsortium.org/dataset?uuid=be4874c329c8dfd14b91c682e613daed",
+    "cell_source": "https://entity.api.sennetconsortium.org/entities/be4874c329c8dfd14b91c682e613daed",
     "annotation_method": "sc_proteomics",
     "modality": "sc_proteomics",
     "summary": [
@@ -23847,7 +23847,7 @@
   },
   {
     "@type": "CellSummary",
-    "cell_source": "https://data.sennetconsortium.org/dataset?uuid=4f0d1913fda94d02e82d928951dbcdab",
+    "cell_source": "https://entity.api.sennetconsortium.org/entities/4f0d1913fda94d02e82d928951dbcdab",
     "annotation_method": "sc_proteomics",
     "modality": "sc_proteomics",
     "summary": [
@@ -24058,7 +24058,7 @@
   },
   {
     "@type": "CellSummary",
-    "cell_source": "https://data.sennetconsortium.org/dataset?uuid=bc2380a1970abded1129ed77507be349",
+    "cell_source": "https://entity.api.sennetconsortium.org/entities/bc2380a1970abded1129ed77507be349",
     "annotation_method": "sc_proteomics",
     "modality": "sc_proteomics",
     "summary": [
@@ -24269,7 +24269,7 @@
   },
   {
     "@type": "CellSummary",
-    "cell_source": "https://data.sennetconsortium.org/dataset?uuid=cc703095438a75d64e4a3fe5fbcead9c",
+    "cell_source": "https://entity.api.sennetconsortium.org/entities/cc703095438a75d64e4a3fe5fbcead9c",
     "annotation_method": "sc_proteomics",
     "modality": "sc_proteomics",
     "summary": [
