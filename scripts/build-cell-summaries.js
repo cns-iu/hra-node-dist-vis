@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { globSync } from 'glob';
 import Papa from 'papaparse';
-import { basename, dirname, join } from 'path';
+import { basename, dirname } from 'path';
 import { readCsv } from './csv.js';
 
 const CSV_FILES = 'image-store/vccf-data-cell-nodes/published/*/*-nodes.csv';
@@ -61,7 +61,7 @@ async function getSummary(nodesFile, crosswalk) {
     dist[row['Level Three Cell Type']] = (dist[row['Level Three Cell Type']] || 0) + 1;
     totalCells++;
   }
-  return Object.entries(dist)
+  const summary = Object.entries(dist)
     .sort((a, b) => b[1] - a[1])
     .map(([cell_label, count]) => ({
       '@type': 'CellSummaryRow',
@@ -70,6 +70,7 @@ async function getSummary(nodesFile, crosswalk) {
       count,
       percentage: count / totalCells,
     }));
+  return { totalCells, summary };
 }
 
 /**
@@ -110,6 +111,7 @@ async function getCrosswalk(url) {
 
 const groupCrosswalkUsed = {};
 const unmapped = {};
+const datasetCounts = {};
 const results = [];
 for (const nodesFile of globSync(CSV_FILES).sort()) {
   const datasetFile = nodesFile.replace('-nodes.csv', '-dataset.json');
@@ -121,7 +123,7 @@ for (const nodesFile of globSync(CSV_FILES).sort()) {
     groupCrosswalkUsed[group] = CROSSWALK_URL;
     const url = normalizeCsvUrl(CROSSWALK_URL);
     crosswalk = await getCrosswalk(url);
-    const summary = await getSummary(nodesFile, crosswalk);
+    const { totalCells, summary } = await getSummary(nodesFile, crosswalk);
 
     results.push({
       '@type': 'CellSummary',
@@ -130,6 +132,8 @@ for (const nodesFile of globSync(CSV_FILES).sort()) {
       modality: 'sc_proteomics',
       summary,
     });
+
+    datasetCounts[dataset['@id']] = totalCells;
 
     const unmappedLabels = (unmapped[group] = unmapped[group] || new Set());
     for (const row of summary) {
@@ -157,6 +161,7 @@ const datasets = results.map((summary) => ({
   donor_id: `${summary['cell_source']}$TEMP_DONOR`,
   block_id: `${summary['cell_source']}$TEMP_BLOCK`,
   dataset_id: summary['cell_source'],
+  dataset_cell_count: datasetCounts[summary['cell_source']],
 }));
 
 writeFileSync(CELL_DATASETS, Papa.unparse(datasets, { header: true }));
